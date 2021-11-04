@@ -100,21 +100,23 @@ pipeline {
 		stage('Deploy to k8s') {
 			steps {
 				withKubeConfig([credentialsId: env.k8s_config]) {
-					sh '''
-						helm template deployment/k8s/cashservice-api \
-							--set image.tag=${TAG} \
-							--set namespace=${kube_ns} \
-                            --set autoscaling.enabled=${tgs_autoscaling} \
-							--set connectionStrings.tgs="$tgs_tgs" \
-					'''
-					sh '''
-						helm template deployment/k8s/cashservice-api \
-							--set image.tag=${TAG} \
-							--set namespace=${kube_ns} \
-                            --set autoscaling.enabled=${tgs_autoscaling} \
-							--set connectionStrings.tgs="$tgs_tgs" \
-                            | kubectl -n ${kube_ns} apply -f -
-					'''
+                    withCredentials([string(credentialsId: "tgs-${kube_ns}-connectionstring", variable: "tgs_tgs")]) {
+                        sh '''
+                            helm template deployment/k8s/cashservice-api \
+                                --set image.tag=${TAG} \
+                                --set namespace=${kube_ns} \
+                                --set autoscaling.enabled=${tgs_autoscaling} \
+                                --set connectionStrings.tgs="$tgs_tgs" \
+                        '''
+                        sh '''
+                            helm template deployment/k8s/cashservice-api \
+                                --set image.tag=${TAG} \
+                                --set namespace=${kube_ns} \
+                                --set autoscaling.enabled=${tgs_autoscaling} \
+                                --set connectionStrings.tgs="$tgs_tgs" \
+                                | kubectl -n ${kube_ns} apply -f -
+                        '''
+                    }
 				}
 			}
 		}
