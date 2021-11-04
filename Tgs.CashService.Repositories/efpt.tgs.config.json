@@ -1,0 +1,53 @@
+﻿{
+  "CodeGenerationMode": 0,
+  "ContextClassName": "TgsContext",
+  "ContextNamespace": "Entities",
+  "DefaultDacpacSchema": null,
+  "FilterSchemas": true,
+  "IncludeConnectionString": false,
+  "ModelNamespace": "Entities",
+  "OutputContextPath": "Entities\/Tgs",
+  "OutputPath": "Entities\/Tgs\/Models",
+  "ProjectRootNamespace": "TGS.GameProviders.Repositories",
+  "Schemas": [
+    {
+      "Name": "dbo"
+    }
+  ],
+  "SelectedHandlebarsLanguage": 0,
+  "SelectedToBeGenerated": 0,
+  "Tables": [
+    {
+      "Name": "dbo.brands",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.players",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.wallets",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.transactions",
+      "ObjectType": 0
+    }
+  ],
+  "UiHint": ".tgs",
+  "UseBoolPropertiesWithoutDefaultSql": true,
+  "UseDatabaseNames": false,
+  "UseDbContextSplitting": true,
+  "UseFluentApiOnly": true,
+  "UseHandleBars": false,
+  "UseInflector": true,
+  "UseLegacyPluralizer": false,
+  "UseNoConstructor": true,
+  "UseNoDefaultConstructor": false,
+  "UseNoNavigations": true,
+  "UseNoObjectFilter": false,
+  "UseNodaTime": false,
+  "UseNullableReferences": true,
+  "UseSchemaFolders": false,
+  "UseSpatial": false
+}
