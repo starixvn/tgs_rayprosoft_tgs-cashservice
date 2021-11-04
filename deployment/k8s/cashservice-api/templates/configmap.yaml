@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-{{ include "payment.fullname" . }}
+data:
+  appsettings.json: |
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Trace",
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "ConnectionStrings": {
+        "Tgs": "{{ .Values.connectionStrings.tgs }}"
+      },
+      "AllowedHosts": "*"
+    }
