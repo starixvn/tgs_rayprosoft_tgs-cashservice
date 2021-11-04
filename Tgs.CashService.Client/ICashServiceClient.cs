@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Tgs.CashService.Client
 {
-    public interface ICashServiceClinet
+    public interface ICashServiceClient
     {
         ValueTask<TransactionViewModel?> AdjustAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId, Guid CreatedByUserId);
 

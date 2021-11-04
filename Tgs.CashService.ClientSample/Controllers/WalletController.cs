@@ -11,12 +11,12 @@ namespace Tgs.CashService.ClientSample.Controllers
     [ApiController]
     public class WalletController : ControllerBase
     {
-        private readonly ICashServiceClinet _cashServiceClinet;
+        private readonly ICashServiceClient _cashServiceClinet;
         private readonly ILogger<WalletController> _logger;
 
         public WalletController(
             ILogger<WalletController> logger,
-            ICashServiceClinet cashServiceClinet)
+            ICashServiceClient cashServiceClinet)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _cashServiceClinet = cashServiceClinet ?? throw new ArgumentNullException(nameof(cashServiceClinet));

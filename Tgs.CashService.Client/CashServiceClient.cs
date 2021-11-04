@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Tgs.CashService.Client
 {
-    internal class CashServiceClinet : ICashServiceClinet
+    internal class CashServiceClient : ICashServiceClient
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions? _serializerOptions;
 
-        public CashServiceClinet(
+        public CashServiceClient(
             HttpClient httpClient,
             JsonSerializerOptions? serializerOptions)
         {

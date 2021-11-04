@@ -14,8 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddOptions<CashServiceClientOptions>()
             .Configure(configure)
             .Services
-            .AddHttpClient<CashServiceClinet, CashServiceClinet>(
-                (httpClient, sp) => ActivatorUtilities.CreateInstance<CashServiceClinet>(
+            .AddHttpClient<CashServiceClient, CashServiceClient>(
+                (httpClient, sp) => ActivatorUtilities.CreateInstance<CashServiceClient>(
                     sp,
                     httpClient,
                     sp.GetRequiredService<IOptions<CashServiceClientOptions>>().Value.JsonSerializerOptions!))
@@ -25,6 +25,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 httpClient.BaseAddress = options.BaseUrl;
             })
             .Services
-            .AddTransient<ICashServiceClinet>(sp => sp.GetRequiredService<CashServiceClinet>());
+            .AddTransient<ICashServiceClient>(sp => sp.GetRequiredService<CashServiceClient>());
     }
 }
