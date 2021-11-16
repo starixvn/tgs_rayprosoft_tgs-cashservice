@@ -5,32 +5,32 @@ namespace Tgs.CashService.Client
 {
     public interface ICashServiceClient
     {
-        ValueTask<TransactionViewModel?> AdjustAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId, Guid CreatedByUserId);
+        ValueTask<TransactionResponse?> AdjustAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId, Guid CreatedByUserId);
 
         ValueTask<decimal> BalanceAsync(Guid walletId);
 
-        ValueTask<TransactionViewModel?> BonusAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse?> BonusAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
 
-        ValueTask<TransactionViewModel?> CancelWithdrawalAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId, Guid CreatedByUserId);
+        ValueTask<TransactionResponse?> CancelWithdrawalAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId, Guid CreatedByUserId);
 
-        ValueTask<TransactionViewModel?> DepositAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse?> DepositAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
 
-        ValueTask<TransactionViewModel?> DividendAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse?> DividendAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
 
-        ValueTask<TransactionViewModel?> GameProviderDepositAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse?> GameProviderDepositAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
 
-        ValueTask<TransactionViewModel?> GameProviderFundInAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse?> GameProviderFundInAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
 
-        ValueTask<TransactionViewModel?> GameProviderFundOutAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse?> GameProviderFundOutAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
 
-        ValueTask<TransactionViewModel?> GameProviderWithdrawalAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse?> GameProviderWithdrawalAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
 
-        ValueTask<TransactionViewModel?> OtherAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId, Guid createdByUserId);
+        ValueTask<TransactionResponse?> OtherAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId, Guid createdByUserId);
 
-        ValueTask<TransactionViewModel?> PromotionAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse?> PromotionAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
 
-        ValueTask<TransactionViewModel?> RebateAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse?> RebateAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
 
-        ValueTask<TransactionViewModel?> WithdrawalAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse?> WithdrawalAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
     }
 }

@@ -42,7 +42,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Adjust")]
-        public ValueTask<TransactionViewModel?> AdjustAsync(
+        public ValueTask<TransactionResponse?> AdjustAsync(
                 [FromBody] AdjustViewModel viewModel)
             => _cashServiceClinet.AdjustAsync(
                 viewModel.BrandId,
@@ -88,7 +88,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Bonus")]
-        public ValueTask<TransactionViewModel?> BonusAsync(
+        public ValueTask<TransactionResponse?> BonusAsync(
             [FromBody] BonusViewModel viewModel)
             => _cashServiceClinet.BonusAsync(
                 viewModel.BrandId,
@@ -118,7 +118,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("CancelWithdrawal")]
-        public ValueTask<TransactionViewModel?> CancelWithdrawalAsync(
+        public ValueTask<TransactionResponse?> CancelWithdrawalAsync(
                 [FromBody] CancelWithdrawalViewModel viewModel)
             => _cashServiceClinet.CancelWithdrawalAsync(
                 viewModel.BrandId,
@@ -148,7 +148,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Deposit")]
-        public ValueTask<TransactionViewModel?> DepositAsync(
+        public ValueTask<TransactionResponse?> DepositAsync(
             [FromBody] DepositViewModel viewModel)
             => _cashServiceClinet.DepositAsync(
                 viewModel.BrandId,
@@ -176,7 +176,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Dividend")]
-        public ValueTask<TransactionViewModel?> DividendAsync(
+        public ValueTask<TransactionResponse?> DividendAsync(
             [FromBody] DividendViewModel viewModel)
             => _cashServiceClinet.DividendAsync(
                 viewModel.BrandId,
@@ -205,7 +205,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderDeposit")]
-        public ValueTask<TransactionViewModel?> GameProviderDepositAsync(
+        public ValueTask<TransactionResponse?> GameProviderDepositAsync(
             [FromBody] GameProviderDepositViewModel viewModel)
             => _cashServiceClinet.GameProviderDepositAsync(
                 viewModel.BrandId,
@@ -234,7 +234,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderFundIn")]
-        public ValueTask<TransactionViewModel?> GameProviderFundInAsync(
+        public ValueTask<TransactionResponse?> GameProviderFundInAsync(
                 [FromBody] GameProviderFundInViewModel viewModel)
             => _cashServiceClinet.GameProviderFundInAsync(
                 viewModel.BrandId,
@@ -263,7 +263,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderFundOut")]
-        public ValueTask<TransactionViewModel?> GameProviderFundOutAsync(
+        public ValueTask<TransactionResponse?> GameProviderFundOutAsync(
                 [FromBody] GameProviderFundOutViewModel viewModel)
             => _cashServiceClinet.GameProviderFundOutAsync(
                 viewModel.BrandId,
@@ -292,7 +292,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderWithdrawal")]
-        public ValueTask<TransactionViewModel?> GameProviderWithdrawalAsync(
+        public ValueTask<TransactionResponse?> GameProviderWithdrawalAsync(
             [FromBody] GameProviderWithdrawalViewModel viewModel)
             => _cashServiceClinet.GameProviderWithdrawalAsync(
                 viewModel.BrandId,
@@ -322,7 +322,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Other")]
-        public ValueTask<TransactionViewModel?> OtherAsync(
+        public ValueTask<TransactionResponse?> OtherAsync(
             [FromBody] OtherViewModel viewModel)
             => _cashServiceClinet.OtherAsync(
                 viewModel.BrandId,
@@ -352,7 +352,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Promotion")]
-        public ValueTask<TransactionViewModel?> PromotionAsync(
+        public ValueTask<TransactionResponse?> PromotionAsync(
                 [FromBody] PromotionViewModel viewModel)
             => _cashServiceClinet.PromotionAsync(
                 viewModel.BrandId,
@@ -381,7 +381,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Rebate")]
-        public ValueTask<TransactionViewModel?> RebateAsync(
+        public ValueTask<TransactionResponse?> RebateAsync(
                 [FromBody] RebateViewModel viewModel)
             => _cashServiceClinet.RebateAsync(
                 viewModel.BrandId,
@@ -410,7 +410,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Withdrawal")]
-        public ValueTask<TransactionViewModel?> WithdrawalAsync(
+        public ValueTask<TransactionResponse?> WithdrawalAsync(
             [FromBody] WithdrawalViewModel viewModel)
             => _cashServiceClinet.WithdrawalAsync(
                 viewModel.BrandId,

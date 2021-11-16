@@ -3,15 +3,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Tgs.CashService.Models
 {
-    public record CancelWithdrawalViewModel
+    public class CancelWithdrawalViewModel
     {
-        public Guid BrandId { get; init; }
-        public Guid WalletId { get; init; }
-        public string PlayerCode { get; init; } = default!;
+        public Guid BrandId { get; set; }
+        public Guid WalletId { get; set; }
+        public string PlayerCode { get; set; } = default!;
         [Range(0, int.MaxValue)]
-        public decimal Amount { get; init; }
-        public string? Description { get; init; }
-        public string? ExternalId { get; init; }
-        public Guid CreatedByUserId { get; init; }
+        public decimal Amount { get; set; }
+        public string? Description { get; set; }
+        public string? ExternalId { get; set; }
+        public Guid CreatedByUserId { get; set; }
     }
 }

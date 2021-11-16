@@ -20,7 +20,7 @@ namespace Tgs.CashService.Client
             _serializerOptions = serializerOptions;
         }
 
-        public async ValueTask<TransactionViewModel?> AdjustAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId, Guid createdByUserId)
+        public async ValueTask<TransactionResponse?> AdjustAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId, Guid createdByUserId)
         {
             var request = new
             {
@@ -46,7 +46,7 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
         public async ValueTask<decimal> BalanceAsync(Guid walletId)
@@ -61,7 +61,7 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<decimal>(contentJson);
         }
 
-        public async ValueTask<TransactionViewModel?> BonusAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse?> BonusAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
         {
             var request = new
             {
@@ -86,10 +86,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> CancelWithdrawalAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId, Guid createdByUserId)
+        public async ValueTask<TransactionResponse?> CancelWithdrawalAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId, Guid createdByUserId)
         {
             var request = new
             {
@@ -115,10 +115,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> DepositAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse?> DepositAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
         {
             var request = new
             {
@@ -143,10 +143,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> DividendAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse?> DividendAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
         {
             var request = new
             {
@@ -171,10 +171,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> GameProviderDepositAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse?> GameProviderDepositAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
         {
             var request = new
             {
@@ -199,10 +199,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> GameProviderFundInAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse?> GameProviderFundInAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
         {
             var request = new
             {
@@ -227,10 +227,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> GameProviderFundOutAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse?> GameProviderFundOutAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
         {
             var request = new
             {
@@ -255,10 +255,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> GameProviderWithdrawalAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse?> GameProviderWithdrawalAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
         {
             var request = new
             {
@@ -283,10 +283,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> OtherAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId, Guid createdByUserId)
+        public async ValueTask<TransactionResponse?> OtherAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId, Guid createdByUserId)
         {
             var request = new
             {
@@ -312,10 +312,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> PromotionAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse?> PromotionAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
 
         {
             var request = new
@@ -341,10 +341,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> RebateAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse?> RebateAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
         {
             var request = new
             {
@@ -369,10 +369,10 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
 
-        public async ValueTask<TransactionViewModel?> WithdrawalAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse?> WithdrawalAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
         {
             var request = new
             {
@@ -397,7 +397,7 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _serializerOptions);
         }
     }
 }
