@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashService.Core
 {
-    public enum TransactionTypes
+    public enum TransactionType
     {
         Deposit = 0,
         Withdrawal = 1,

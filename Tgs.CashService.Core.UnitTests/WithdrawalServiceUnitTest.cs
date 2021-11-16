@@ -19,25 +19,30 @@ namespace Tgs.CashService.Core.UnitTests
 
             var query = new WithdrawalCommand(
                 Guid.NewGuid(),
-                Guid.NewGuid(),
-                "4ucmqplxb029",
                 -100,
                 Guid.NewGuid().ToString("N"),
                 "測試反水");
+
+            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
+                .Returns(new Wallet
+                {
+                    Id = query.WalletId,
+                    BrandId = Guid.NewGuid(),
+                    PlayerCode = "Player1"
+                });
 
             _ = await sut.GetAsync(query).ConfigureAwait(false);
 
             _ = fakeWalletRepository
                 .Received(1)
                 .ExchangeAsync(
-                    query.BrandId,
-                    query.WalletId,
-                    query.PlayerCode,
-                    TransactionTypes.Withdrawal,
+                    Arg.Any<Guid>(),
+                    Arg.Is(query.WalletId),
+                    Arg.Any<string>(),
+                    Arg.Is(TransactionType.Withdrawal),
                     query.Amount,
                     query.Description,
-                    query.ExternalId
-                    );
+                    query.ExternalId);
         }
     }
 }

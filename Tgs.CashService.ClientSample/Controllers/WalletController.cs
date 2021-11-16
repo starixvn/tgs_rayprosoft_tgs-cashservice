@@ -148,12 +148,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Deposit")]
-        public ValueTask<TransactionResponse?> DepositAsync(
+        public ValueTask<TransactionResponse> DepositAsync(
             [FromBody] DepositViewModel viewModel)
             => _cashServiceClinet.DepositAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
@@ -410,12 +408,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Withdrawal")]
-        public ValueTask<TransactionResponse?> WithdrawalAsync(
+        public ValueTask<TransactionResponse> WithdrawalAsync(
             [FromBody] WithdrawalViewModel viewModel)
             => _cashServiceClinet.WithdrawalAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);

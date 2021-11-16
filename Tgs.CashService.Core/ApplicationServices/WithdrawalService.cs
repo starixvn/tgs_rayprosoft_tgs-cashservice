@@ -20,20 +20,23 @@ namespace Tgs.CashService.Core.ApplicationServices
 
         public async ValueTask<ExchangeResult> GetAsync(WithdrawalCommand query, CancellationToken cancellationToken = default)
         {
-            var (TransactionId, PostBalance) = await _walletRepository.ExchangeAsync(
-                query.BrandId,
-                query.WalletId,
-                query.PlayerCode,
-                TransactionTypes.Withdrawal,
-                query.Amount,
-                query.Description,
-                query.ExternalId)
+            var wallet = await _walletRepository.GetWalletAsync(query.WalletId);
+
+            if (wallet == null)
+                throw new InvalidOperationException("Can't found wallet.");
+
+            var (transactionId, postBalance) = await _walletRepository
+                .ExchangeAsync(
+                    wallet.BrandId,
+                    query.WalletId,
+                    wallet.PlayerCode,
+                    TransactionType.Withdrawal,
+                    query.Amount,
+                    query.Description,
+                    query.ExternalId)
                 .ConfigureAwait(false);
-            return new()
-            {
-                TransactionId = TransactionId,
-                Balance = PostBalance
-            };
+
+            return new ExchangeResult(transactionId, postBalance);
         }
     }
 }

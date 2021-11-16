@@ -33,7 +33,7 @@ namespace Tgs.CashService.Core.UnitTests
                     query.BrandId,
                     query.WalletId,
                     query.PlayerCode,
-                    TransactionTypes.GameProviderFundOut,
+                    TransactionType.GameProviderFundOut,
                     query.Amount,
                     query.Description,
                     query.ExternalId

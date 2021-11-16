@@ -34,7 +34,7 @@ namespace Tgs.CashService.Core.UnitTests
                     query.BrandId,
                     query.WalletId,
                     query.PlayerCode,
-                    TransactionTypes.CancelWithdrawal,
+                    TransactionType.CancelWithdrawal,
                     query.Amount,
                     query.Description,
                     query.ExternalId,

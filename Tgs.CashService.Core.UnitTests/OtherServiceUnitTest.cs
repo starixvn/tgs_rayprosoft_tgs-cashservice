@@ -34,7 +34,7 @@ namespace Tgs.CashService.Core.UnitTests
                     query.BrandId,
                     query.WalletId,
                     query.PlayerCode,
-                    TransactionTypes.Other,
+                    TransactionType.Other,
                     query.Amount,
                     query.Description,
                     query.ExternalId,

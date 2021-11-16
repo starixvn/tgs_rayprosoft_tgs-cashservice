@@ -20,20 +20,17 @@ namespace Tgs.CashService.Core.ApplicationServices
 
         public async ValueTask<ExchangeResult> GetAsync(GameProviderWithdrawalCommand query, CancellationToken cancellationToken = default)
         {
-            var (TransactionId, PostBalance) = await _walletRepository.ExchangeAsync(
+            var (transactionId, postBalance) = await _walletRepository.ExchangeAsync(
                 query.BrandId,
                 query.WalletId,
                 query.PlayerCode,
-                TransactionTypes.GameProviderWithdrawal,
+                TransactionType.GameProviderWithdrawal,
                 query.Amount,
                 query.Description,
                 query.ExternalId)
                 .ConfigureAwait(false);
-            return new()
-            {
-                TransactionId = TransactionId,
-                Balance = PostBalance
-            };
+
+            return new ExchangeResult(transactionId, postBalance);
         }
     }
 }

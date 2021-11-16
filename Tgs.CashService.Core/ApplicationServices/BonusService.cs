@@ -20,20 +20,18 @@ namespace Tgs.CashService.Core.ApplicationServices
 
         public async ValueTask<ExchangeResult> GetAsync(BonusCommand query, CancellationToken cancellationToken = default)
         {
-            var (TransactionId, PostBalance) = await _walletRepository.ExchangeAsync(
-                query.BrandId,
-                query.WalletId,
-                query.PlayerCode,
-                TransactionTypes.Bonus,
-                query.Amount,
-                query.Description,
-                query.ExternalId)
+            var (transactionId, postBalance) = await _walletRepository
+                .ExchangeAsync(
+                    query.BrandId,
+                    query.WalletId,
+                    query.PlayerCode,
+                    TransactionType.Bonus,
+                    query.Amount,
+                    query.Description,
+                    query.ExternalId)
                 .ConfigureAwait(false);
-            return new()
-            {
-                TransactionId = TransactionId,
-                Balance = PostBalance
-            };
+
+            return new ExchangeResult(transactionId, postBalance);
         }
     }
 }

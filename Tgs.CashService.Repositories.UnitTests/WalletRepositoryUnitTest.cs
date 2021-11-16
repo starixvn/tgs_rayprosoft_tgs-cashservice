@@ -15,7 +15,7 @@ namespace Tgs.CashService.Repositories.UnitTests
             var brandId = Guid.NewGuid();
             var walletId = Guid.NewGuid();
             var playerCode = "4ucmqplxb029";
-            var transactionType = TransactionTypes.Deposit;
+            var transactionType = TransactionType.Deposit;
             var amount = 100m;
             var description = "´ú¸Õ¦s´Ú";
             var externalId = Guid.NewGuid().ToString("N");

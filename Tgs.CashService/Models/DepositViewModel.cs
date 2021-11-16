@@ -5,12 +5,6 @@ namespace Tgs.CashService.Models
 {
     public class DepositViewModel
     {
-        public Guid BrandId { get; set; }
-
-        public Guid WalletId { get; set; }
-
-        public string PlayerCode { get; set; } = default!;
-
         [Range(0, int.MaxValue)]
         public decimal Amount { get; set; }
 

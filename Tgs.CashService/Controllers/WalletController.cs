@@ -169,34 +169,21 @@ namespace Tgs.CashService.Controllers
         /// Deposits the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
-        /// <param name="viewModel">The view model.</param>
+        /// <param name="walletId"></param>
+        /// <param name="request">The view model.</param>
         /// <returns></returns>
-        /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
-        ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
-        ///     "amount": 10,
-        ///     "description": "測試存款",
-        ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        /// }
-        /// </remarks>
-        [HttpPut("deposit")]
+        [HttpPut("deposit/{walletId}")]
         public async ValueTask<TransactionResultViewModel> DepositAsync(
             [FromServices] IGetService<DepositCommand, ExchangeResult> service,
-            [FromBody] DepositViewModel viewModel)
+            Guid walletId,
+            [FromBody] DepositViewModel request)
         {
             var result = await service
                 .GetAsync(new DepositCommand(
-                    viewModel.BrandId,
-                    viewModel.WalletId,
-                    viewModel.PlayerCode,
-                    viewModel.Amount,
-                    viewModel.Description,
-                    viewModel.ExternalId))
+                    walletId,
+                    request.Amount,
+                    request.Description,
+                    request.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -539,6 +526,7 @@ namespace Tgs.CashService.Controllers
         /// Withdrawals the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
+        /// <param name="walletId"></param>
         /// <param name="viewModel">The view model.</param>
         /// <returns></returns>
         /// <remarks>
@@ -554,16 +542,15 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         /// }
         /// </remarks>
-        [HttpPut("withdrawal")]
+        [HttpPut("withdrawal/{walletId}")]
         public async ValueTask<TransactionResultViewModel> WithdrawalAsync(
             [FromServices] IGetService<WithdrawalCommand, ExchangeResult> service,
+            Guid walletId,
             [FromBody] WithdrawalViewModel viewModel)
         {
             var result = await service
                 .GetAsync(new WithdrawalCommand(
-                    viewModel.BrandId,
-                    viewModel.WalletId,
-                    viewModel.PlayerCode,
+                    walletId,
                     viewModel.Amount,
                     viewModel.Description,
                     viewModel.ExternalId))
