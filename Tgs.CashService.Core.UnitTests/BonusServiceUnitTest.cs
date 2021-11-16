@@ -17,15 +17,13 @@ namespace Tgs.CashService.Core.UnitTests
             var faceLogger = NullLogger<BonusService>.Instance;
             var sut = new BonusService(faceLogger, fakeWalletRepository);
 
-            var query = new BonusQuery()
-            {
-                BrandId = Guid.NewGuid(),
-                WalletId = Guid.NewGuid(),
-                PlayerCode = "4ucmqplxb029",
-                Amount = 100,
-                ExternalId = Guid.NewGuid().ToString("N"),
-                Description = "測試紅利",
-            };
+            var query = new BonusCommand(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "4ucmqplxb029",
+                100,
+                Guid.NewGuid().ToString("N"),
+                "測試紅利");
 
             _ = await sut.GetAsync(query).ConfigureAwait(false);
 

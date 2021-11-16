@@ -6,7 +6,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record WithdrawalService : IGetService<WithdrawalQuery, ExchangeResult>
+    public record WithdrawalService : IGetService<WithdrawalCommand, ExchangeResult>
     {
         private readonly ILogger<WithdrawalService> _logger;
 
@@ -18,7 +18,7 @@ namespace Tgs.CashService.Core.ApplicationServices
             _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         }
 
-        public async ValueTask<ExchangeResult> GetAsync(WithdrawalQuery query, CancellationToken cancellationToken = default)
+        public async ValueTask<ExchangeResult> GetAsync(WithdrawalCommand query, CancellationToken cancellationToken = default)
         {
             var (TransactionId, PostBalance) = await _walletRepository.ExchangeAsync(
                 query.BrandId,

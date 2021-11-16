@@ -6,7 +6,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record BonusService : IGetService<BonusQuery, ExchangeResult>
+    public record BonusService : IGetService<BonusCommand, ExchangeResult>
     {
         private readonly ILogger<BonusService> _logger;
 
@@ -18,7 +18,7 @@ namespace Tgs.CashService.Core.ApplicationServices
             _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         }
 
-        public async ValueTask<ExchangeResult> GetAsync(BonusQuery query, CancellationToken cancellationToken = default)
+        public async ValueTask<ExchangeResult> GetAsync(BonusCommand query, CancellationToken cancellationToken = default)
         {
             var (TransactionId, PostBalance) = await _walletRepository.ExchangeAsync(
                 query.BrandId,

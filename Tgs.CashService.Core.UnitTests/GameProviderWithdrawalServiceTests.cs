@@ -8,7 +8,7 @@ using Tgs.CashService.Core.ApplicationServices;
 namespace Tgs.CashService.Core.UnitTests
 {
     [TestFixture]
-    public class GameProviderWithdrawalServiceUnitTest
+    public class GameProviderWithdrawalServiceTests
     {
         [Test]
         public async Task Can_Create_GameProviderWithdrawal_Exchange()
@@ -17,15 +17,13 @@ namespace Tgs.CashService.Core.UnitTests
             var faceLogger = NullLogger<GameProviderWithdrawalService>.Instance;
             var sut = new GameProviderWithdrawalService(faceLogger, fakeWalletRepository);
 
-            var query = new GameProviderWithdrawalQuery()
-            {
-                BrandId = Guid.NewGuid(),
-                WalletId = Guid.NewGuid(),
-                PlayerCode = "4ucmqplxb029",
-                Amount = 100,
-                ExternalId = Guid.NewGuid().ToString("N"),
-                Description = "測試遊戲下分",
-            };
+            var query = new GameProviderWithdrawalCommand(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "4ucmqplxb029",
+                100,
+                Guid.NewGuid().ToString("N"),
+                "測試遊戲下分");
 
             _ = await sut.GetAsync(query).ConfigureAwait(false);
 

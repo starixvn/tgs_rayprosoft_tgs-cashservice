@@ -17,15 +17,13 @@ namespace Tgs.CashService.Core.UnitTests
             var faceLogger = NullLogger<DividendService>.Instance;
             var sut = new DividendService(faceLogger, fakeWalletRepository);
 
-            var query = new DividendQuery()
-            {
-                BrandId = Guid.NewGuid(),
-                WalletId = Guid.NewGuid(),
-                PlayerCode = "4ucmqplxb029",
-                Amount = 100,
-                ExternalId = Guid.NewGuid().ToString("N"),
-                Description = "測試分紅",
-            };
+            var query = new DividendCommand(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "4ucmqplxb029",
+                100,
+                Guid.NewGuid().ToString("N"),
+                "測試分紅");
 
             _ = await sut.GetAsync(query).ConfigureAwait(false);
 

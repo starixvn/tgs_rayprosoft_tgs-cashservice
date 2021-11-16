@@ -17,15 +17,13 @@ namespace Tgs.CashService.Core.UnitTests
             var faceLogger = NullLogger<WithdrawalService>.Instance;
             var sut = new WithdrawalService(faceLogger, fakeWalletRepository);
 
-            var query = new WithdrawalQuery()
-            {
-                BrandId = Guid.NewGuid(),
-                WalletId = Guid.NewGuid(),
-                PlayerCode = "4ucmqplxb029",
-                Amount = -100,
-                ExternalId = Guid.NewGuid().ToString("N"),
-                Description = "測試反水",
-            };
+            var query = new WithdrawalCommand(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "4ucmqplxb029",
+                -100,
+                Guid.NewGuid().ToString("N"),
+                "測試反水");
 
             _ = await sut.GetAsync(query).ConfigureAwait(false);
 

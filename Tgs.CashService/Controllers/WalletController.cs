@@ -34,20 +34,18 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("adjust")]
         public async ValueTask<TransactionResultViewModel> AdjustAsync(
-            [FromServices] IGetService<AdjustQuery, ExchangeResult> service,
+            [FromServices] IGetService<AdjustCommand, ExchangeResult> service,
             [FromBody] AdjustViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new AdjustQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId,
-                    CreatedByUserId = viewModel.CreatedByUserId
-                })
+                .GetAsync(new AdjustCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId,
+                    viewModel.CreatedByUserId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -104,19 +102,17 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("bonus")]
         public async ValueTask<TransactionResultViewModel> BonusAsync(
-            [FromServices] IGetService<BonusQuery, ExchangeResult> service,
+            [FromServices] IGetService<BonusCommand, ExchangeResult> service,
             [FromBody] BonusViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new BonusQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId
-                })
+                .GetAsync(new BonusCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -148,20 +144,18 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpDelete("withdrawal")]
         public async ValueTask<TransactionResultViewModel> CancelWithdrawalAsync(
-            [FromServices] IGetService<CancelWithdrawalQuery, ExchangeResult> service,
+            [FromServices] IGetService<CancelWithdrawalCommand, ExchangeResult> service,
             [FromBody] CancelWithdrawalViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new CancelWithdrawalQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId,
-                    CreatedByUserId = viewModel.CreatedByUserId
-                })
+                .GetAsync(new CancelWithdrawalCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId,
+                    viewModel.CreatedByUserId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -192,19 +186,17 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("deposit")]
         public async ValueTask<TransactionResultViewModel> DepositAsync(
-            [FromServices] IGetService<DepositQuery, ExchangeResult> service,
+            [FromServices] IGetService<DepositCommand, ExchangeResult> service,
             [FromBody] DepositViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new DepositQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId
-                })
+                .GetAsync(new DepositCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -234,19 +226,17 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("dividend")]
         public async ValueTask<TransactionResultViewModel> DividendAsync(
-            [FromServices] IGetService<DividendQuery, ExchangeResult> service,
+            [FromServices] IGetService<DividendCommand, ExchangeResult> service,
             [FromBody] DividendViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new DividendQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId
-                })
+                .GetAsync(new DividendCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -277,19 +267,17 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("gp/deposit")]
         public async ValueTask<TransactionResultViewModel> GameProviderDepositAsync(
-            [FromServices] IGetService<GameProviderDepositQuery, ExchangeResult> service,
+            [FromServices] IGetService<GameProviderDepositCommand, ExchangeResult> service,
             [FromBody] GameProviderDepositViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new GameProviderDepositQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId
-                })
+                .GetAsync(new GameProviderDepositCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -320,19 +308,17 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("gp/fund-in")]
         public async ValueTask<TransactionResultViewModel> GameProviderFundInAsync(
-            [FromServices] IGetService<GameProviderFundInQuery, ExchangeResult> service,
+            [FromServices] IGetService<GameProviderFundInCommand, ExchangeResult> service,
             [FromBody] GameProviderFundInViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new GameProviderFundInQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId
-                })
+                .GetAsync(new GameProviderFundInCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -363,19 +349,17 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("gp/fund-out")]
         public async ValueTask<TransactionResultViewModel> GameProviderFundOutAsync(
-            [FromServices] IGetService<GameProviderFundOutQuery, ExchangeResult> service,
+            [FromServices] IGetService<GameProviderFundOutCommand, ExchangeResult> service,
             [FromBody] GameProviderFundOutViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new GameProviderFundOutQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId
-                })
+                .GetAsync(new GameProviderFundOutCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -406,19 +390,17 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("gp/withdrawal")]
         public async ValueTask<TransactionResultViewModel> GameProviderWithdrawalAsync(
-            [FromServices] IGetService<GameProviderWithdrawalQuery, ExchangeResult> service,
+            [FromServices] IGetService<GameProviderWithdrawalCommand, ExchangeResult> service,
             [FromBody] GameProviderWithdrawalViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new GameProviderWithdrawalQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId
-                })
+                .GetAsync(new GameProviderWithdrawalCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -450,20 +432,18 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("other")]
         public async ValueTask<TransactionResultViewModel> OtherAsync(
-            [FromServices] IGetService<OtherQuery, ExchangeResult> service,
+            [FromServices] IGetService<OtherCommand, ExchangeResult> service,
             [FromBody] OtherViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new OtherQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId,
-                    CreatedByUserId = viewModel.CreatedByUserId
-                })
+                .GetAsync(new OtherCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId,
+                    viewModel.CreatedByUserId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -494,19 +474,17 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("promotion")]
         public async ValueTask<TransactionResultViewModel> PromotionAsync(
-            [FromServices] IGetService<PromotionQuery, ExchangeResult> service,
+            [FromServices] IGetService<PromotionCommand, ExchangeResult> service,
             [FromBody] PromotionViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new PromotionQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId
-                })
+                .GetAsync(new PromotionCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -537,19 +515,17 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("rebate")]
         public async ValueTask<TransactionResultViewModel> RebateAsync(
-            [FromServices] IGetService<RebateQuery, ExchangeResult> service,
+            [FromServices] IGetService<RebateCommand, ExchangeResult> service,
             [FromBody] RebateViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new RebateQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId
-                })
+                .GetAsync(new RebateCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
@@ -580,19 +556,17 @@ namespace Tgs.CashService.Controllers
         /// </remarks>
         [HttpPut("withdrawal")]
         public async ValueTask<TransactionResultViewModel> WithdrawalAsync(
-            [FromServices] IGetService<WithdrawalQuery, ExchangeResult> service,
+            [FromServices] IGetService<WithdrawalCommand, ExchangeResult> service,
             [FromBody] WithdrawalViewModel viewModel)
         {
             var result = await service
-                .GetAsync(new WithdrawalQuery()
-                {
-                    BrandId = viewModel.BrandId,
-                    WalletId = viewModel.WalletId,
-                    PlayerCode = viewModel.PlayerCode,
-                    Amount = viewModel.Amount,
-                    Description = viewModel.Description,
-                    ExternalId = viewModel.ExternalId
-                })
+                .GetAsync(new WithdrawalCommand(
+                    viewModel.BrandId,
+                    viewModel.WalletId,
+                    viewModel.PlayerCode,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()

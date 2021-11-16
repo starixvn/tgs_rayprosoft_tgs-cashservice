@@ -17,16 +17,14 @@ namespace Tgs.CashService.Core.UnitTests
             var faceLogger = NullLogger<CancelWithdrawalService>.Instance;
             var sut = new CancelWithdrawalService(faceLogger, fakeWalletRepository);
 
-            var query = new CancelWithdrawalQuery()
-            {
-                BrandId = Guid.NewGuid(),
-                WalletId = Guid.NewGuid(),
-                PlayerCode = "4ucmqplxb029",
-                Amount = 100,
-                ExternalId = Guid.NewGuid().ToString("N"),
-                Description = "測試取消提款單",
-                CreatedByUserId = Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b")
-            };
+            var query = new CancelWithdrawalCommand(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "4ucmqplxb029",
+                100,
+                Guid.NewGuid().ToString("N"),
+                "測試取消提款單",
+                Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
 
             _ = await sut.GetAsync(query).ConfigureAwait(false);
 
