@@ -306,12 +306,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Promotion")]
-        public ValueTask<TransactionResponse?> PromotionAsync(
-                [FromBody] PromotionViewModel viewModel)
+        public ValueTask<TransactionResponse> PromotionAsync(
+            [FromBody] PromotionViewModel viewModel)
             => _cashServiceClinet.PromotionAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
