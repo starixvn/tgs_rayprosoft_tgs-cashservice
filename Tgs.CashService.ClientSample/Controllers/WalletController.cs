@@ -151,34 +151,6 @@ namespace Tgs.CashService.ClientSample.Controllers
                 viewModel.ExternalId);
 
         /// <summary>
-        /// Dividends the exchange asynchronous.
-        /// </summary>
-        /// <param name="service">The service.</param>
-        /// <param name="viewModel">The view model.</param>
-        /// <remarks>
-        /// Example
-        ///     Post
-        ///         {
-        ///             "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
-        ///             "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///             "playerCode": "4ucmqplxb029",
-        ///             "amount": 10,
-        ///             "description": "測試分紅",
-        ///             "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        ///         }
-        /// </remarks>
-        [HttpPost("Dividend")]
-        public ValueTask<TransactionResponse?> DividendAsync(
-            [FromBody] DividendViewModel viewModel)
-            => _cashServiceClinet.DividendAsync(
-                viewModel.BrandId,
-                viewModel.WalletId,
-                viewModel.PlayerCode,
-                viewModel.Amount,
-                viewModel.Description,
-                viewModel.ExternalId);
-
-        /// <summary>
         /// Games the provider deposit exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
@@ -197,12 +169,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderDeposit")]
-        public ValueTask<TransactionResponse?> GameProviderDepositAsync(
+        public ValueTask<TransactionResponse> GameProviderDepositAsync(
             [FromBody] GameProviderDepositViewModel viewModel)
             => _cashServiceClinet.GameProviderDepositAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);

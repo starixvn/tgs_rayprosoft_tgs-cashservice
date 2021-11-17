@@ -5,13 +5,7 @@ namespace Tgs.CashService.Models
 {
     public class GameProviderDepositViewModel
     {
-        public Guid BrandId { get; set; }
-
-        public Guid WalletId { get; set; }
-
-        public string PlayerCode { get; set; } = default!;
-
-        [Range(int.MinValue, 0)]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal Amount { get; set; }
 
         public string? Description { get; set; }
