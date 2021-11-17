@@ -436,6 +436,7 @@ namespace Tgs.CashService.Controllers
         /// Rebates the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
+        /// <param name="walletId"></param>
         /// <param name="viewModel">The view model.</param>
         /// <returns></returns>
         /// <remarks>
@@ -451,16 +452,15 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         /// }
         /// </remarks>
-        [HttpPut("rebate")]
+        [HttpPut("rebate/{walletId}")]
         public async ValueTask<TransactionResultViewModel> RebateAsync(
             [FromServices] IGetService<RebateCommand, ExchangeResult> service,
+            Guid walletId,
             [FromBody] RebateViewModel viewModel)
         {
             var result = await service
                 .GetAsync(new RebateCommand(
-                    viewModel.BrandId,
-                    viewModel.WalletId,
-                    viewModel.PlayerCode,
+                    walletId,
                     viewModel.Amount,
                     viewModel.Description,
                     viewModel.ExternalId))

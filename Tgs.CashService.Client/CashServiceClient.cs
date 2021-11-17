@@ -315,13 +315,10 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse?> RebateAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse> RebateAsync(Guid walletId, decimal amount, string? description, string? externalId)
         {
             var request = new
             {
-                BrandId = brandId,
-                WalletId = walletId,
-                PlayerCode = playerCode,
                 Amount = amount,
                 Description = description,
                 ExternalId = externalId
@@ -331,8 +328,8 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PostAsync(
-                   "/Wallet/Rebate",
+               .PutAsync(
+                   $"/wallet/rebate/{walletId}",
                    requestContent)
                .ConfigureAwait(false);
 
@@ -340,7 +337,7 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
         public async ValueTask<TransactionResponse> WithdrawalAsync(Guid walletId, decimal amount, string? description, string? externalId)

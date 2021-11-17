@@ -333,12 +333,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Rebate")]
-        public ValueTask<TransactionResponse?> RebateAsync(
-                [FromBody] RebateViewModel viewModel)
+        public ValueTask<TransactionResponse> RebateAsync(
+            [FromBody] RebateViewModel viewModel)
             => _cashServiceClinet.RebateAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
