@@ -8,22 +8,22 @@ using Tgs.CashService.Core.ApplicationServices;
 namespace Tgs.CashService.Core.UnitTests
 {
     [TestFixture]
-    public class BonusServiceUnitTest
+    public class PromotionTests
     {
         [Test]
-        public async Task Can_Create_Bonus_Exchange()
+        public async Task Can_Create_Promotion_Exchange()
         {
             var fakeWalletRepository = Substitute.For<IWalletRepository>();
-            var faceLogger = NullLogger<BonusService>.Instance;
-            var sut = new BonusService(faceLogger, fakeWalletRepository);
+            var faceLogger = NullLogger<PromotionService>.Instance;
+            var sut = new PromotionService(faceLogger, fakeWalletRepository);
 
-            var query = new BonusCommand(
+            var query = new PromotionCommand(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 "4ucmqplxb029",
                 100,
                 Guid.NewGuid().ToString("N"),
-                "測試紅利");
+                "測試活動紅利");
 
             _ = await sut.GetAsync(query).ConfigureAwait(false);
 
@@ -33,7 +33,7 @@ namespace Tgs.CashService.Core.UnitTests
                     query.BrandId,
                     query.WalletId,
                     query.PlayerCode,
-                    TransactionType.Bonus,
+                    TransactionType.Promotion,
                     query.Amount,
                     query.Description,
                     query.ExternalId

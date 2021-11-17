@@ -14,7 +14,7 @@ namespace Tgs.CashService.Client
 
         ValueTask<decimal> GetBalanceAsync(Guid walletId);
 
-        ValueTask<TransactionResponse?> BonusAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse> BonusAsync(Guid WalletId, decimal Amount, string? Description, string? ExternalId);
 
         ValueTask<TransactionResponse> CancelWithdrawalAsync(
             Guid WalletId,

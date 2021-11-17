@@ -86,12 +86,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Bonus")]
-        public ValueTask<TransactionResponse?> BonusAsync(
+        public ValueTask<TransactionResponse> BonusAsync(
             [FromBody] BonusViewModel viewModel)
             => _cashServiceClinet.BonusAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);

@@ -3,9 +3,7 @@
 namespace Tgs.CashService.Core.ApplicationServices
 {
     public record BonusCommand(
-        Guid BrandId,
         Guid WalletId,
-        string PlayerCode,
         decimal Amount,
         string? Description,
         string? ExternalId);

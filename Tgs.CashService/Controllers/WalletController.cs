@@ -76,7 +76,8 @@ namespace Tgs.CashService.Controllers
         /// Bonuses the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
-        /// <param name="viewModel">The view model.</param>
+        /// <param name="walletId"></param>
+        /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
         /// <b>Example</b><br />
@@ -91,19 +92,18 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         /// }
         /// </remarks>
-        [HttpPut("bonus")]
+        [HttpPut("bonus/{walletId}")]
         public async ValueTask<TransactionResultViewModel> BonusAsync(
             [FromServices] IGetService<BonusCommand, ExchangeResult> service,
-            [FromBody] BonusViewModel viewModel)
+            Guid walletId,
+            [FromBody] BonusViewModel request)
         {
             var result = await service
                 .GetAsync(new BonusCommand(
-                    viewModel.BrandId,
-                    viewModel.WalletId,
-                    viewModel.PlayerCode,
-                    viewModel.Amount,
-                    viewModel.Description,
-                    viewModel.ExternalId))
+                    walletId,
+                    request.Amount,
+                    request.Description,
+                    request.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()

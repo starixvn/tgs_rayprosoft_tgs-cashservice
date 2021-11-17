@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Core.ApplicationServices;
@@ -44,6 +45,100 @@ namespace Tgs.CashService.Core.UnitTests
                     Arg.Is(query.Description),
                     Arg.Is(query.ExternalId),
                     Arg.Is(query.CreatedByUserId));
+        }
+
+        [Test]
+        public async Task Can_Create_Bonus_Exchange()
+        {
+            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+            var faceLogger = NullLogger<BonusService>.Instance;
+            var sut = new BonusService(faceLogger, fakeWalletRepository);
+
+            var query = new BonusCommand(
+                Guid.NewGuid(),
+                100,
+                Guid.NewGuid().ToString("N"),
+                "測試紅利");
+
+            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
+                .Returns(new Wallet
+                {
+                    Id = query.WalletId,
+                    BrandId = Guid.NewGuid(),
+                    PlayerCode = "Player1"
+                });
+
+            _ = await sut.GetAsync(query).ConfigureAwait(false);
+
+            _ = fakeWalletRepository.Received(1)
+                .ExchangeAsync(
+                    Arg.Any<Guid>(),
+                    Arg.Is(query.WalletId),
+                    Arg.Any<string>(),
+                    Arg.Is(TransactionType.Bonus),
+                    Arg.Is(query.Amount),
+                    Arg.Is(query.Description),
+                    Arg.Is(query.ExternalId));
+        }
+
+        [Test]
+        public async Task Can_Create_Dividend_Exchange()
+        {
+            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+            var faceLogger = NullLogger<DividendService>.Instance;
+            var sut = new DividendService(faceLogger, fakeWalletRepository);
+
+            var query = new DividendCommand(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "4ucmqplxb029",
+                100,
+                Guid.NewGuid().ToString("N"),
+                "測試分紅");
+
+            _ = await sut.GetAsync(query).ConfigureAwait(false);
+
+            _ = fakeWalletRepository
+                .Received(1)
+                .ExchangeAsync(
+                    query.BrandId,
+                    query.WalletId,
+                    query.PlayerCode,
+                    TransactionType.Dividend,
+                    query.Amount,
+                    query.Description,
+                    query.ExternalId
+                    );
+        }
+
+        [Test]
+        public async Task Can_Create_Rebate_Exchange()
+        {
+            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+            var faceLogger = NullLogger<RebateService>.Instance;
+            var sut = new RebateService(faceLogger, fakeWalletRepository);
+
+            var query = new RebateCommand(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "4ucmqplxb029",
+                100,
+                Guid.NewGuid().ToString("N"),
+                "測試反水");
+
+            _ = await sut.GetAsync(query).ConfigureAwait(false);
+
+            _ = fakeWalletRepository
+                .Received(1)
+                .ExchangeAsync(
+                    query.BrandId,
+                    query.WalletId,
+                    query.PlayerCode,
+                    TransactionType.Rebate,
+                    query.Amount,
+                    query.Description,
+                    query.ExternalId
+                    );
         }
     }
 }
