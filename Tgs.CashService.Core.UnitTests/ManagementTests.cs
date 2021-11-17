@@ -51,8 +51,7 @@ namespace Tgs.CashService.Core.UnitTests
         public async Task Can_Create_Bonus_Exchange()
         {
             var fakeWalletRepository = Substitute.For<IWalletRepository>();
-            var faceLogger = NullLogger<BonusService>.Instance;
-            var sut = new BonusService(faceLogger, fakeWalletRepository);
+            var sut = new BonusService(fakeWalletRepository);
 
             var query = new BonusCommand(
                 Guid.NewGuid(),
@@ -79,36 +78,6 @@ namespace Tgs.CashService.Core.UnitTests
                     Arg.Is(query.Amount),
                     Arg.Is(query.Description),
                     Arg.Is(query.ExternalId));
-        }
-
-        [Test]
-        public async Task Can_Create_Dividend_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
-            var faceLogger = NullLogger<DividendService>.Instance;
-            var sut = new DividendService(faceLogger, fakeWalletRepository);
-
-            var query = new DividendCommand(
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                "4ucmqplxb029",
-                100,
-                Guid.NewGuid().ToString("N"),
-                "´ú¸Õ¤À¬õ");
-
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
-
-            _ = fakeWalletRepository
-                .Received(1)
-                .ExchangeAsync(
-                    query.BrandId,
-                    query.WalletId,
-                    query.PlayerCode,
-                    TransactionType.Dividend,
-                    query.Amount,
-                    query.Description,
-                    query.ExternalId
-                    );
         }
 
         [Test]

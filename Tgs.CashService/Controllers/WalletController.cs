@@ -185,46 +185,6 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Dividends the exchange asynchronous.
-        /// </summary>
-        /// <param name="service">The service.</param>
-        /// <param name="viewModel">The view model.</param>
-        /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
-        ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
-        ///     "amount": 10,
-        ///     "description": "測試分紅",
-        ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        /// }
-        /// </remarks>
-        [HttpPut("dividend")]
-        public async ValueTask<TransactionResultViewModel> DividendAsync(
-            [FromServices] IGetService<DividendCommand, ExchangeResult> service,
-            [FromBody] DividendViewModel viewModel)
-        {
-            var result = await service
-                .GetAsync(new DividendCommand(
-                    viewModel.BrandId,
-                    viewModel.WalletId,
-                    viewModel.PlayerCode,
-                    viewModel.Amount,
-                    viewModel.Description,
-                    viewModel.ExternalId))
-                .ConfigureAwait(false);
-
-            return new TransactionResultViewModel()
-            {
-                TransactionId = result.TransactionId,
-                Balance = result.Balance
-            };
-        }
-
-        /// <summary>
         /// Games the provider deposit exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>

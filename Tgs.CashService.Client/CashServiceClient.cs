@@ -158,34 +158,6 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse?> DividendAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
-        {
-            var request = new
-            {
-                BrandId = brandId,
-                WalletId = walletId,
-                PlayerCode = playerCode,
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
-
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-
-            var response = await _httpClient
-               .PostAsync(
-                   "/Wallet/Dividend",
-                   requestContent)
-               .ConfigureAwait(false);
-
-            response.EnsureSuccessStatusCode();
-
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions);
-        }
-
         public async ValueTask<TransactionResponse?> GameProviderDepositAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId)
         {
             var request = new
