@@ -5,8 +5,7 @@ pipeline {
 	
 	environment {
 		BuildConfiguration="Debug"
-		ImageName="registry.gitlab.com/rayprosoft/turnkey-gaming-system/cashservice-api"
-		ImageTagUrl = "https://gitlab.com/api/v4/projects/20478010/registry/repositories/2444690/tags"
+		ImageName="harbor.rpgp.cc/tgs/cashservice-api"
 	}
 
 	stages {
