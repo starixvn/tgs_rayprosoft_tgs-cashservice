@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
@@ -15,13 +14,11 @@ public class PaymentTests
     [TestMethod]
     public async Task Deposit_Amount_To_Wallet()
     {
-        await using var baseServer = new WebApplicationFactory<Startup>();
-
         var walletId = Guid.NewGuid();
         var transactionId = Guid.NewGuid();
         var postBalance = 12345M;
 
-        await using var web = baseServer.WithWebHostBuilder(
+        await using var web = new TestCashApplication(
             builder => builder.ConfigureServices(services =>
             {
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
@@ -66,13 +63,11 @@ public class PaymentTests
     [TestMethod]
     public async Task Withdraw_Amount_From_Wallet()
     {
-        await using var baseServer = new WebApplicationFactory<Startup>();
-
         var walletId = Guid.NewGuid();
         var transactionId = Guid.NewGuid();
         var postBalance = 12345M;
 
-        await using var web = baseServer.WithWebHostBuilder(
+        await using var web = new TestCashApplication(
             builder => builder.ConfigureServices(services =>
             {
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
@@ -117,13 +112,12 @@ public class PaymentTests
     [TestMethod]
     public async Task Cancel_Withdraw_From_Wallet()
     {
-        await using var baseServer = new WebApplicationFactory<Startup>();
-
         var walletId = Guid.NewGuid();
         var transactionId = Guid.NewGuid();
         var postBalance = 12345M;
+        var cancelAmount = 1000M;
 
-        await using var web = baseServer.WithWebHostBuilder(
+        await using var web = new TestCashApplication(
             builder => builder.ConfigureServices(services =>
             {
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
@@ -142,7 +136,7 @@ public class PaymentTests
                         Arg.Is(walletId),
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.CancelWithdrawal),
-                        Arg.Any<decimal>(),
+                        Arg.Is(cancelAmount),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
@@ -157,7 +151,7 @@ public class PaymentTests
 
         var actual = await sut.CancelWithdrawalAsync(
             walletId,
-            1000M,
+            cancelAmount,
             null,
             null,
             Guid.NewGuid());

@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
     public record WithdrawalService : IGetService<WithdrawalCommand, ExchangeResult>
     {
-        private readonly ILogger<WithdrawalService> _logger;
-
         private readonly IWalletRepository _walletRepository;
 
-        public WithdrawalService(ILogger<WithdrawalService> logger, IWalletRepository walletRepository)
+        public WithdrawalService(IWalletRepository walletRepository)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         }
 

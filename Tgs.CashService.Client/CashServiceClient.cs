@@ -25,13 +25,15 @@ namespace Tgs.CashService.Client
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
-        public async ValueTask<TransactionResponse?> AdjustAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId, Guid createdByUserId)
+        public async ValueTask<TransactionResponse> AdjustAsync(
+            Guid walletId,
+            decimal amount,
+            string? description,
+            string? externalId,
+            Guid createdByUserId)
         {
             var request = new
             {
-                BrandId = brandId,
-                WalletId = walletId,
-                PlayerCode = playerCode,
                 Amount = amount,
                 Description = description,
                 ExternalId = externalId,
@@ -42,8 +44,8 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PostAsync(
-                   "/Wallet/Adjust",
+               .PutAsync(
+                   $"/wallet/adjust/{walletId}",
                    requestContent)
                .ConfigureAwait(false);
 
@@ -51,7 +53,7 @@ namespace Tgs.CashService.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
         public async ValueTask<decimal> BalanceAsync(Guid walletId)

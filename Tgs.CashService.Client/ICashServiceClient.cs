@@ -5,7 +5,12 @@ namespace Tgs.CashService.Client
 {
     public interface ICashServiceClient
     {
-        ValueTask<TransactionResponse?> AdjustAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId, Guid CreatedByUserId);
+        ValueTask<TransactionResponse> AdjustAsync(
+            Guid WalletId,
+            decimal Amount,
+            string? Description,
+            string? ExternalId,
+            Guid CreatedByUserId);
 
         ValueTask<decimal> BalanceAsync(Guid walletId);
 

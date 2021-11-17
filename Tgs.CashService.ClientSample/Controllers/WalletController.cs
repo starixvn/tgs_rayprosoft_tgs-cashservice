@@ -42,12 +42,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Adjust")]
-        public ValueTask<TransactionResponse?> AdjustAsync(
-                [FromBody] AdjustViewModel viewModel)
+        public ValueTask<TransactionResponse> AdjustAsync(
+            [FromBody] AdjustViewModel viewModel)
             => _cashServiceClinet.AdjustAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,
