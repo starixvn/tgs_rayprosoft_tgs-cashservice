@@ -1,24 +1,29 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record BalanceService : IGetService<BalanceQuery, decimal?>
+    public record BalanceService : IGetService<GetBalanceQuery, decimal>
     {
-        private readonly ILogger<BalanceService> _logger;
-
         private readonly IWalletRepository _walletRepository;
 
-        public BalanceService(ILogger<BalanceService> logger, IWalletRepository walletRepository)
+        public BalanceService(IWalletRepository walletRepository)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         }
 
-        public ValueTask<decimal?> GetAsync(BalanceQuery query, CancellationToken cancellationToken = default)
-        => _walletRepository.GetBalanceAsync(query.WalletId);
+        public async ValueTask<decimal> GetAsync(GetBalanceQuery query, CancellationToken cancellationToken = default)
+        {
+            var balance = await _walletRepository
+                .GetBalanceAsync(query.WalletId)
+                .ConfigureAwait(false);
+
+            if (balance is null)
+                throw new InvalidOperationException("Can't found wallet.");
+
+            return balance.Value;
+        }
     }
 }

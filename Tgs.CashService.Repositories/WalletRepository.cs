@@ -25,7 +25,7 @@ namespace Tgs.CashService.Repositories
             Guid brandId,
             Guid walletId,
             string playerCode,
-            TransactionTypes transactionType,
+            TransactionType transactionType,
             decimal amount,
             string? description,
             string? externalId,
@@ -77,12 +77,27 @@ namespace Tgs.CashService.Repositories
 
         public async ValueTask<decimal?> GetBalanceAsync(Guid walletId)
         {
-            var playerWallet = await _context.Wallets
+            var playerWallet = await _context.WalletData
                 .Where(x => x.Id == walletId)
                 .FirstOrDefaultAsync()
                 .ConfigureAwait(false);
 
             return playerWallet?.Balance;
+        }
+
+        public async ValueTask<Wallet?> GetWalletAsync(Guid walletId)
+        {
+            var wallet = await (from w in _context.WalletData.AsQueryable()
+                                join p in _context.Players on w.PlayerCode equals p.PlayerCode
+                                where w.Id == walletId
+                                select new Wallet
+                                {
+                                    Id = w.Id,
+                                    PlayerCode = w.PlayerCode,
+                                    BrandId = p.BrandId
+                                }).FirstOrDefaultAsync().ConfigureAwait(false);
+
+            return wallet;
         }
     }
 }

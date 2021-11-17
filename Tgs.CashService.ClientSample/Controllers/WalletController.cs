@@ -42,12 +42,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Adjust")]
-        public ValueTask<TransactionViewModel?> AdjustAsync(
-                [FromBody] AdjustViewModel viewModel)
+        public ValueTask<TransactionResponse> AdjustAsync(
+            [FromBody] AdjustViewModel viewModel)
             => _cashServiceClinet.AdjustAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,
@@ -67,7 +65,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         [HttpGet("{walletId}")]
         public ValueTask<decimal> BalanceAsync(
                 Guid walletId)
-            => _cashServiceClinet.BalanceAsync(walletId);
+            => _cashServiceClinet.GetBalanceAsync(walletId);
 
         /// <summary>
         /// Bonuses the exchange asynchronous.
@@ -88,12 +86,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Bonus")]
-        public ValueTask<TransactionViewModel?> BonusAsync(
+        public ValueTask<TransactionResponse> BonusAsync(
             [FromBody] BonusViewModel viewModel)
             => _cashServiceClinet.BonusAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
@@ -118,12 +114,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("CancelWithdrawal")]
-        public ValueTask<TransactionViewModel?> CancelWithdrawalAsync(
-                [FromBody] CancelWithdrawalViewModel viewModel)
+        public ValueTask<TransactionResponse> CancelWithdrawalAsync(
+            [FromBody] CancelWithdrawalViewModel viewModel)
             => _cashServiceClinet.CancelWithdrawalAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,
@@ -148,40 +142,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Deposit")]
-        public ValueTask<TransactionViewModel?> DepositAsync(
+        public ValueTask<TransactionResponse> DepositAsync(
             [FromBody] DepositViewModel viewModel)
             => _cashServiceClinet.DepositAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
-                viewModel.Amount,
-                viewModel.Description,
-                viewModel.ExternalId);
-
-        /// <summary>
-        /// Dividends the exchange asynchronous.
-        /// </summary>
-        /// <param name="service">The service.</param>
-        /// <param name="viewModel">The view model.</param>
-        /// <remarks>
-        /// Example
-        ///     Post
-        ///         {
-        ///             "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
-        ///             "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///             "playerCode": "4ucmqplxb029",
-        ///             "amount": 10,
-        ///             "description": "測試分紅",
-        ///             "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        ///         }
-        /// </remarks>
-        [HttpPost("Dividend")]
-        public ValueTask<TransactionViewModel?> DividendAsync(
-            [FromBody] DividendViewModel viewModel)
-            => _cashServiceClinet.DividendAsync(
-                viewModel.BrandId,
-                viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
@@ -205,12 +169,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderDeposit")]
-        public ValueTask<TransactionViewModel?> GameProviderDepositAsync(
+        public ValueTask<TransactionResponse> GameProviderDepositAsync(
             [FromBody] GameProviderDepositViewModel viewModel)
             => _cashServiceClinet.GameProviderDepositAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
@@ -234,12 +196,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderFundIn")]
-        public ValueTask<TransactionViewModel?> GameProviderFundInAsync(
+        public ValueTask<TransactionResponse> GameProviderFundInAsync(
                 [FromBody] GameProviderFundInViewModel viewModel)
             => _cashServiceClinet.GameProviderFundInAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
@@ -263,12 +223,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderFundOut")]
-        public ValueTask<TransactionViewModel?> GameProviderFundOutAsync(
-                [FromBody] GameProviderFundOutViewModel viewModel)
+        public ValueTask<TransactionResponse> GameProviderFundOutAsync(
+            [FromBody] GameProviderFundOutViewModel viewModel)
             => _cashServiceClinet.GameProviderFundOutAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
@@ -292,12 +250,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderWithdrawal")]
-        public ValueTask<TransactionViewModel?> GameProviderWithdrawalAsync(
+        public ValueTask<TransactionResponse> GameProviderWithdrawalAsync(
             [FromBody] GameProviderWithdrawalViewModel viewModel)
             => _cashServiceClinet.GameProviderWithdrawalAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
@@ -322,12 +278,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Other")]
-        public ValueTask<TransactionViewModel?> OtherAsync(
+        public ValueTask<TransactionResponse> OtherAsync(
             [FromBody] OtherViewModel viewModel)
             => _cashServiceClinet.OtherAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,
@@ -352,12 +306,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Promotion")]
-        public ValueTask<TransactionViewModel?> PromotionAsync(
-                [FromBody] PromotionViewModel viewModel)
+        public ValueTask<TransactionResponse> PromotionAsync(
+            [FromBody] PromotionViewModel viewModel)
             => _cashServiceClinet.PromotionAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
@@ -381,12 +333,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Rebate")]
-        public ValueTask<TransactionViewModel?> RebateAsync(
-                [FromBody] RebateViewModel viewModel)
+        public ValueTask<TransactionResponse> RebateAsync(
+            [FromBody] RebateViewModel viewModel)
             => _cashServiceClinet.RebateAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
@@ -410,12 +360,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Withdrawal")]
-        public ValueTask<TransactionViewModel?> WithdrawalAsync(
+        public ValueTask<TransactionResponse> WithdrawalAsync(
             [FromBody] WithdrawalViewModel viewModel)
             => _cashServiceClinet.WithdrawalAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
