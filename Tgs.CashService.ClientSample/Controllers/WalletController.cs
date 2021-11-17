@@ -196,12 +196,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderFundIn")]
-        public ValueTask<TransactionResponse?> GameProviderFundInAsync(
+        public ValueTask<TransactionResponse> GameProviderFundInAsync(
                 [FromBody] GameProviderFundInViewModel viewModel)
             => _cashServiceClinet.GameProviderFundInAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);
