@@ -56,10 +56,11 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<decimal> BalanceAsync(Guid walletId)
+        public async ValueTask<decimal> GetBalanceAsync(Guid walletId)
         {
-            var response = await _httpClient.GetAsync("/Wallet/Balance/{walletId}")
-               .ConfigureAwait(false);
+            var response = await _httpClient
+                .GetAsync($"/wallet/{walletId}")
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 

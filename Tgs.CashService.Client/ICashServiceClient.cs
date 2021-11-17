@@ -12,7 +12,7 @@ namespace Tgs.CashService.Client
             string? ExternalId,
             Guid CreatedByUserId);
 
-        ValueTask<decimal> BalanceAsync(Guid walletId);
+        ValueTask<decimal> GetBalanceAsync(Guid walletId);
 
         ValueTask<TransactionResponse?> BonusAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
 

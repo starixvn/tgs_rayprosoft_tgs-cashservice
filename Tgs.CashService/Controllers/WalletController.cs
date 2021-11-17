@@ -67,19 +67,10 @@ namespace Tgs.CashService.Controllers
         ///     Get /36a6cdef-094f-eb11-8d88-70b5e82b6b8d
         /// </remarks>
         [HttpGet("{walletId}")]
-        public async ValueTask<decimal> BalanceAsync(
-            [FromServices] IGetService<BalanceQuery, decimal?> service,
+        public ValueTask<decimal> GetBalanceAsync(
+            [FromServices] IGetService<GetBalanceQuery, decimal> service,
             Guid walletId)
-        {
-            var result = await service
-                .GetAsync(new BalanceQuery()
-                {
-                    WalletId = walletId
-                })
-                .ConfigureAwait(false);
-
-            return result.Value;
-        }
+            => service.GetAsync(new GetBalanceQuery(walletId));
 
         /// <summary>
         /// Bonuses the exchange asynchronous.

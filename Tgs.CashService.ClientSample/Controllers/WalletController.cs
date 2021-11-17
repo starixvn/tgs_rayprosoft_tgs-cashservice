@@ -65,7 +65,7 @@ namespace Tgs.CashService.ClientSample.Controllers
         [HttpGet("{walletId}")]
         public ValueTask<decimal> BalanceAsync(
                 Guid walletId)
-            => _cashServiceClinet.BalanceAsync(walletId);
+            => _cashServiceClinet.GetBalanceAsync(walletId);
 
         /// <summary>
         /// Bonuses the exchange asynchronous.
