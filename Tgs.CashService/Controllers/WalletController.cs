@@ -311,7 +311,8 @@ namespace Tgs.CashService.Controllers
         /// Games the provider withdrawal exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
-        /// <param name="viewModel">The view model.</param>
+        /// <param name="walletId"></param>
+        /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
         /// <b>Example</b><br />
@@ -326,19 +327,18 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         /// }
         /// </remarks>
-        [HttpPut("gp/withdrawal")]
+        [HttpPut("gp/withdrawal/{walletId}")]
         public async ValueTask<TransactionResultViewModel> GameProviderWithdrawalAsync(
             [FromServices] IGetService<GameProviderWithdrawalCommand, ExchangeResult> service,
-            [FromBody] GameProviderWithdrawalViewModel viewModel)
+            Guid walletId,
+            [FromBody] GameProviderWithdrawalViewModel request)
         {
             var result = await service
                 .GetAsync(new GameProviderWithdrawalCommand(
-                    viewModel.BrandId,
-                    viewModel.WalletId,
-                    viewModel.PlayerCode,
-                    viewModel.Amount,
-                    viewModel.Description,
-                    viewModel.ExternalId))
+                    walletId,
+                    request.Amount,
+                    request.Description,
+                    request.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()

@@ -250,12 +250,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderWithdrawal")]
-        public ValueTask<TransactionResponse?> GameProviderWithdrawalAsync(
+        public ValueTask<TransactionResponse> GameProviderWithdrawalAsync(
             [FromBody] GameProviderWithdrawalViewModel viewModel)
             => _cashServiceClinet.GameProviderWithdrawalAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);

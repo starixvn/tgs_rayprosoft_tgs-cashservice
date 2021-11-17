@@ -169,4 +169,57 @@ public class GameProviderTests
         Assert.AreEqual(postBalance, actual.Balance);
         Assert.AreEqual(transactionId, actual.TransactionId);
     }
+
+    [TestMethod]
+    public async Task Game_Withdraw_To_Wallet()
+    {
+        var walletId = Guid.NewGuid();
+        var withdrawAmount = 1000M;
+        var transactionId = Guid.NewGuid();
+        var postBalance = 12345M;
+
+        await using var web = new TestCashApplication(builder =>
+        {
+            builder.ConfigureServices(services =>
+            {
+                var fakeWalletRepository = Substitute.For<IWalletRepository>();
+
+                fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                    .Returns(new Wallet
+                    {
+                        Id = walletId,
+                        BrandId = Guid.NewGuid(),
+                        PlayerCode = "Player1"
+                    });
+
+                fakeWalletRepository
+                    .ExchangeAsync(
+                        Arg.Any<Guid>(),
+                        Arg.Is(walletId),
+                        Arg.Any<string>(),
+                        Arg.Is(TransactionType.GameProviderWithdrawal),
+                        Arg.Is(withdrawAmount),
+                        Arg.Any<string>(),
+                        Arg.Any<string>(),
+                        Arg.Any<Guid?>())
+                    .Returns((transactionId, postBalance));
+
+                services.AddSingleton(fakeWalletRepository);
+            });
+        });
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var actual = await sut.GameProviderWithdrawalAsync(
+            walletId,
+            withdrawAmount,
+            null,
+            null);
+
+        Assert.IsNotNull(actual);
+        Assert.AreEqual(postBalance, actual.Balance);
+        Assert.AreEqual(transactionId, actual.TransactionId);
+    }
 }

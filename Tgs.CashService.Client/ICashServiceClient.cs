@@ -31,7 +31,7 @@ namespace Tgs.CashService.Client
 
         ValueTask<TransactionResponse> GameProviderFundOutAsync(Guid WalletId, decimal Amount, string? Description, string? ExternalId);
 
-        ValueTask<TransactionResponse?> GameProviderWithdrawalAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse> GameProviderWithdrawalAsync(Guid WalletId, decimal Amount, string? Description, string? ExternalId);
 
         ValueTask<TransactionResponse?> OtherAsync(Guid BrandId, Guid WalletId, string PlayerCode, decimal Amount, string? Description, string? ExternalId, Guid createdByUserId);
 

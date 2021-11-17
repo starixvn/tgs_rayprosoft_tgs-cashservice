@@ -1,33 +1,34 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
     public record GameProviderWithdrawalService : IGetService<GameProviderWithdrawalCommand, ExchangeResult>
     {
-        private readonly ILogger<GameProviderWithdrawalService> _logger;
-
         private readonly IWalletRepository _walletRepository;
 
-        public GameProviderWithdrawalService(ILogger<GameProviderWithdrawalService> logger, IWalletRepository walletRepository)
+        public GameProviderWithdrawalService(IWalletRepository walletRepository)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         }
 
-        public async ValueTask<ExchangeResult> GetAsync(GameProviderWithdrawalCommand query, CancellationToken cancellationToken = default)
+        public async ValueTask<ExchangeResult> GetAsync(GameProviderWithdrawalCommand command, CancellationToken cancellationToken = default)
         {
+            var wallet = await _walletRepository.GetWalletAsync(command.WalletId);
+
+            if (wallet == null)
+                throw new InvalidOperationException("Can't found wallet.");
+
             var (transactionId, postBalance) = await _walletRepository.ExchangeAsync(
-                query.BrandId,
-                query.WalletId,
-                query.PlayerCode,
+                wallet.BrandId,
+                command.WalletId,
+                wallet.PlayerCode,
                 TransactionType.GameProviderWithdrawal,
-                query.Amount,
-                query.Description,
-                query.ExternalId)
+                command.Amount,
+                command.Description,
+                command.ExternalId)
                 .ConfigureAwait(false);
 
             return new ExchangeResult(transactionId, postBalance);
