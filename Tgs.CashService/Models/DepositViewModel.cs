@@ -5,7 +5,7 @@ namespace Tgs.CashService.Models
 {
     public class DepositViewModel
     {
-        [Range(0, int.MaxValue)]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal Amount { get; set; }
 
         public string? Description { get; set; }

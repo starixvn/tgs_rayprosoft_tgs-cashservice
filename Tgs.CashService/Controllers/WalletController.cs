@@ -527,7 +527,7 @@ namespace Tgs.CashService.Controllers
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
-        /// <param name="viewModel">The view model.</param>
+        /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
         /// <b>Example</b><br />
@@ -546,14 +546,14 @@ namespace Tgs.CashService.Controllers
         public async ValueTask<TransactionResultViewModel> WithdrawalAsync(
             [FromServices] IGetService<WithdrawalCommand, ExchangeResult> service,
             Guid walletId,
-            [FromBody] WithdrawalViewModel viewModel)
+            [FromBody] WithdrawalViewModel request)
         {
             var result = await service
                 .GetAsync(new WithdrawalCommand(
                     walletId,
-                    viewModel.Amount,
-                    viewModel.Description,
-                    viewModel.ExternalId))
+                    request.Amount,
+                    request.Description,
+                    request.ExternalId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.CashService.Client;
 using Tgs.CashService.Core;
-using TGS.GameProviders.Repositories.Entities;
 
 namespace Tgs.CashService.IntegrationTests;
 
@@ -27,7 +24,6 @@ public class PaymentTests
         await using var web = baseServer.WithWebHostBuilder(
             builder => builder.ConfigureServices(services =>
             {
-
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
                 fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
@@ -43,7 +39,7 @@ public class PaymentTests
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
                         Arg.Any<string>(),
-                        Arg.Any<TransactionType>(),
+                        Arg.Is(TransactionType.Deposit),
                         Arg.Any<decimal>(),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
@@ -94,7 +90,7 @@ public class PaymentTests
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
                         Arg.Any<string>(),
-                        Arg.Any<TransactionType>(),
+                        Arg.Is(TransactionType.Withdrawal),
                         Arg.Any<decimal>(),
                         Arg.Any<string>(),
                         Arg.Any<string>(),

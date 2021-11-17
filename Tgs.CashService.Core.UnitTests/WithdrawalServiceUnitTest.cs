@@ -19,7 +19,7 @@ namespace Tgs.CashService.Core.UnitTests
 
             var query = new WithdrawalCommand(
                 Guid.NewGuid(),
-                -100,
+                100,
                 Guid.NewGuid().ToString("N"),
                 "測試反水");
 
@@ -40,9 +40,9 @@ namespace Tgs.CashService.Core.UnitTests
                     Arg.Is(query.WalletId),
                     Arg.Any<string>(),
                     Arg.Is(TransactionType.Withdrawal),
-                    query.Amount,
-                    query.Description,
-                    query.ExternalId);
+                    Arg.Is(-query.Amount),
+                    Arg.Is(query.Description),
+                    Arg.Is(query.ExternalId));
         }
     }
 }

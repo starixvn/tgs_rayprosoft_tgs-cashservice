@@ -31,7 +31,7 @@ namespace Tgs.CashService.Core.ApplicationServices
                     query.WalletId,
                     wallet.PlayerCode,
                     TransactionType.Withdrawal,
-                    query.Amount,
+                    -query.Amount,
                     query.Description,
                     query.ExternalId)
                 .ConfigureAwait(false);
