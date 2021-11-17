@@ -109,5 +109,41 @@ namespace Tgs.CashService.Core.UnitTests
                     query.ExternalId
                     );
         }
+
+        [Test]
+        public async Task Can_Create_Other_Exchange()
+        {
+            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+
+            var sut = new OtherService(fakeWalletRepository);
+
+            var query = new OtherCommand(
+                Guid.NewGuid(),
+                100,
+                Guid.NewGuid().ToString("N"),
+                "´ú¸Õ¨ä¥L",
+                Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
+
+            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
+                .Returns(new Wallet
+                {
+                    Id = query.WalletId,
+                    BrandId = Guid.NewGuid(),
+                    PlayerCode = "Player1"
+                });
+
+            _ = await sut.GetAsync(query).ConfigureAwait(false);
+
+            _ = fakeWalletRepository.Received(1)
+                .ExchangeAsync(
+                    Arg.Any<Guid>(),
+                    Arg.Is(query.WalletId),
+                    Arg.Any<string>(),
+                    Arg.Is(TransactionType.Other),
+                    Arg.Is(query.Amount),
+                    Arg.Is(query.Description),
+                    Arg.Is(query.ExternalId),
+                    Arg.Is(query.CreatedByUserId));
+        }
     }
 }

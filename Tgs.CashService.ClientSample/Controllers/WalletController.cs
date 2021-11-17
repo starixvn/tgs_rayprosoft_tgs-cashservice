@@ -278,12 +278,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("Other")]
-        public ValueTask<TransactionResponse?> OtherAsync(
+        public ValueTask<TransactionResponse> OtherAsync(
             [FromBody] OtherViewModel viewModel)
             => _cashServiceClinet.OtherAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,

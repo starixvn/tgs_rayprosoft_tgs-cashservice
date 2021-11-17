@@ -352,7 +352,8 @@ namespace Tgs.CashService.Controllers
         /// Others the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
-        /// <param name="viewModel">The view model.</param>
+        /// <param name="walletId"></param>
+        /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
         /// <b>Example</b><br />
@@ -368,20 +369,19 @@ namespace Tgs.CashService.Controllers
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
         /// }
         /// </remarks>
-        [HttpPut("other")]
+        [HttpPut("other/{walletId}")]
         public async ValueTask<TransactionResultViewModel> OtherAsync(
             [FromServices] IGetService<OtherCommand, ExchangeResult> service,
-            [FromBody] OtherViewModel viewModel)
+            Guid walletId,
+            [FromBody] OtherViewModel request)
         {
             var result = await service
                 .GetAsync(new OtherCommand(
-                    viewModel.BrandId,
-                    viewModel.WalletId,
-                    viewModel.PlayerCode,
-                    viewModel.Amount,
-                    viewModel.Description,
-                    viewModel.ExternalId,
-                    viewModel.CreatedByUserId))
+                    walletId,
+                    request.Amount,
+                    request.Description,
+                    request.ExternalId,
+                    request.CreatedByUserId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()
