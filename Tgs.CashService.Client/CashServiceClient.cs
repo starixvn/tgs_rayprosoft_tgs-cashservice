@@ -94,13 +94,15 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions);
         }
 
-        public async ValueTask<TransactionResponse?> CancelWithdrawalAsync(Guid brandId, Guid walletId, string playerCode, decimal amount, string? description, string? externalId, Guid createdByUserId)
+        public async ValueTask<TransactionResponse> CancelWithdrawalAsync(
+            Guid walletId,
+            decimal amount,
+            string? description,
+            string? externalId,
+            Guid createdByUserId)
         {
             var request = new
             {
-                BrandId = brandId,
-                WalletId = walletId,
-                PlayerCode = playerCode,
                 Amount = amount,
                 Description = description,
                 ExternalId = externalId,
@@ -110,17 +112,21 @@ namespace Tgs.CashService.Client
             var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
+            var requestMessage = new HttpRequestMessage(
+                HttpMethod.Delete,
+                $"/wallet/withdrawal/{walletId}");
+
+            requestMessage.Content = requestContent;
+
             var response = await _httpClient
-               .PostAsync(
-                   "/Wallet/CancelWithdrawal",
-                   requestContent)
+               .SendAsync(requestMessage)
                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions);
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
         public async ValueTask<TransactionResponse> DepositAsync(

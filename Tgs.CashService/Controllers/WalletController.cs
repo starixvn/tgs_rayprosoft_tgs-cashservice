@@ -126,7 +126,8 @@ namespace Tgs.CashService.Controllers
         /// Cancels the withdrawal exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
-        /// <param name="viewModel">The view model.</param>
+        /// <param name="walletId"></param>
+        /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
         /// <b>Example</b><br />
@@ -142,20 +143,19 @@ namespace Tgs.CashService.Controllers
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
         /// }
         /// </remarks>
-        [HttpDelete("withdrawal")]
+        [HttpDelete("withdrawal/{walletId}")]
         public async ValueTask<TransactionResultViewModel> CancelWithdrawalAsync(
             [FromServices] IGetService<CancelWithdrawalCommand, ExchangeResult> service,
-            [FromBody] CancelWithdrawalViewModel viewModel)
+            Guid walletId,
+            [FromBody] CancelWithdrawalViewModel request)
         {
             var result = await service
                 .GetAsync(new CancelWithdrawalCommand(
-                    viewModel.BrandId,
-                    viewModel.WalletId,
-                    viewModel.PlayerCode,
-                    viewModel.Amount,
-                    viewModel.Description,
-                    viewModel.ExternalId,
-                    viewModel.CreatedByUserId))
+                    walletId,
+                    request.Amount,
+                    request.Description,
+                    request.ExternalId,
+                    request.CreatedByUserId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()

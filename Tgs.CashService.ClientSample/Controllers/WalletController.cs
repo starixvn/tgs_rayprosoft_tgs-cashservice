@@ -118,12 +118,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("CancelWithdrawal")]
-        public ValueTask<TransactionResponse?> CancelWithdrawalAsync(
-                [FromBody] CancelWithdrawalViewModel viewModel)
+        public ValueTask<TransactionResponse> CancelWithdrawalAsync(
+            [FromBody] CancelWithdrawalViewModel viewModel)
             => _cashServiceClinet.CancelWithdrawalAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,
