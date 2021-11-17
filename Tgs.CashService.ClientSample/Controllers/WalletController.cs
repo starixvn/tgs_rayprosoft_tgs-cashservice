@@ -223,12 +223,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///         }
         /// </remarks>
         [HttpPost("GameProviderFundOut")]
-        public ValueTask<TransactionResponse?> GameProviderFundOutAsync(
-                [FromBody] GameProviderFundOutViewModel viewModel)
+        public ValueTask<TransactionResponse> GameProviderFundOutAsync(
+            [FromBody] GameProviderFundOutViewModel viewModel)
             => _cashServiceClinet.GameProviderFundOutAsync(
-                viewModel.BrandId,
                 viewModel.WalletId,
-                viewModel.PlayerCode,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId);

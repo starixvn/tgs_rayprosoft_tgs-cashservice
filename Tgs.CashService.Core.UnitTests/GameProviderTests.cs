@@ -82,30 +82,35 @@ namespace Tgs.CashService.Core.UnitTests
         public async Task Can_Create_GameProviderFundOut_Exchange()
         {
             var fakeWalletRepository = Substitute.For<IWalletRepository>();
-            var faceLogger = NullLogger<GameProviderFundOutService>.Instance;
-            var sut = new GameProviderFundOutService(faceLogger, fakeWalletRepository);
 
-            var query = new GameProviderFundOutCommand(
+            var sut = new GameProviderFundOutService(fakeWalletRepository);
+
+            var command = new GameProviderFundOutCommand(
                 Guid.NewGuid(),
-                Guid.NewGuid(),
-                "4ucmqplxb029",
-                -100,
+                100M,
                 Guid.NewGuid().ToString("N"),
                 "測試轉出主錢包");
 
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
+            fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
+                .Returns(new Wallet
+                {
+                    Id = command.WalletId,
+                    BrandId = Guid.NewGuid(),
+                    PlayerCode = "Player1"
+                });
+
+            _ = await sut.GetAsync(command).ConfigureAwait(false);
 
             _ = fakeWalletRepository
                 .Received(1)
                 .ExchangeAsync(
-                    query.BrandId,
-                    query.WalletId,
-                    query.PlayerCode,
-                    TransactionType.GameProviderFundOut,
-                    query.Amount,
-                    query.Description,
-                    query.ExternalId
-                    );
+                    Arg.Any<Guid>(),
+                    Arg.Is(command.WalletId),
+                    Arg.Any<string>(),
+                    Arg.Is(TransactionType.GameProviderFundOut),
+                    Arg.Is(-command.Amount),
+                    Arg.Is(command.Description),
+                    Arg.Is(command.ExternalId));
         }
 
         [Test]
