@@ -5,7 +5,7 @@
          {
             "Columns": [ ],
             "Name": "wallets",
-            "NewName": "WalletData"
+            "NewName": "WalletItem"
          }
       ],
       "UseSchemaName": false

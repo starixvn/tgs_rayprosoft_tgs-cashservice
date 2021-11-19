@@ -12,6 +12,6 @@ namespace Tgs.CashService.Models
 
         public string? ExternalId { get; set; }
 
-        public Guid CreatedByUserId { get; set; }
+        public Guid? CreatedByUserId { get; set; }
     }
 }

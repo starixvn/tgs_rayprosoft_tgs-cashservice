@@ -9,9 +9,9 @@ using TGS.GameProviders.Repositories.Entities;
 
 namespace TGS.GameProviders.Repositories.Entities.Configurations
 {
-    public partial class WalletDatumConfiguration : IEntityTypeConfiguration<WalletDatum>
+    public partial class WalletItemConfiguration : IEntityTypeConfiguration<WalletItem>
     {
-        public void Configure(EntityTypeBuilder<WalletDatum> entity)
+        public void Configure(EntityTypeBuilder<WalletItem> entity)
         {
             entity.ToTable("wallets", "dbo");
 
@@ -53,6 +53,6 @@ namespace TGS.GameProviders.Repositories.Entities.Configurations
             OnConfigurePartial(entity);
         }
 
-        partial void OnConfigurePartial(EntityTypeBuilder<WalletDatum> entity);
+        partial void OnConfigurePartial(EntityTypeBuilder<WalletItem> entity);
     }
 }

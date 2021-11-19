@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace TGS.GameProviders.Repositories.Entities
 {
-    public partial class WalletDatum
+    public partial class WalletItem
     {
         public Guid Id { get; set; }
         public string PlayerCode { get; set; } = default!;

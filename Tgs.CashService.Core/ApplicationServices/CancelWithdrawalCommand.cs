@@ -7,5 +7,5 @@ namespace Tgs.CashService.Core.ApplicationServices
         decimal Amount,
         string? Description,
         string? ExternalId,
-        Guid CreatedByUserId);
+        Guid? CreatedByUserId);
 }
