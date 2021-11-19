@@ -28,7 +28,7 @@ namespace Tgs.CashService.Repositories
             Guid? createdByUserId)
         {
             const string sql = "dbo.wallet_update_wallet_balance";
-            var updatedOn = DateTimeOffset.UtcNow;
+            var updatedOn = DateTime.UtcNow;
             var transactionId = Guid.NewGuid();
 
             using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
@@ -58,7 +58,7 @@ namespace Tgs.CashService.Repositories
                     Balance = postBalance,
                     Type = (short)transactionType,
                     Description = description,
-                    RecordedOn = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).DateTime,
+                    RecordedOn = updatedOn,
                     ExternalTransactionId = externalId,
                     CreatedByUserId = createdByUserId
                 })
