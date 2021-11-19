@@ -312,7 +312,8 @@ namespace Tgs.CashService.ClientSample.Controllers
                 viewModel.WalletId,
                 viewModel.Amount,
                 viewModel.Description,
-                viewModel.ExternalId);
+                viewModel.ExternalId,
+                null);
 
         /// <summary>
         /// Rebates the exchange asynchronous.

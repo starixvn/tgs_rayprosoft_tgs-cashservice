@@ -29,7 +29,8 @@ namespace Tgs.CashService.Core.ApplicationServices
                     TransactionType.Promotion,
                     command.Amount,
                     command.Description,
-                    command.ExternalId)
+                    command.ExternalId,
+                    command.CreateByUserId)
                 .ConfigureAwait(false);
 
             return new ExchangeResult(transactionId, postBalance);
