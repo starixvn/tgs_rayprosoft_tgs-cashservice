@@ -20,7 +20,8 @@ namespace Tgs.CashService.Core.UnitTests
                 Guid.NewGuid(),
                 100M,
                 Guid.NewGuid().ToString("N"),
-                "測試活動紅利");
+                "測試活動紅利",
+                null);
 
             fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
                 .Returns(new Wallet

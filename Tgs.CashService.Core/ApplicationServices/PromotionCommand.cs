@@ -6,5 +6,6 @@ namespace Tgs.CashService.Core.ApplicationServices
         Guid WalletId,
         decimal Amount,
         string? Description,
-        string? ExternalId);
+        string? ExternalId,
+        Guid? CreateByUserId);
 }

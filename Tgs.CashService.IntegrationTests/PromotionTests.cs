@@ -60,6 +60,7 @@ public class PromotionTests
             walletId,
             1000M,
             null,
+            null,
             null);
 
         Assert.IsNotNull(actual);

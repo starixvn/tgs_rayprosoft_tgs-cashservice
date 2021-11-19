@@ -422,7 +422,8 @@ namespace Tgs.CashService.Controllers
                     walletId,
                     request.Amount,
                     request.Description,
-                    request.ExternalId))
+                    request.ExternalId,
+                    request.CreatedByUserId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()

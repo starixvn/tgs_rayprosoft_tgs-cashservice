@@ -289,14 +289,20 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse> PromotionAsync(Guid walletId, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse> PromotionAsync(
+            Guid walletId,
+            decimal amount,
+            string? description,
+            string? externalId,
+            Guid? createByUserId)
 
         {
             var request = new
             {
                 Amount = amount,
                 Description = description,
-                ExternalId = externalId
+                ExternalId = externalId,
+                CreateByUserId = createByUserId
             };
 
             var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));

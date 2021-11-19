@@ -35,7 +35,12 @@ namespace Tgs.CashService.Client
 
         ValueTask<TransactionResponse> OtherAsync(Guid WalletId, decimal Amount, string Description, string ExternalId, Guid createdByUserId);
 
-        ValueTask<TransactionResponse> PromotionAsync(Guid WalletId, decimal Amount, string? Description, string? ExternalId);
+        ValueTask<TransactionResponse> PromotionAsync(
+            Guid WalletId,
+            decimal Amount,
+            string? Description,
+            string? ExternalId,
+            Guid? createByUserId);
 
         ValueTask<TransactionResponse> RebateAsync(Guid WalletId, decimal Amount, string? Description, string? ExternalId);
 
