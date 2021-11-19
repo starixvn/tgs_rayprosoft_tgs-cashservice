@@ -99,7 +99,7 @@ namespace Tgs.CashService.Client
             decimal amount,
             string? description,
             string? externalId,
-            Guid createdByUserId)
+            Guid? createdByUserId)
         {
             var request = new
             {

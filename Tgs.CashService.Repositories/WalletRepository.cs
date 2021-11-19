@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Data;
 using System.Transactions;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
@@ -77,7 +73,7 @@ namespace Tgs.CashService.Repositories
 
         public async ValueTask<decimal?> GetBalanceAsync(Guid walletId)
         {
-            var playerWallet = await _context.WalletData
+            var playerWallet = await _context.WalletItems
                 .Where(x => x.Id == walletId)
                 .FirstOrDefaultAsync()
                 .ConfigureAwait(false);
@@ -87,7 +83,7 @@ namespace Tgs.CashService.Repositories
 
         public async ValueTask<Wallet?> GetWalletAsync(Guid walletId)
         {
-            var wallet = await (from w in _context.WalletData.AsQueryable()
+            var wallet = await (from w in _context.WalletItems.AsQueryable()
                                 join p in _context.Players on w.PlayerCode equals p.PlayerCode
                                 where w.Id == walletId
                                 select new Wallet

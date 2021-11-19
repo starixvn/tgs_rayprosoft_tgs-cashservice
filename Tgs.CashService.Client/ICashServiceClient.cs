@@ -21,7 +21,7 @@ namespace Tgs.CashService.Client
             decimal Amount,
             string? Description,
             string? ExternalId,
-            Guid CreatedByUserId);
+            Guid? CreatedByUserId);
 
         ValueTask<TransactionResponse> DepositAsync(Guid WalletId, decimal Amount, string? Description, string? ExternalId);
 

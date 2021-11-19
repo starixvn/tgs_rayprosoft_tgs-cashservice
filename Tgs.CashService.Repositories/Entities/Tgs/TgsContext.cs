@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore;
 using System;
 using TGS.GameProviders.Repositories.Entities.Configurations;
-using System.Threading.Tasks;
 
 #nullable disable
 
@@ -11,10 +10,6 @@ namespace TGS.GameProviders.Repositories.Entities
 {
     public partial class TgsContext : DbContext
     {
-        public TgsContext()
-        {
-        }
-
         public TgsContext(DbContextOptions<TgsContext> options)
             : base(options)
         {
@@ -23,7 +18,7 @@ namespace TGS.GameProviders.Repositories.Entities
         public virtual DbSet<Brand> Brands { get; set; }
         public virtual DbSet<Player> Players { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
-        public virtual DbSet<WalletDatum> WalletData { get; set; }
+        public virtual DbSet<WalletItem> WalletItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,11 +28,10 @@ namespace TGS.GameProviders.Repositories.Entities
             modelBuilder.ApplyConfiguration(new Configurations.BrandConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.TransactionConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.WalletDatumConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.WalletItemConfiguration());
             OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-        internal Task FindAsync(Guid walletId) => throw new NotImplementedException();
     }
 }
