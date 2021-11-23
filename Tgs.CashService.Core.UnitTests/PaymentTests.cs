@@ -16,33 +16,34 @@ namespace Tgs.CashService.Core.UnitTests
 
             var sut = new DepositService(fakeWalletRepository);
 
-            var query = new DepositCommand(
+            var command = new DepositCommand(
                 Guid.NewGuid(),
-                100,
+                100M,
                 Guid.NewGuid().ToString("N"),
-                "測試存款");
+                "測試存款",
+                Guid.NewGuid());
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
+            fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
                 .Returns(new Wallet
                 {
-                    Id = query.WalletId,
+                    Id = command.WalletId,
                     BrandId = Guid.NewGuid(),
                     PlayerCode = "Player1"
                 });
 
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
+            _ = await sut.GetAsync(command).ConfigureAwait(false);
 
             _ = fakeWalletRepository
                 .Received(1)
                 .ExchangeAsync(
                     Arg.Any<Guid>(),
-                    query.WalletId,
+                    Arg.Is(command.WalletId),
                     Arg.Any<string>(),
-                    TransactionType.Deposit,
-                    query.Amount,
-                    query.Description,
-                    query.ExternalId
-                    );
+                    Arg.Is(TransactionType.Deposit),
+                    Arg.Is(command.Amount),
+                    Arg.Is(command.Description),
+                    Arg.Is(command.ExternalId),
+                    Arg.Is(command.CreatedByUserId));
         }
 
         [Test]
@@ -52,23 +53,25 @@ namespace Tgs.CashService.Core.UnitTests
 
             var sut = new DepositService(fakeWalletRepository);
 
-            var query = new DepositCommand(
+            var command = new DepositCommand(
                 Guid.NewGuid(),
                 100,
                 Guid.NewGuid().ToString("N"),
-                "測試存款");
+                "測試存款",
+                null);
 
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await sut.GetAsync(query));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await sut.GetAsync(command));
 
             _ = fakeWalletRepository.DidNotReceive()
                 .ExchangeAsync(
                     Arg.Any<Guid>(),
-                    query.WalletId,
+                    Arg.Is(command.WalletId),
                     Arg.Any<string>(),
-                    TransactionType.Deposit,
-                    query.Amount,
-                    query.Description,
-                    query.ExternalId);
+                    Arg.Is(TransactionType.Deposit),
+                    Arg.Any<decimal>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<Guid?>());
         }
 
         [Test]

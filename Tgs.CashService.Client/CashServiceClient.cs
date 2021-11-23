@@ -133,13 +133,15 @@ namespace Tgs.CashService.Client
             Guid walletId,
             decimal amount,
             string? description,
-            string? externalId)
+            string? externalId,
+            Guid? createdByUserId)
         {
             var request = new
             {
                 Amount = amount,
                 Description = description,
-                ExternalId = externalId
+                ExternalId = externalId,
+                CreatedByUserId = createdByUserId
             };
 
             var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
