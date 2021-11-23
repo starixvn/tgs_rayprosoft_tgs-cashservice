@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.CashService.Core;
 using Tgs.CashService.Core.ApplicationServices;
-using Tgs.CashService.Models;
+using Tgs.CashService.ViewModels;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Controllers
@@ -174,7 +174,8 @@ namespace Tgs.CashService.Controllers
                     walletId,
                     request.Amount,
                     request.Description,
-                    request.ExternalId))
+                    request.ExternalId,
+                    request.CreatedByUserId))
                 .ConfigureAwait(false);
 
             return new TransactionResultViewModel()

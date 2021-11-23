@@ -23,7 +23,12 @@ namespace Tgs.CashService.Client
             string? externalId,
             Guid? createdByUserId);
 
-        ValueTask<TransactionResponse> DepositAsync(Guid walletId, decimal amount, string? description, string? externalId);
+        ValueTask<TransactionResponse> DepositAsync(
+            Guid walletId,
+            decimal amount,
+            string? description,
+            string? externalId,
+            Guid? createdByUserId);
 
         ValueTask<TransactionResponse> GameProviderDepositAsync(Guid walletId, decimal amount, string? description, string? externalId);
 

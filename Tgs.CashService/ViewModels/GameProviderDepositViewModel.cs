@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Tgs.CashService.Models
+namespace Tgs.CashService.ViewModels
 {
-    public class WithdrawalViewModel
+    public class GameProviderDepositViewModel
     {
         [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal Amount { get; set; }
