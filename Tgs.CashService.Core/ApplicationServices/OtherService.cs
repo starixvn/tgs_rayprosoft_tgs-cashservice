@@ -1,40 +1,38 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record OtherService : IGetService<OtherQuery, ExchangeResult>
+    public record OtherService : IGetService<OtherCommand, ExchangeResult>
     {
-        private readonly ILogger<OtherService> _logger;
-
         private readonly IWalletRepository _walletRepository;
 
-        public OtherService(ILogger<OtherService> logger, IWalletRepository walletRepository)
+        public OtherService(IWalletRepository walletRepository)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         }
 
-        public async ValueTask<ExchangeResult> GetAsync(OtherQuery query, CancellationToken cancellationToken = default)
+        public async ValueTask<ExchangeResult> GetAsync(OtherCommand command, CancellationToken cancellationToken = default)
         {
-            var (TransactionId, PostBalance) = await _walletRepository.ExchangeAsync(
-                query.BrandId,
-                query.WalletId,
-                query.PlayerCode,
-                TransactionTypes.Other,
-                query.Amount,
-                query.Description,
-                query.ExternalId,
-                query.CreatedByUserId)
+            var wallet = await _walletRepository.GetWalletAsync(command.WalletId);
+
+            if (wallet == null)
+                throw new InvalidOperationException("Can't found wallet.");
+
+            var (transactionId, postBalance) = await _walletRepository.ExchangeAsync(
+                wallet.BrandId,
+                command.WalletId,
+                wallet.PlayerCode,
+                TransactionType.Other,
+                command.Amount,
+                command.Description,
+                command.ExternalId,
+                command.CreatedByUserId)
                 .ConfigureAwait(false);
-            return new()
-            {
-                TransactionId = TransactionId,
-                Balance = PostBalance
-            };
+
+            return new ExchangeResult(transactionId, postBalance);
         }
     }
 }

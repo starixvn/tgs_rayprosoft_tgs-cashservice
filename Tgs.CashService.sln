@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31729.503
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService", "Tgs.CashService\Tgs.CashService.csproj", "{D6ED533E-C5CA-4F3F-9DA3-E3B2A74FB116}"
 EndProject
@@ -12,18 +12,22 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BCB8DC8D-839E-44F4-B06A-BBD0BCE12A08}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		CodeMaid.config = CodeMaid.config
+		Jenkinsfile = Jenkinsfile
 		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService.Repositories.UnitTests", "Tgs.CashService.Repositories.UnitTests\Tgs.CashService.Repositories.UnitTests.csproj", "{B77A84E4-81BE-4B66-B5CD-02DD418E6F72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.CashService.Client", "Tgs.CashService.Client\Tgs.CashService.Client.csproj", "{94DCA208-3528-46EC-8D0E-473D8AD0E281}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService.Client", "Tgs.CashService.Client\Tgs.CashService.Client.csproj", "{94DCA208-3528-46EC-8D0E-473D8AD0E281}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{036A3AB7-4CCC-4CFA-91B8-52C080969734}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.CashService.ClientSample", "Tgs.CashService.ClientSample\Tgs.CashService.ClientSample.csproj", "{8BB8800B-A590-4B6F-B47E-2701160FE1D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService.ClientSample", "Tgs.CashService.ClientSample\Tgs.CashService.ClientSample.csproj", "{8BB8800B-A590-4B6F-B47E-2701160FE1D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.CashService.Core.UnitTests", "Tgs.CashService.Core.UnitTests\Tgs.CashService.Core.UnitTests.csproj", "{CFE223CC-D077-41D0-9BCA-FC63DD0AA2C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService.Core.UnitTests", "Tgs.CashService.Core.UnitTests\Tgs.CashService.Core.UnitTests.csproj", "{CFE223CC-D077-41D0-9BCA-FC63DD0AA2C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService.IntegrationTests", "Tgs.CashService.IntegrationTests\Tgs.CashService.IntegrationTests.csproj", "{94EA4A15-C3BB-4352-BB10-807E6D7A32B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +63,10 @@ Global
 		{CFE223CC-D077-41D0-9BCA-FC63DD0AA2C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFE223CC-D077-41D0-9BCA-FC63DD0AA2C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFE223CC-D077-41D0-9BCA-FC63DD0AA2C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94EA4A15-C3BB-4352-BB10-807E6D7A32B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94EA4A15-C3BB-4352-BB10-807E6D7A32B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94EA4A15-C3BB-4352-BB10-807E6D7A32B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94EA4A15-C3BB-4352-BB10-807E6D7A32B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

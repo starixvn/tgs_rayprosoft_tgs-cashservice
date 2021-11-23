@@ -39,5 +39,6 @@ namespace TGS.GameProviders.Repositories.Entities
         public string? SmsVendorSettings { get; set; }
         public decimal PlatformCharge { get; set; }
         public bool CheckDividendActiveCount { get; set; }
+        public bool EnableSmsRegisterFlow { get; set; }
     }
 }

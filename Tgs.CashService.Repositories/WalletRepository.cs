@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Data;
 using System.Transactions;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
@@ -25,14 +21,14 @@ namespace Tgs.CashService.Repositories
             Guid brandId,
             Guid walletId,
             string playerCode,
-            TransactionTypes transactionType,
+            TransactionType transactionType,
             decimal amount,
             string? description,
             string? externalId,
             Guid? createdByUserId)
         {
             const string sql = "dbo.wallet_update_wallet_balance";
-            var updatedOn = DateTimeOffset.UtcNow;
+            var updatedOn = DateTime.UtcNow;
             var transactionId = Guid.NewGuid();
 
             using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
@@ -62,7 +58,7 @@ namespace Tgs.CashService.Repositories
                     Balance = postBalance,
                     Type = (short)transactionType,
                     Description = description,
-                    RecordedOn = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).DateTime,
+                    RecordedOn = updatedOn,
                     ExternalTransactionId = externalId,
                     CreatedByUserId = createdByUserId
                 })
@@ -77,12 +73,27 @@ namespace Tgs.CashService.Repositories
 
         public async ValueTask<decimal?> GetBalanceAsync(Guid walletId)
         {
-            var playerWallet = await _context.Wallets
+            var playerWallet = await _context.WalletItems
                 .Where(x => x.Id == walletId)
                 .FirstOrDefaultAsync()
                 .ConfigureAwait(false);
 
             return playerWallet?.Balance;
+        }
+
+        public async ValueTask<Wallet?> GetWalletAsync(Guid walletId)
+        {
+            var wallet = await (from w in _context.WalletItems.AsQueryable()
+                                join p in _context.Players on w.PlayerCode equals p.PlayerCode
+                                where w.Id == walletId
+                                select new Wallet
+                                {
+                                    Id = w.Id,
+                                    PlayerCode = w.PlayerCode,
+                                    BrandId = p.BrandId
+                                }).FirstOrDefaultAsync().ConfigureAwait(false);
+
+            return wallet;
         }
     }
 }
