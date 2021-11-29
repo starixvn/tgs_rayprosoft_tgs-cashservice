@@ -385,7 +385,7 @@ namespace Tgs.CashService.Client
                 Amount = amount,
                 Description = description,
                 ExternalId = externalId,
-                CreateByUserId = createdByUserId
+                CreatedByUserId = createdByUserId
             };
 
             var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
