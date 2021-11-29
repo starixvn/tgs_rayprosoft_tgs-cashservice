@@ -354,7 +354,7 @@ namespace Tgs.CashService.Controllers
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
         /// }
         /// </remarks>
-        [HttpPut("unsettledbetmanual/{walletId}")]
+        [HttpPut("unsettled/{walletId}")]
         public async ValueTask<TransactionResultViewModel> UnsettledBetManualAsync(
             [FromServices] IGetService<UnsettledBetManualCommand, ExchangeResult> service,
             Guid walletId,

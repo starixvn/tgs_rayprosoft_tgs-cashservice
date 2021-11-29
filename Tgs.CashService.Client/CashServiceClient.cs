@@ -393,7 +393,7 @@ namespace Tgs.CashService.Client
 
             var response = await _httpClient
                .PutAsync(
-                   $"/wallet/unsettledbetmanual/{walletId}",
+                   $"/wallet/unsettled/{walletId}",
                    requestContent)
                .ConfigureAwait(false);
 
