@@ -45,10 +45,12 @@ namespace Tgs.CashService.Client
             decimal amount,
             string? description,
             string? externalId,
-            Guid? createByUserId);
+            Guid? createdByUserId);
 
         ValueTask<TransactionResponse> RebateAsync(Guid walletId, decimal amount, string? description, string? externalId);
 
         ValueTask<TransactionResponse> WithdrawalAsync(Guid walletId, decimal amount, string? description, string? externalId);
+
+        ValueTask<TransactionResponse> UnsettledBetManualAsync(Guid walletId, decimal amount, string description, string externalId, Guid createdByUserId);
     }
 }

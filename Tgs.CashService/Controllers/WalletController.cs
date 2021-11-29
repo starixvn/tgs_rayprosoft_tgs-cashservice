@@ -24,9 +24,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試調整",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -84,9 +82,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試紅利",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -125,9 +121,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試取消提款",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -197,9 +191,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試遊戲上分",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -238,9 +230,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試主錢包轉入(GP->TGS)",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -279,9 +269,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試主錢包轉出(TGS->GP)",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -320,9 +308,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試遊戲下分",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -350,6 +336,47 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
+        ///
+        /// </summary>
+        /// <param name="service">The service.</param>
+        /// <param name="walletId"></param>
+        /// <param name="request">The view model.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// <b>Example</b><br />
+        ///
+        /// Post
+        /// {
+        ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
+        ///     "amount": 10,
+        ///     "description": "測試Open Round Page",
+        ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
+        /// }
+        /// </remarks>
+        [HttpPut("unsettledbetmanual/{walletId}")]
+        public async ValueTask<TransactionResultViewModel> UnsettledBetManualAsync(
+            [FromServices] IGetService<UnsettledBetManualCommand, ExchangeResult> service,
+            Guid walletId,
+            [FromBody] UnsettledBetManualViewModel request)
+        {
+            var result = await service
+                .GetAsync(new UnsettledBetManualCommand(
+                    walletId,
+                    request.Amount,
+                    request.Description,
+                    request.ExternalId,
+                    request.CreatedByUserId))
+                .ConfigureAwait(false);
+
+            return new TransactionResultViewModel()
+            {
+                TransactionId = result.TransactionId,
+                Balance = result.Balance
+            };
+        }
+
+        /// <summary>
         /// Others the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
@@ -361,9 +388,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試其他",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -404,9 +429,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試活動",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -446,9 +469,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試活動",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -487,9 +508,7 @@ namespace Tgs.CashService.Controllers
         ///
         /// Post
         /// {
-        ///     "brandId": "4e86719f-243f-46f6-b010-5c758b7285af",
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-        ///     "playerCode": "4ucmqplxb029",
         ///     "amount": 10,
         ///     "description": "測試提款",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"

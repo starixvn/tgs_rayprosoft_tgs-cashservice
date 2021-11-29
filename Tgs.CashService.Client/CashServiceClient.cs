@@ -372,5 +372,36 @@ namespace Tgs.CashService.Client
 
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
+
+        public async ValueTask<TransactionResponse> UnsettledBetManualAsync(
+            Guid walletId,
+            decimal amount,
+            string description,
+            string externalId,
+            Guid createdByUserId)
+        {
+            var request = new
+            {
+                Amount = amount,
+                Description = description,
+                ExternalId = externalId,
+                CreateByUserId = createdByUserId
+            };
+
+            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+            var response = await _httpClient
+               .PutAsync(
+                   $"/wallet/unsettledbetmanual/{walletId}",
+                   requestContent)
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+        }
     }
 }
