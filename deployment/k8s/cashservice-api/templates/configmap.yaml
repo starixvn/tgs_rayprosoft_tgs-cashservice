@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-{{ include "cashservice-api.fullname" . }}
+data:
+  appsettings.json: |
+    {
+      "ConnectionStrings": {
+        "Tgs": "{{ .Values.connectionStrings.tgs }}"
+      } 
+    }

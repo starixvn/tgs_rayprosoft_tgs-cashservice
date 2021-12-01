@@ -9,12 +9,14 @@ namespace Tgs.CashService.Core
           Guid brandId,
           Guid walletId,
           string playerCode,
-          TransactionTypes transactionType,
+          TransactionType transactionType,
           decimal amount,
           string? description,
           string? externalId,
           Guid? createdByUserId = null);
 
         ValueTask<decimal?> GetBalanceAsync(Guid walletId);
+
+        ValueTask<Wallet?> GetWalletAsync(Guid walletId);
     }
 }
