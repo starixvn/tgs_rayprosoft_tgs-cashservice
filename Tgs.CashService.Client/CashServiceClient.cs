@@ -133,13 +133,15 @@ namespace Tgs.CashService.Client
             Guid walletId,
             decimal amount,
             string? description,
-            string? externalId)
+            string? externalId,
+            Guid? createdByUserId)
         {
             var request = new
             {
                 Amount = amount,
                 Description = description,
-                ExternalId = externalId
+                ExternalId = externalId,
+                CreatedByUserId = createdByUserId
             };
 
             var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
@@ -361,6 +363,37 @@ namespace Tgs.CashService.Client
             var response = await _httpClient
                .PutAsync(
                    $"/wallet/withdrawal/{walletId}",
+                   requestContent)
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+        }
+
+        public async ValueTask<TransactionResponse> UnsettledBetManualAsync(
+            Guid walletId,
+            decimal amount,
+            string description,
+            string externalId,
+            Guid createdByUserId)
+        {
+            var request = new
+            {
+                Amount = amount,
+                Description = description,
+                ExternalId = externalId,
+                CreatedByUserId = createdByUserId
+            };
+
+            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+            var response = await _httpClient
+               .PutAsync(
+                   $"/wallet/unsettled/{walletId}",
                    requestContent)
                .ConfigureAwait(false);
 

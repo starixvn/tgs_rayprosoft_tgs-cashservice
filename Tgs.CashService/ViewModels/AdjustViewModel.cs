@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tgs.CashService.Models
+namespace Tgs.CashService.ViewModels
 {
     public class AdjustViewModel
     {

@@ -54,6 +54,7 @@ public class PaymentTests
             walletId,
             1000M,
             null,
+            null,
             null);
 
         Assert.AreEqual(postBalance, actual.Balance);
