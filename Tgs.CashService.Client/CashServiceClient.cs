@@ -13,7 +13,8 @@ namespace Tgs.CashService.Client
         private static readonly JsonSerializerOptions _SerializerOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = {
+            Converters =
+            {
                 new JsonStringEnumConverter()
             }
         };
@@ -21,9 +22,7 @@ namespace Tgs.CashService.Client
         private readonly HttpClient _httpClient;
 
         public CashServiceClient(HttpClient httpClient)
-        {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        }
+            => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
         public async ValueTask<TransactionResponse> AdjustAsync(
             Guid walletId,
@@ -44,10 +43,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/adjust/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/adjust/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -69,7 +68,8 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<decimal>(contentJson);
         }
 
-        public async ValueTask<TransactionResponse> BonusAsync(Guid walletId, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse> BonusAsync(Guid walletId, decimal amount, string? description,
+            string? externalId)
         {
             var request = new
             {
@@ -82,10 +82,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/bonus/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/bonus/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -119,8 +119,8 @@ namespace Tgs.CashService.Client
             requestMessage.Content = requestContent;
 
             var response = await _httpClient
-               .SendAsync(requestMessage)
-               .ConfigureAwait(false);
+                .SendAsync(requestMessage)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -148,10 +148,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/deposit/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/deposit/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -160,7 +160,8 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse> GameProviderDepositAsync(Guid walletId, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse> GameProviderDepositAsync(Guid walletId, decimal amount,
+            string? description, string? externalId)
         {
             var request = new
             {
@@ -173,10 +174,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/gp/deposit/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/gp/deposit/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -185,7 +186,8 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse> GameProviderFundInAsync(Guid walletId, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse> GameProviderFundInAsync(Guid walletId, decimal amount,
+            string? description, string? externalId)
         {
             var request = new
             {
@@ -198,10 +200,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/gp/fund-in/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/gp/fund-in/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -210,7 +212,8 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse> GameProviderFundOutAsync(Guid walletId, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse> GameProviderFundOutAsync(Guid walletId, decimal amount,
+            string? description, string? externalId)
         {
             var request = new
             {
@@ -223,10 +226,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/gp/fund-out/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/gp/fund-out/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -235,7 +238,8 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse> GameProviderWithdrawalAsync(Guid walletId, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse> GameProviderWithdrawalAsync(Guid walletId, decimal amount,
+            string? description, string? externalId)
         {
             var request = new
             {
@@ -248,10 +252,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/gp/withdrawal/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/gp/withdrawal/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -279,10 +283,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/other/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/other/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -311,10 +315,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/promotion/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/promotion/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -323,7 +327,8 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse> RebateAsync(Guid walletId, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse> RebateAsync(Guid walletId, decimal amount, string? description,
+            string? externalId)
         {
             var request = new
             {
@@ -336,10 +341,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/rebate/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/rebate/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -348,7 +353,8 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse> WithdrawalAsync(Guid walletId, decimal amount, string? description, string? externalId)
+        public async ValueTask<TransactionResponse> WithdrawalAsync(Guid walletId, decimal amount, string? description,
+            string? externalId)
         {
             var request = new
             {
@@ -361,10 +367,10 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/withdrawal/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/withdrawal/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -392,10 +398,36 @@ namespace Tgs.CashService.Client
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
-               .PutAsync(
-                   $"/wallet/unsettled/{walletId}",
-                   requestContent)
-               .ConfigureAwait(false);
+                .PutAsync(
+                    $"/wallet/unsettled/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+        }
+
+        public async ValueTask<TransactionResponse> AllAgentRebateAsync(Guid walletId, decimal amount,
+            string? description, string? externalId)
+        {
+            var request = new
+            {
+                Amount = amount,
+                Description = description,
+                ExternalId = externalId
+            };
+
+            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+            var response = await _httpClient
+                .PutAsync(
+                    $"/wallet/allAgentRebate/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
