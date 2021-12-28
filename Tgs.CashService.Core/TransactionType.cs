@@ -14,7 +14,8 @@
         CancelWithdrawal = 9,
         GameProviderDeposit = 10,
         GameProviderWithdrawal = 11,
-        UnsettledBetManual=12,
+        UnsettledBetManual = 12,
+        AllAgentRebate = 100000,
         Other = 99
     }
 }

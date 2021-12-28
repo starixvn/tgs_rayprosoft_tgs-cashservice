@@ -13,23 +13,22 @@ namespace Tgs.CashService.Controllers
     public class WalletController : ControllerBase
     {
         /// <summary>
-        /// Adjusts the exchange asynchronous.
+        ///     Adjusts the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試調整",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("adjust/{walletId}")]
         public async ValueTask<TransactionResultViewModel> AdjustAsync(
@@ -46,7 +45,7 @@ namespace Tgs.CashService.Controllers
                     request.CreatedByUserId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -54,14 +53,13 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Balances the asynchronous.
+        ///     Balances the asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId">The wallet identifier.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
+        ///     <b>Example</b><br />
         ///     Get /36a6cdef-094f-eb11-8d88-70b5e82b6b8d
         /// </remarks>
         [HttpGet("{walletId}")]
@@ -71,22 +69,21 @@ namespace Tgs.CashService.Controllers
             => service.GetAsync(new GetBalanceQuery(walletId));
 
         /// <summary>
-        /// Bonuses the exchange asynchronous.
+        ///     Bonuses the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試紅利",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("bonus/{walletId}")]
         public async ValueTask<TransactionResultViewModel> BonusAsync(
@@ -102,7 +99,7 @@ namespace Tgs.CashService.Controllers
                     request.ExternalId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -110,23 +107,22 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Cancels the withdrawal exchange asynchronous.
+        ///     Cancels the withdrawal exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試取消提款",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-        /// }
+        ///     }
         /// </remarks>
         [HttpDelete("withdrawal/{walletId}")]
         public async ValueTask<TransactionResultViewModel> CancelWithdrawalAsync(
@@ -143,7 +139,7 @@ namespace Tgs.CashService.Controllers
                     request.CreatedByUserId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -151,7 +147,7 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Deposits the exchange asynchronous.
+        ///     Deposits the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
@@ -172,7 +168,7 @@ namespace Tgs.CashService.Controllers
                     request.CreatedByUserId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -180,22 +176,21 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Games the provider deposit exchange asynchronous.
+        ///     Games the provider deposit exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試遊戲上分",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("gp/deposit/{walletId}")]
         public async ValueTask<TransactionResultViewModel> GameProviderDepositAsync(
@@ -211,7 +206,7 @@ namespace Tgs.CashService.Controllers
                     request.ExternalId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -219,22 +214,21 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Games the provider fund in exchange asynchronous.
+        ///     Games the provider fund in exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="viewModel">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試主錢包轉入(GP->TGS)",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("gp/fund-in/{walletId}")]
         public async ValueTask<TransactionResultViewModel> GameProviderFundInAsync(
@@ -250,7 +244,7 @@ namespace Tgs.CashService.Controllers
                     viewModel.ExternalId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -258,22 +252,21 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Games the provider fund out exchange asynchronous.
+        ///     Games the provider fund out exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試主錢包轉出(TGS->GP)",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("gp/fund-out/{walletId}")]
         public async ValueTask<TransactionResultViewModel> GameProviderFundOutAsync(
@@ -289,7 +282,7 @@ namespace Tgs.CashService.Controllers
                     request.ExternalId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -297,22 +290,21 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Games the provider withdrawal exchange asynchronous.
+        ///     Games the provider withdrawal exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試遊戲下分",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("gp/withdrawal/{walletId}")]
         public async ValueTask<TransactionResultViewModel> GameProviderWithdrawalAsync(
@@ -328,7 +320,7 @@ namespace Tgs.CashService.Controllers
                     request.ExternalId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -336,23 +328,21 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        ///
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試Open Round Page",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("unsettled/{walletId}")]
         public async ValueTask<TransactionResultViewModel> UnsettledBetManualAsync(
@@ -369,7 +359,7 @@ namespace Tgs.CashService.Controllers
                     request.CreatedByUserId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -377,23 +367,22 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Others the exchange asynchronous.
+        ///     Others the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試其他",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("other/{walletId}")]
         public async ValueTask<TransactionResultViewModel> OtherAsync(
@@ -410,7 +399,7 @@ namespace Tgs.CashService.Controllers
                     request.CreatedByUserId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -418,22 +407,21 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Promotions the exchange asynchronous.
+        ///     Promotions the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試活動",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("promotion/{walletId}")]
         public async ValueTask<TransactionResultViewModel> PromotionAsync(
@@ -450,7 +438,7 @@ namespace Tgs.CashService.Controllers
                     request.CreatedByUserId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -458,22 +446,21 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Rebates the exchange asynchronous.
+        ///     Rebates the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="viewModel">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試活動",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("rebate/{walletId}")]
         public async ValueTask<TransactionResultViewModel> RebateAsync(
@@ -489,7 +476,7 @@ namespace Tgs.CashService.Controllers
                     viewModel.ExternalId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
@@ -497,22 +484,21 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        /// Withdrawals the exchange asynchronous.
+        ///     Withdrawals the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        /// Post
-        /// {
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
         ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
         ///     "amount": 10,
         ///     "description": "測試提款",
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-        /// }
+        ///     }
         /// </remarks>
         [HttpPut("withdrawal/{walletId}")]
         public async ValueTask<TransactionResultViewModel> WithdrawalAsync(
@@ -528,7 +514,45 @@ namespace Tgs.CashService.Controllers
                     request.ExternalId))
                 .ConfigureAwait(false);
 
-            return new TransactionResultViewModel()
+            return new TransactionResultViewModel
+            {
+                TransactionId = result.TransactionId,
+                Balance = result.Balance
+            };
+        }
+
+        /// <summary>
+        ///     Rebates the exchange asynchronous.
+        /// </summary>
+        /// <param name="service">The service.</param>
+        /// <param name="walletId"></param>
+        /// <param name="viewModel">The view model.</param>
+        /// <returns></returns>
+        /// <remarks>
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
+        ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
+        ///     "amount": 10,
+        ///     "description": "測試活動",
+        ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        ///     }
+        /// </remarks>
+        [HttpPut("allAgentRebate/{walletId}")]
+        public async ValueTask<TransactionResultViewModel> AllAgentRebateAsync(
+            [FromServices] IGetService<AllAgentRebateCommand, ExchangeResult> service,
+            Guid walletId,
+            [FromBody] RebateViewModel viewModel)
+        {
+            var result = await service
+                .GetAsync(new AllAgentRebateCommand(
+                    walletId,
+                    viewModel.Amount,
+                    viewModel.Description,
+                    viewModel.ExternalId))
+                .ConfigureAwait(false);
+
+            return new TransactionResultViewModel
             {
                 TransactionId = result.TransactionId,
                 Balance = result.Balance
