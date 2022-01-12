@@ -410,7 +410,7 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse> ResettledBetManualAsync(
+        public async ValueTask<TransactionResponse> AdjustResettledBetManualAsync(
             Guid walletId,
             decimal amount,
             string description,
@@ -430,7 +430,7 @@ namespace Tgs.CashService.Client
 
             var response = await _httpClient
                 .PutAsync(
-                    $"/wallet/resettled/{walletId}",
+                    $"/wallet/adjust/resettled/{walletId}",
                     requestContent)
                 .ConfigureAwait(false);
 

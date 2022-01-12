@@ -187,13 +187,13 @@ namespace Tgs.CashService.Core.UnitTests
         }
 
         [Test]
-        public async Task Can_Create_ResettledBetManualCommand_Exchange()
+        public async Task Can_Create_AdjustResettledBetManualCommand_Exchange()
         {
             var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-            var sut = new ResettledBetManualService(fakeWalletRepository);
+            var sut = new AdjustResettledBetManualService(fakeWalletRepository);
 
-            var command = new ResettledBetManualCommand(
+            var command = new AdjustResettledBetManualCommand(
                 Guid.NewGuid(),
                 100,
                 "´ú¸ÕClosed Round Page",

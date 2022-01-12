@@ -5,16 +5,16 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record ResettledBetManualService : IGetService<ResettledBetManualCommand, ExchangeResult>
+    public record AdjustResettledBetManualService : IGetService<AdjustResettledBetManualCommand, ExchangeResult>
     {
         private readonly IWalletRepository _walletRepository;
 
-        public ResettledBetManualService(IWalletRepository walletRepository)
+        public AdjustResettledBetManualService(IWalletRepository walletRepository)
         {
             _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         }
 
-        public async ValueTask<ExchangeResult> GetAsync(ResettledBetManualCommand command, CancellationToken cancellationToken = default)
+        public async ValueTask<ExchangeResult> GetAsync(AdjustResettledBetManualCommand command, CancellationToken cancellationToken = default)
         {
             var wallet = await _walletRepository.GetWalletAsync(command.WalletId);
 

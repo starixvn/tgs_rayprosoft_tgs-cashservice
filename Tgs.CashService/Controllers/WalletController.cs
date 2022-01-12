@@ -367,6 +367,7 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
+        /// Adjust the exchange for the cloesd game round
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
@@ -383,14 +384,14 @@ namespace Tgs.CashService.Controllers
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
         ///     }
         /// </remarks>
-        [HttpPut("resettled/{walletId}", Name = "ResettledBetManual")]
-        public async ValueTask<TransactionResultViewModel> ResettledBetManualAsync(
-            [FromServices] IGetService<ResettledBetManualCommand, ExchangeResult> service,
+        [HttpPut("adjust/resettled/{walletId}", Name = "AdjustResettledBetManual")]
+        public async ValueTask<TransactionResultViewModel> AdjustResettledBetManualAsync(
+            [FromServices] IGetService<AdjustResettledBetManualCommand, ExchangeResult> service,
             Guid walletId,
-            [FromBody] ResettledBetManualViewModel request)
+            [FromBody] AdjustResettledBetManualViewModel request)
         {
             var result = await service
-                .GetAsync(new ResettledBetManualCommand(
+                .GetAsync(new AdjustResettledBetManualCommand(
                     walletId,
                     request.Amount,
                     request.Description,
