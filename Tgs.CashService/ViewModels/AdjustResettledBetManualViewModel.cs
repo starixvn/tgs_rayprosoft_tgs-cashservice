@@ -2,8 +2,7 @@
 
 namespace Tgs.CashService.ViewModels
 {
-    public record ResettledBetManualViewModel(
-       Guid WalletId,
+    public record AdjustResettledBetManualViewModel(
        decimal Amount,
        string Description,
        string ExternalId,
