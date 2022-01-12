@@ -16,6 +16,37 @@
         GameProviderWithdrawal = 11,
         UnsettledBetManual = 12,
         AllAgentRebate = 100000,
-        Other = 99
+        Other = 99,
+
+        /// <summary>
+        /// 存款 1000~1999
+        /// </summary>
+        //Deposit = 1000,
+        /// <summary>
+        /// 提款 2000~2999
+        /// </summary>
+        //Withdraw = 2000,
+        /// <summary>
+        /// 活動 3000~3999
+        /// </summary>
+        //Promotion = 3000,
+        /// <summary>
+        /// 分紅 4000~4999
+        /// </summary>
+        //Dividend = 4000,
+        /// <summary>
+        /// 調帳 5000~5999
+        /// </summary>
+        //Adjust = 5000,
+
+        /// <summary>
+        /// 已結算單再調整
+        /// </summary>
+        AdjustResettledBetManual = 5010,
+
+        /// <summary>
+        /// 遊戲 10000~10999
+        /// </summary>
+        Game = 10000
     }
 }

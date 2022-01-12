@@ -30,7 +30,7 @@ namespace Tgs.CashService.Controllers
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
         ///     }
         /// </remarks>
-        [HttpPut("adjust/{walletId}")]
+        [HttpPut("adjust/{walletId}", Name = "Adjust")]
         public async ValueTask<TransactionResultViewModel> AdjustAsync(
             [FromServices] IGetService<AdjustCommand, ExchangeResult> service,
             Guid walletId,
@@ -62,7 +62,7 @@ namespace Tgs.CashService.Controllers
         ///     <b>Example</b><br />
         ///     Get /36a6cdef-094f-eb11-8d88-70b5e82b6b8d
         /// </remarks>
-        [HttpGet("{walletId}")]
+        [HttpGet("{walletId}", Name = "GetBalance")]
         public ValueTask<decimal> GetBalanceAsync(
             [FromServices] IGetService<GetBalanceQuery, decimal> service,
             Guid walletId)
@@ -85,7 +85,7 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         ///     }
         /// </remarks>
-        [HttpPut("bonus/{walletId}")]
+        [HttpPut("bonus/{walletId}", Name = "Bonus")]
         public async ValueTask<TransactionResultViewModel> BonusAsync(
             [FromServices] IGetService<BonusCommand, ExchangeResult> service,
             Guid walletId,
@@ -124,7 +124,7 @@ namespace Tgs.CashService.Controllers
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
         ///     }
         /// </remarks>
-        [HttpDelete("withdrawal/{walletId}")]
+        [HttpDelete("withdrawal/{walletId}", Name = "CancelWithdrawal")]
         public async ValueTask<TransactionResultViewModel> CancelWithdrawalAsync(
             [FromServices] IGetService<CancelWithdrawalCommand, ExchangeResult> service,
             Guid walletId,
@@ -153,7 +153,7 @@ namespace Tgs.CashService.Controllers
         /// <param name="walletId"></param>
         /// <param name="request">The view model.</param>
         /// <returns></returns>
-        [HttpPut("deposit/{walletId}")]
+        [HttpPut("deposit/{walletId}", Name = "Deposit")]
         public async ValueTask<TransactionResultViewModel> DepositAsync(
             [FromServices] IGetService<DepositCommand, ExchangeResult> service,
             Guid walletId,
@@ -192,7 +192,7 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         ///     }
         /// </remarks>
-        [HttpPut("gp/deposit/{walletId}")]
+        [HttpPut("gp/deposit/{walletId}", Name = "GameProviderDeposit")]
         public async ValueTask<TransactionResultViewModel> GameProviderDepositAsync(
             [FromServices] IGetService<GameProviderDepositCommand, ExchangeResult> service,
             Guid walletId,
@@ -230,7 +230,7 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         ///     }
         /// </remarks>
-        [HttpPut("gp/fund-in/{walletId}")]
+        [HttpPut("gp/fund-in/{walletId}", Name = "GameProviderFundIn")]
         public async ValueTask<TransactionResultViewModel> GameProviderFundInAsync(
             [FromServices] IGetService<GameProviderFundInCommand, ExchangeResult> service,
             Guid walletId,
@@ -268,7 +268,7 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         ///     }
         /// </remarks>
-        [HttpPut("gp/fund-out/{walletId}")]
+        [HttpPut("gp/fund-out/{walletId}", Name = "GameProviderFundOut")]
         public async ValueTask<TransactionResultViewModel> GameProviderFundOutAsync(
             [FromServices] IGetService<GameProviderFundOutCommand, ExchangeResult> service,
             Guid walletId,
@@ -306,7 +306,7 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         ///     }
         /// </remarks>
-        [HttpPut("gp/withdrawal/{walletId}")]
+        [HttpPut("gp/withdrawal/{walletId}", Name = "GameProviderWithdrawal")]
         public async ValueTask<TransactionResultViewModel> GameProviderWithdrawalAsync(
             [FromServices] IGetService<GameProviderWithdrawalCommand, ExchangeResult> service,
             Guid walletId,
@@ -344,7 +344,7 @@ namespace Tgs.CashService.Controllers
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
         ///     }
         /// </remarks>
-        [HttpPut("unsettled/{walletId}")]
+        [HttpPut("unsettled/{walletId}", Name = "UnsettledBetManual")]
         public async ValueTask<TransactionResultViewModel> UnsettledBetManualAsync(
             [FromServices] IGetService<UnsettledBetManualCommand, ExchangeResult> service,
             Guid walletId,
@@ -367,7 +367,46 @@ namespace Tgs.CashService.Controllers
         }
 
         /// <summary>
-        ///     Others the exchange asynchronous.
+        /// </summary>
+        /// <param name="service">The service.</param>
+        /// <param name="walletId"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <remarks>
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
+        ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
+        ///     "amount": 10,
+        ///     "description": "測試Closed Round Page",
+        ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
+        ///     }
+        /// </remarks>
+        [HttpPut("resettled/{walletId}", Name = "ResettledBetManual")]
+        public async ValueTask<TransactionResultViewModel> ResettledBetManualAsync(
+            [FromServices] IGetService<ResettledBetManualCommand, ExchangeResult> service,
+            Guid walletId,
+            [FromBody] ResettledBetManualViewModel request)
+        {
+            var result = await service
+                .GetAsync(new ResettledBetManualCommand(
+                    walletId,
+                    request.Amount,
+                    request.Description,
+                    request.ExternalId,
+                    request.CreatedByUserId))
+                .ConfigureAwait(false);
+
+            return new TransactionResultViewModel
+            {
+                TransactionId = result.TransactionId,
+                Balance = result.Balance
+            };
+        }
+
+        /// <summary>
+        /// Others the exchange asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="walletId"></param>
@@ -384,7 +423,7 @@ namespace Tgs.CashService.Controllers
         ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
         ///     }
         /// </remarks>
-        [HttpPut("other/{walletId}")]
+        [HttpPut("other/{walletId}", Name = "Other")]
         public async ValueTask<TransactionResultViewModel> OtherAsync(
             [FromServices] IGetService<OtherCommand, ExchangeResult> service,
             Guid walletId,
@@ -423,7 +462,7 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         ///     }
         /// </remarks>
-        [HttpPut("promotion/{walletId}")]
+        [HttpPut("promotion/{walletId}", Name = "Promotion")]
         public async ValueTask<TransactionResultViewModel> PromotionAsync(
             [FromServices] IGetService<PromotionCommand, ExchangeResult> service,
             Guid walletId,
@@ -462,7 +501,7 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         ///     }
         /// </remarks>
-        [HttpPut("rebate/{walletId}")]
+        [HttpPut("rebate/{walletId}", Name = "Rebate")]
         public async ValueTask<TransactionResultViewModel> RebateAsync(
             [FromServices] IGetService<RebateCommand, ExchangeResult> service,
             Guid walletId,
@@ -500,7 +539,7 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         ///     }
         /// </remarks>
-        [HttpPut("withdrawal/{walletId}")]
+        [HttpPut("withdrawal/{walletId}", Name = "Withdrawal")]
         public async ValueTask<TransactionResultViewModel> WithdrawalAsync(
             [FromServices] IGetService<WithdrawalCommand, ExchangeResult> service,
             Guid walletId,
@@ -538,7 +577,7 @@ namespace Tgs.CashService.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         ///     }
         /// </remarks>
-        [HttpPut("allAgentRebate/{walletId}")]
+        [HttpPut("allAgentRebate/{walletId}", Name = "AllAgentRebate")]
         public async ValueTask<TransactionResultViewModel> AllAgentRebateAsync(
             [FromServices] IGetService<AllAgentRebateCommand, ExchangeResult> service,
             Guid walletId,
