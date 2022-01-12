@@ -366,6 +366,45 @@ namespace Tgs.CashService.Controllers
             };
         }
 
+        /// <summary>        
+        /// </summary>
+        /// <param name="service">The service.</param>
+        /// <param name="walletId"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <remarks>
+        ///     <b>Example</b><br />
+        ///     Post
+        ///     {
+        ///     "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
+        ///     "amount": 10,
+        ///     "description": "測試Closed Round Page",
+        ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
+        ///     }
+        /// </remarks>
+        [HttpPut("resettled/{walletId}")]
+        public async ValueTask<TransactionResultViewModel> ResettledBetManualAsync(
+            [FromServices] IGetService<ResettledBetManualCommand, ExchangeResult> service,
+            Guid walletId,
+            [FromBody] ResettledBetManualViewModel request)
+        {
+            var result = await service
+                .GetAsync(new ResettledBetManualCommand(
+                    walletId,
+                    request.Amount,
+                    request.Description,
+                    request.ExternalId,
+                    request.CreatedByUserId))
+                .ConfigureAwait(false);
+
+            return new TransactionResultViewModel
+            {
+                TransactionId = result.TransactionId,
+                Balance = result.Balance
+            };
+        }
+
         /// <summary>
         ///     Others the exchange asynchronous.
         /// </summary>
