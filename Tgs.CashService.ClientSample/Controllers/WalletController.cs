@@ -388,10 +388,10 @@ namespace Tgs.CashService.ClientSample.Controllers
         ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         ///     }
         /// </remarks>
-        [HttpPost("allAgentRebate")]
+        [HttpPost("dividend/allAgentRebate")]
         public ValueTask<TransactionResponse> AllAgentRebateAsync(
             [FromBody] AllAgentRebateViewModel viewModel)
-            => _cashServiceClinet.AllAgentRebateAsync(
+            => _cashServiceClinet.DividendAllAgentRebateAsync(
                 viewModel.WalletId,
                 viewModel.Amount,
                 viewModel.Description,

@@ -441,7 +441,7 @@ namespace Tgs.CashService.Client
             return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<TransactionResponse> AllAgentRebateAsync(Guid walletId, decimal amount,
+        public async ValueTask<TransactionResponse> DividendAllAgentRebateAsync(Guid walletId, decimal amount,
             string? description, string? externalId)
         {
             var request = new
@@ -456,7 +456,57 @@ namespace Tgs.CashService.Client
 
             var response = await _httpClient
                 .PutAsync(
-                    $"/wallet/allAgentRebate/{walletId}",
+                    $"/wallet/dividend/allAgentRebate/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+        }
+
+        public async ValueTask<TransactionResponse> PromotionVipLevelUpgradeAsync(Guid walletId, decimal amount, string? description, string? externalId)
+        {
+            var request = new
+            {
+                Amount = amount,
+                Description = description,
+                ExternalId = externalId
+            };
+
+            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+            var response = await _httpClient
+                .PutAsync(
+                    $"/wallet/promotion/vip/upgrad/{walletId}",
+                    requestContent)
+                .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+        }
+
+        public async ValueTask<TransactionResponse> PromotionVipLevelSeasonAsync(Guid walletId, decimal amount, string? description, string? externalId)
+        {
+            var request = new
+            {
+                Amount = amount,
+                Description = description,
+                ExternalId = externalId
+            };
+
+            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+            var response = await _httpClient
+                .PutAsync(
+                    $"/wallet/promotion/vip/season/{walletId}",
                     requestContent)
                 .ConfigureAwait(false);
 

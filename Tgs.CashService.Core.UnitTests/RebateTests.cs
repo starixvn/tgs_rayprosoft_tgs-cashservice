@@ -44,13 +44,13 @@ namespace Tgs.CashService.Core.UnitTests
         }
 
         [Test]
-        public async Task Can_Create_All_Agent_Rebate_Exchange()
+        public async Task Can_Create_Dividend_All_Agent_Rebate_Exchange()
         {
             var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-            var sut = new AllAgentRebateService(fakeWalletRepository);
+            var sut = new DividendAllAgentRebateService(fakeWalletRepository);
 
-            var command = new AllAgentRebateCommand(
+            var command = new DividendAllAgentRebateCommand(
                 Guid.NewGuid(),
                 100M,
                 "新增玩家全民代理返水",
@@ -71,7 +71,7 @@ namespace Tgs.CashService.Core.UnitTests
                     Arg.Any<Guid>(),
                     Arg.Is(command.WalletId),
                     Arg.Any<string>(),
-                    Arg.Is(TransactionType.AllAgentRebate),
+                    Arg.Is(TransactionType.DividendAllAgentRebate),
                     Arg.Is(command.Amount),
                     Arg.Is(command.Description),
                     Arg.Is(command.ExternalId));

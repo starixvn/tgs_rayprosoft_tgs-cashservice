@@ -65,7 +65,22 @@ namespace Tgs.CashService.Client
         ValueTask<TransactionResponse> ResettledBetManualAsync(Guid walletId, decimal amount, string description,
             string externalId, Guid createdByUserId);
 
-        ValueTask<TransactionResponse> AllAgentRebateAsync(Guid walletId, decimal amount, string? description,
+        ValueTask<TransactionResponse> DividendAllAgentRebateAsync(
+            Guid walletId,
+            decimal amount,
+            string? description,
+            string? externalId);
+
+        ValueTask<TransactionResponse> PromotionVipLevelUpgradeAsync(
+            Guid walletId,
+            decimal amount,
+            string? description,
+            string? externalId);
+
+        ValueTask<TransactionResponse> PromotionVipLevelSeasonAsync(
+            Guid walletId,
+            decimal amount,
+            string? description,
             string? externalId);
     }
 }

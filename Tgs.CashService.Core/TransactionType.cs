@@ -15,7 +15,7 @@
         GameProviderDeposit = 10,
         GameProviderWithdrawal = 11,
         UnsettledBetManual = 12,
-        AllAgentRebate = 100000,
+
         Other = 99,
 
         /// <summary>
@@ -30,10 +30,26 @@
         /// 活動 3000~3999
         /// </summary>
         //Promotion = 3000,
+
+        /// <summary>
+        /// The promotion vip level upgrade
+        /// </summary>
+        PromotionVipLevelUpgrade = 3800,
+
+        /// <summary>
+        /// The promotion vip level season
+        /// </summary>
+        PromotionVipLevelSeason = 3850,
+
         /// <summary>
         /// 分紅 4000~4999
         /// </summary>
         //Dividend = 4000,
+        /// <summary>
+        /// The dividend all agent rebate
+        /// </summary>
+        DividendAllAgentRebate = 4100,
+
         /// <summary>
         /// 調帳 5000~5999
         /// </summary>
