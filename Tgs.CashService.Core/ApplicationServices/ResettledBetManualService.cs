@@ -5,7 +5,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record ResettledBetManualService : IGetService<ResettledBetManualCommand, ExchangeResult>
+    public class ResettledBetManualService : IGetService<ResettledBetManualCommand, ExchangeResult>
     {
         private readonly IWalletRepository _walletRepository;
 

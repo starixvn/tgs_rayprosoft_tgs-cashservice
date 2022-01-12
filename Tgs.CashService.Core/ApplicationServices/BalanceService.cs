@@ -5,7 +5,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record BalanceService : IGetService<GetBalanceQuery, decimal>
+    public class BalanceService : IGetService<GetBalanceQuery, decimal>
     {
         private readonly IWalletRepository _walletRepository;
 

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Tgs.CashService.Core;
 using Tgs.CashService.Repositories;
 using TGS.GameProviders.Repositories.Entities;

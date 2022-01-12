@@ -5,7 +5,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record GameProviderFundInService : IGetService<GameProviderFundInCommand, ExchangeResult>
+    public class GameProviderFundInService : IGetService<GameProviderFundInCommand, ExchangeResult>
     {
         private readonly IWalletRepository _walletRepository;
 
