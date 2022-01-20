@@ -14,7 +14,8 @@ namespace Tgs.CashService.Client
 
         ValueTask<decimal> GetBalanceAsync(Guid walletId);
 
-        ValueTask<TransactionResponse> BonusAsync(Guid walletId, decimal amount, string? description, string? externalId);
+        ValueTask<TransactionResponse> BonusAsync(Guid walletId, decimal amount, string? description,
+            string? externalId);
 
         ValueTask<TransactionResponse> CancelWithdrawalAsync(
             Guid walletId,
@@ -30,15 +31,20 @@ namespace Tgs.CashService.Client
             string? externalId,
             Guid? createdByUserId);
 
-        ValueTask<TransactionResponse> GameProviderDepositAsync(Guid walletId, decimal amount, string? description, string? externalId);
+        ValueTask<TransactionResponse> GameProviderDepositAsync(Guid walletId, decimal amount, string? description,
+            string? externalId);
 
-        ValueTask<TransactionResponse> GameProviderFundInAsync(Guid walletId, decimal amount, string? description, string? externalId);
+        ValueTask<TransactionResponse> GameProviderFundInAsync(Guid walletId, decimal amount, string? description,
+            string? externalId);
 
-        ValueTask<TransactionResponse> GameProviderFundOutAsync(Guid walletId, decimal amount, string? description, string? externalId);
+        ValueTask<TransactionResponse> GameProviderFundOutAsync(Guid walletId, decimal amount, string? description,
+            string? externalId);
 
-        ValueTask<TransactionResponse> GameProviderWithdrawalAsync(Guid walletId, decimal amount, string? description, string? externalId);
+        ValueTask<TransactionResponse> GameProviderWithdrawalAsync(Guid walletId, decimal amount, string? description,
+            string? externalId);
 
-        ValueTask<TransactionResponse> OtherAsync(Guid walletId, decimal amount, string description, string externalId, Guid createdByUserId);
+        ValueTask<TransactionResponse> OtherAsync(Guid walletId, decimal amount, string description, string externalId,
+            Guid createdByUserId);
 
         ValueTask<TransactionResponse> PromotionAsync(
             Guid walletId,
@@ -47,10 +53,34 @@ namespace Tgs.CashService.Client
             string? externalId,
             Guid? createdByUserId);
 
-        ValueTask<TransactionResponse> RebateAsync(Guid walletId, decimal amount, string? description, string? externalId);
+        ValueTask<TransactionResponse> RebateAsync(Guid walletId, decimal amount, string? description,
+            string? externalId);
 
-        ValueTask<TransactionResponse> WithdrawalAsync(Guid walletId, decimal amount, string? description, string? externalId);
+        ValueTask<TransactionResponse> WithdrawalAsync(Guid walletId, decimal amount, string? description,
+            string? externalId);
 
-        ValueTask<TransactionResponse> UnsettledBetManualAsync(Guid walletId, decimal amount, string description, string externalId, Guid createdByUserId);
+        ValueTask<TransactionResponse> UnsettledBetManualAsync(Guid walletId, decimal amount, string description,
+            string externalId, Guid createdByUserId);
+
+        ValueTask<TransactionResponse> AdjustResettledBetManualAsync(Guid walletId, decimal amount, string description,
+            string externalId, Guid createdByUserId);
+
+        ValueTask<TransactionResponse> DividendAllAgentRebateAsync(
+            Guid walletId,
+            decimal amount,
+            string? description,
+            string? externalId);
+
+        ValueTask<TransactionResponse> PromotionVipLevelUpgradeAsync(
+            Guid walletId,
+            decimal amount,
+            string? description,
+            string? externalId);
+
+        ValueTask<TransactionResponse> PromotionVipLevelSeasonAsync(
+            Guid walletId,
+            decimal amount,
+            string? description,
+            string? externalId);
     }
 }

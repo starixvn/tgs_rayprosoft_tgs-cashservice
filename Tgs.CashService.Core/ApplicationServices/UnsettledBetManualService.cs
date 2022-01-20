@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record UnsettledBetManualService : IGetService<UnsettledBetManualCommand, ExchangeResult>
+    public class UnsettledBetManualService : IGetService<UnsettledBetManualCommand, ExchangeResult>
     {
         private readonly IWalletRepository _walletRepository;
 
