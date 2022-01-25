@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
@@ -57,6 +58,7 @@ builder.Services
                 .AddEnvironmentVariableDetector())
             .AddSource("Tgs.*")
             .AddSource("TGS.*")
+            .AddNpgsql()
             .AddAspNetCoreInstrumentation()
             .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
             .AddProfileViewExporter()
@@ -67,13 +69,11 @@ builder.Services
         options.Filter = httpContext =>
         {
             return !httpContext.Request.Path.HasValue
-                ? true
-                : httpContext.Request.Path.StartsWithSegments("/swagger")
-                ? false
-                : httpContext.Request.Path.StartsWithSegments("/healthz")
-                ? false
-                : !new[] { "html", "ico", "png", "jpg" }.Any(
-                ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
+                || !httpContext.Request.Path.StartsWithSegments("/swagger")
+                && !httpContext.Request.Path.StartsWithSegments("/healthz")
+                && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+                && !new[] { "html", "ico", "png", "jpg" }.Any(
+                    ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
         };
     });
 
@@ -84,5 +84,6 @@ app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tgs.CashSer
 app.MapControllers();
 app.MapSwagger();
 app.MapHealthChecks("/healthz");
+app.MapProfileViewer();
 
 app.Run();
