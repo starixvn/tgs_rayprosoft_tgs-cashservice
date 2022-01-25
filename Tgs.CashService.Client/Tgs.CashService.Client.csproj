@@ -10,6 +10,8 @@
 		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-cashservice.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Tgs Cash</PackageTags>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>10.0</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

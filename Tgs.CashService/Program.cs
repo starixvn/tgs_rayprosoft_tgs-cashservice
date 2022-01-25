@@ -1,25 +1,44 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
-namespace Tgs.CashService
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("/config/appsettings.json", true);
+
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddControllers();
+builder.Services.AddSwaggerGen(c =>
 {
-    public class Program
-    {
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(builder =>
-                {
-                    builder.AddJsonFile("/config/appsettings.json", true);
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+    var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
+    foreach (var xmlFileName in xmlFileNames) c.IncludeXmlComments(xmlFileName);
 
-        public static void Main(string[] args)
+    c.SwaggerDoc("v1",
+        new OpenApiInfo
         {
-            CreateHostBuilder(args).Build().Run();
-        }
-    }
-}
+            Title = "Tgs.CashService",
+            Version = "v1"
+        });
+});
+
+builder.Services.AddDbRepository((sp, dbBuilder) =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+    _ = dbBuilder
+        .UseLazyLoadingProxies()
+        .UseNpgsql(config.GetConnectionString("Tgs"));
+});
+
+builder.Services.AddCashServiceCore();
+
+builder.Services.AddHealthChecks();
+
+var app = builder.Build();
+
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tgs.CashService v1"));
+
+app.MapControllers();
+app.MapSwagger();
+app.MapHealthChecks("/healthz");
+
+app.Run();
