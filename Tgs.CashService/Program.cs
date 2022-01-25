@@ -16,7 +16,8 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
     var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
-    foreach (var xmlFileName in xmlFileNames) c.IncludeXmlComments(xmlFileName);
+    foreach (var xmlFileName in xmlFileNames)
+        c.IncludeXmlComments(xmlFileName);
 
     c.SwaggerDoc("v1",
         new OpenApiInfo
