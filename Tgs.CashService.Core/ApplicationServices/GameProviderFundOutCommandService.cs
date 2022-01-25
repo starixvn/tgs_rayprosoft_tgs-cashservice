@@ -5,18 +5,18 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
-public class WithdrawalService : IGetService<WithdrawalCommand, ExchangeResult>
+public class GameProviderFundOutCommandService : IGetService<GameProviderFundOutCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
 
-    public WithdrawalService(IWalletRepository walletRepository)
+    public GameProviderFundOutCommandService(IWalletRepository walletRepository)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(WithdrawalCommand query, CancellationToken cancellationToken = default)
+    public async ValueTask<ExchangeResult> GetAsync(GameProviderFundOutCommand command, CancellationToken cancellationToken = default)
     {
-        var wallet = await _walletRepository.GetWalletAsync(query.WalletId);
+        var wallet = await _walletRepository.GetWalletAsync(command.WalletId);
 
         if (wallet == null)
             throw new InvalidOperationException("Can't found wallet.");
@@ -24,12 +24,12 @@ public class WithdrawalService : IGetService<WithdrawalCommand, ExchangeResult>
         var (transactionId, postBalance) = await _walletRepository
             .ExchangeAsync(
                 wallet.BrandId,
-                query.WalletId,
+                command.WalletId,
                 wallet.PlayerCode,
-                TransactionType.Withdrawal,
-                -query.Amount,
-                query.Description,
-                query.ExternalId)
+                TransactionType.GameProviderFundOut,
+                -command.Amount,
+                command.Description,
+                command.ExternalId)
             .ConfigureAwait(false);
 
         return new ExchangeResult(transactionId, postBalance);

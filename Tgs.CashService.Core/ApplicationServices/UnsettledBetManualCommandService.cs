@@ -5,11 +5,11 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
-public class UnsettledBetManualService : IGetService<UnsettledBetManualCommand, ExchangeResult>
+public class UnsettledBetManualCommandService : IGetService<UnsettledBetManualCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
 
-    public UnsettledBetManualService(IWalletRepository walletRepository)
+    public UnsettledBetManualCommandService(IWalletRepository walletRepository)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
     }

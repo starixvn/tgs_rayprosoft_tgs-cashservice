@@ -5,11 +5,11 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
-public class GameProviderWithdrawalService : IGetService<GameProviderWithdrawalCommand, ExchangeResult>
+public class GameProviderWithdrawalCommandService : IGetService<GameProviderWithdrawalCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
 
-    public GameProviderWithdrawalService(IWalletRepository walletRepository)
+    public GameProviderWithdrawalCommandService(IWalletRepository walletRepository)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
     }

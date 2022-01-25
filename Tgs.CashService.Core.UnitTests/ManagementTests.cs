@@ -14,7 +14,7 @@ public class ManagementTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new AdjustService(fakeWalletRepository);
+        var sut = new AdjustCommandService(fakeWalletRepository);
 
         var query = new AdjustCommand(
             Guid.NewGuid(),
@@ -50,7 +50,7 @@ public class ManagementTests
     public async Task Can_Create_Bonus_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
-        var sut = new BonusService(fakeWalletRepository);
+        var sut = new BonusCommandService(fakeWalletRepository);
 
         var query = new BonusCommand(
             Guid.NewGuid(),
@@ -84,7 +84,7 @@ public class ManagementTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new RebateService(fakeWalletRepository);
+        var sut = new RebateCommandService(fakeWalletRepository);
 
         var query = new RebateCommand(
             Guid.NewGuid(),
@@ -118,7 +118,7 @@ public class ManagementTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new OtherService(fakeWalletRepository);
+        var sut = new OtherCommandService(fakeWalletRepository);
 
         var query = new OtherCommand(
             Guid.NewGuid(),
@@ -154,7 +154,7 @@ public class ManagementTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new UnsettledBetManualService(fakeWalletRepository);
+        var sut = new UnsettledBetManualCommandService(fakeWalletRepository);
 
         var command = new UnsettledBetManualCommand(
             Guid.NewGuid(),

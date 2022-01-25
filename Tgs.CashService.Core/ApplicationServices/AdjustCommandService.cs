@@ -5,18 +5,18 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
-public class BonusService : IGetService<BonusCommand, ExchangeResult>
+public class AdjustCommandService : IGetService<AdjustCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
 
-    public BonusService(IWalletRepository walletRepository)
+    public AdjustCommandService(IWalletRepository walletRepository)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(BonusCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<ExchangeResult> GetAsync(AdjustCommand query, CancellationToken cancellationToken = default)
     {
-        var wallet = await _walletRepository.GetWalletAsync(command.WalletId);
+        var wallet = await _walletRepository.GetWalletAsync(query.WalletId);
 
         if (wallet == null)
             throw new InvalidOperationException("Can't found wallet.");
@@ -24,12 +24,13 @@ public class BonusService : IGetService<BonusCommand, ExchangeResult>
         var (transactionId, postBalance) = await _walletRepository
             .ExchangeAsync(
                 wallet.BrandId,
-                command.WalletId,
+                query.WalletId,
                 wallet.PlayerCode,
-                TransactionType.Bonus,
-                command.Amount,
-                command.Description,
-                command.ExternalId)
+                TransactionType.Adjust,
+                query.Amount,
+                query.Description,
+                query.ExternalId,
+                query.CreatedByUserId)
             .ConfigureAwait(false);
 
         return new ExchangeResult(transactionId, postBalance);

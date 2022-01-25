@@ -14,7 +14,7 @@ public class PromotionTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new PromotionService(fakeWalletRepository);
+        var sut = new PromotionCommandService(fakeWalletRepository);
 
         var command = new PromotionCommand(
             Guid.NewGuid(),

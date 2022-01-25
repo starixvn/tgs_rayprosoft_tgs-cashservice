@@ -5,16 +5,16 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
-public class GameProviderFundOutService : IGetService<GameProviderFundOutCommand, ExchangeResult>
+public class GameProviderDepositCommandService : IGetService<GameProviderDepositCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
 
-    public GameProviderFundOutService(IWalletRepository walletRepository)
+    public GameProviderDepositCommandService(IWalletRepository walletRepository)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(GameProviderFundOutCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<ExchangeResult> GetAsync(GameProviderDepositCommand command, CancellationToken cancellationToken = default)
     {
         var wallet = await _walletRepository.GetWalletAsync(command.WalletId);
 
@@ -26,7 +26,7 @@ public class GameProviderFundOutService : IGetService<GameProviderFundOutCommand
                 wallet.BrandId,
                 command.WalletId,
                 wallet.PlayerCode,
-                TransactionType.GameProviderFundOut,
+                TransactionType.GameProviderDeposit,
                 -command.Amount,
                 command.Description,
                 command.ExternalId)

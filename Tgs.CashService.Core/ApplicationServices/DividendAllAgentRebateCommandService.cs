@@ -5,16 +5,15 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
-public class PromotionService : IGetService<PromotionCommand, ExchangeResult>
+public class DividendAllAgentRebateCommandService : IGetService<DividendAllAgentRebateCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
 
-    public PromotionService(IWalletRepository walletRepository)
-    {
-        _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
-    }
+    public DividendAllAgentRebateCommandService(IWalletRepository walletRepository) => _walletRepository =
+        walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
 
-    public async ValueTask<ExchangeResult> GetAsync(PromotionCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<ExchangeResult> GetAsync(DividendAllAgentRebateCommand command,
+        CancellationToken cancellationToken = default)
     {
         var wallet = await _walletRepository.GetWalletAsync(command.WalletId);
 
@@ -26,11 +25,10 @@ public class PromotionService : IGetService<PromotionCommand, ExchangeResult>
                 wallet.BrandId,
                 command.WalletId,
                 wallet.PlayerCode,
-                TransactionType.Promotion,
+                TransactionType.DividendAllAgentRebate,
                 command.Amount,
                 command.Description,
-                command.ExternalId,
-                command.CreateByUserId)
+                command.ExternalId)
             .ConfigureAwait(false);
 
         return new ExchangeResult(transactionId, postBalance);

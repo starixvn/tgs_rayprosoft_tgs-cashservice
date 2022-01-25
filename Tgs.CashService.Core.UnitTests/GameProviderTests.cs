@@ -14,7 +14,7 @@ public class GameProviderTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new GameProviderDepositService(fakeWalletRepository);
+        var sut = new GameProviderDepositCommandService(fakeWalletRepository);
 
         var query = new GameProviderDepositCommand(
             Guid.NewGuid(),
@@ -48,7 +48,7 @@ public class GameProviderTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new GameProviderFundInService(fakeWalletRepository);
+        var sut = new GameProviderFundInCommandService(fakeWalletRepository);
 
         var query = new GameProviderFundInCommand(
             Guid.NewGuid(),
@@ -82,7 +82,7 @@ public class GameProviderTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new GameProviderFundOutService(fakeWalletRepository);
+        var sut = new GameProviderFundOutCommandService(fakeWalletRepository);
 
         var command = new GameProviderFundOutCommand(
             Guid.NewGuid(),
@@ -117,7 +117,7 @@ public class GameProviderTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new GameProviderWithdrawalService(fakeWalletRepository);
+        var sut = new GameProviderWithdrawalCommandService(fakeWalletRepository);
 
         var command = new GameProviderWithdrawalCommand(
             Guid.NewGuid(),

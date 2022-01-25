@@ -14,7 +14,7 @@ public class PaymentTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new DepositService(fakeWalletRepository);
+        var sut = new DepositCommandService(fakeWalletRepository);
 
         var command = new DepositCommand(
             Guid.NewGuid(),
@@ -51,7 +51,7 @@ public class PaymentTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new DepositService(fakeWalletRepository);
+        var sut = new DepositCommandService(fakeWalletRepository);
 
         var command = new DepositCommand(
             Guid.NewGuid(),
@@ -79,7 +79,7 @@ public class PaymentTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new WithdrawalService(fakeWalletRepository);
+        var sut = new WithdrawalCommandService(fakeWalletRepository);
 
         var query = new WithdrawalCommand(
             Guid.NewGuid(),

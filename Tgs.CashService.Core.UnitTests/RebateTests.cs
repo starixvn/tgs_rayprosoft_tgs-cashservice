@@ -14,7 +14,7 @@ public class RebateTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new RebateService(fakeWalletRepository);
+        var sut = new RebateCommandService(fakeWalletRepository);
 
         var command = new RebateCommand(
             Guid.NewGuid(),
@@ -48,7 +48,7 @@ public class RebateTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new DividendAllAgentRebateService(fakeWalletRepository);
+        var sut = new DividendAllAgentRebateCommandService(fakeWalletRepository);
 
         var command = new DividendAllAgentRebateCommand(
             Guid.NewGuid(),
