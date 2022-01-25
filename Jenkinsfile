@@ -18,14 +18,20 @@ pipeline {
                         case ['origin/main','main']:
                             env.kube_ns = "prod";
                             env.k8s_config = 'stag-k8s-config';
+                            env.node_selector = '{ "dedicated": "prod" }';
+                            env.dedicated = '{"effect":"NoSchedule","key": "dedicated", "operator": "Equal", "value": "prod"}';
                             break;
                         case ['origin/release','release']:
                             env.kube_ns = "staging";
                             env.k8s_config = 'stag-k8s-config';
+                            env.node_selector = '{ "dedicated": "nonprod" }';
+                            env.dedicated = '{"effect":"NoSchedule","key": "dedicated", "operator": "Equal", "value": "noprod"}';
                             break;
                         default:
                             env.kube_ns = "dev";
-                            env.k8s_config = 'k8s-kube-config' 
+                            env.k8s_config = 'k8s-kube-config';
+                            env.node_selector = '{}';
+                            env.dedicated = '';
                             break;
                     }
                 }
@@ -36,12 +42,12 @@ pipeline {
                             envItems.each { key, value -> env."tgs_${key}" = value;
                         }
                         env.TAG = sh(script: "echo `date +%Y%m%d%H%M`", returnStdout: true).trim() + '-' + env.kube_ns;
-                        message += "\nBranch: ${env.GIT_BRANCH}" 
-                        message += "\nTag: ${env.TAG}"
-                        message += "\nEnv: ${env.kube_ns}"
+                        message += "\nBranch: ${env.GIT_BRANCH}";
+                        message += "\nTag: ${env.TAG}";
+                        message += "\nEnv: ${env.kube_ns}";
                         env.commit_url = "${env.GIT_URL}".replace("git@gitlab.com:","https://gitlab.com/")
-                            .replace(".git","/-/commit/") + "${env.GIT_COMMIT}"
-                        message += "\n Commit: ${env.commit_url}"
+                            .replace(".git","/-/commit/") + "${env.GIT_COMMIT}";
+                        message += "\n Commit: ${env.commit_url}";
                     }
                 }
                 sh "echo tag: $TAG"
@@ -101,19 +107,30 @@ pipeline {
 				withKubeConfig([credentialsId: env.k8s_config]) {
                     withCredentials([string(credentialsId: "tgs-${kube_ns}-connectionstring", variable: "tgs_tgs")]) {
                         sh '''
-                            helm template deployment/k8s/cashservice-api \
+                            cat << EOF | yq e -P | helm template deployment/k8s/cashservice-api \
+                                -n ${kube_ns} \
                                 --set image.tag=${TAG} \
                                 --set namespace=${kube_ns} \
                                 --set autoscaling.enabled=${tgs_autoscaling} \
                                 --set connectionStrings.tgs="$tgs_tgs" \
+                                -f -
+                            {
+                                "nodeSelector": $node_selector,
+                                "tolerations": [$dedicated]
+                            }
                         '''
                         sh '''
-                            helm template deployment/k8s/cashservice-api \
+                            cat << EOF | yq e -P | helm template deployment/k8s/cashservice-api \
+                                -n ${kube_ns} \
                                 --set image.tag=${TAG} \
                                 --set namespace=${kube_ns} \
                                 --set autoscaling.enabled=${tgs_autoscaling} \
                                 --set connectionStrings.tgs="$tgs_tgs" \
-                                | kubectl -n ${kube_ns} apply -f -
+                                -f - | kubectl -n ${kube_ns} apply -f -
+                            {
+                                "nodeSelector": $node_selector,
+                                "tolerations": [$dedicated]
+                            }
                         '''
                     }
 				}
