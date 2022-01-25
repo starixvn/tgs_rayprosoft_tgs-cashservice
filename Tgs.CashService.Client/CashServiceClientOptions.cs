@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Text.Json;
 
-namespace Tgs.CashService.Client
-{
-    public class CashServiceClientOptions
-    {
-        public Uri BaseUrl { get; set; } = default!;
+namespace Tgs.CashService.Client;
 
-        public JsonSerializerOptions? JsonSerializerOptions { get; set; }
-    }
+public class CashServiceClientOptions
+{
+    public Uri BaseUrl { get; set; } = default!;
+
+    public JsonSerializerOptions? JsonSerializerOptions { get; set; }
 }

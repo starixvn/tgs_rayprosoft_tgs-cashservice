@@ -17,18 +17,16 @@ public class GeneralTests
         var walletId = Guid.NewGuid();
         var expectedAmount = 1000M;
 
-        await using var web = new TestCashApplication(builder =>
-        {
-            builder.ConfigureServices(services =>
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services =>
             {
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                fakeWalletRepository.GetBalanceAsync(Arg.Is(walletId))
+                _ = fakeWalletRepository.GetBalanceAsync(Arg.Is(walletId))
                     .Returns(expectedAmount);
 
-                services.AddSingleton(fakeWalletRepository);
-            });
-        });
+                _ = services.AddSingleton(fakeWalletRepository);
+            }));
 
         var httpClient = web.CreateClient();
 

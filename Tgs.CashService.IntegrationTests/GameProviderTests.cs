@@ -19,13 +19,12 @@ public class GameProviderTests
         var transactionId = Guid.NewGuid();
         var postBalance = 12345M;
 
-        await using var web = new TestCashApplication(builder =>
-        {
-            builder.ConfigureServices(services =>
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services =>
             {
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -33,7 +32,7 @@ public class GameProviderTests
                         PlayerCode = "Player1"
                     });
 
-                fakeWalletRepository
+                _ = fakeWalletRepository
                     .ExchangeAsync(
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
@@ -45,9 +44,8 @@ public class GameProviderTests
                         Arg.Any<Guid?>())
                     .Returns((transactionId, postBalance));
 
-                services.AddSingleton(fakeWalletRepository);
-            });
-        });
+                _ = services.AddSingleton(fakeWalletRepository);
+            }));
 
         var httpClient = web.CreateClient();
 
@@ -72,13 +70,12 @@ public class GameProviderTests
         var transactionId = Guid.NewGuid();
         var postBalance = 12345M;
 
-        await using var web = new TestCashApplication(builder =>
-        {
-            builder.ConfigureServices(services =>
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services =>
             {
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -86,7 +83,7 @@ public class GameProviderTests
                         PlayerCode = "Player1"
                     });
 
-                fakeWalletRepository
+                _ = fakeWalletRepository
                     .ExchangeAsync(
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
@@ -98,9 +95,8 @@ public class GameProviderTests
                         Arg.Any<Guid?>())
                     .Returns((transactionId, postBalance));
 
-                services.AddSingleton(fakeWalletRepository);
-            });
-        });
+                _ = services.AddSingleton(fakeWalletRepository);
+            }));
 
         var httpClient = web.CreateClient();
 
@@ -125,13 +121,12 @@ public class GameProviderTests
         var transactionId = Guid.NewGuid();
         var postBalance = 12345M;
 
-        await using var web = new TestCashApplication(builder =>
-        {
-            builder.ConfigureServices(services =>
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services =>
             {
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -139,7 +134,7 @@ public class GameProviderTests
                         PlayerCode = "Player1"
                     });
 
-                fakeWalletRepository
+                _ = fakeWalletRepository
                     .ExchangeAsync(
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
@@ -151,9 +146,8 @@ public class GameProviderTests
                         Arg.Any<Guid?>())
                     .Returns((transactionId, postBalance));
 
-                services.AddSingleton(fakeWalletRepository);
-            });
-        });
+                _ = services.AddSingleton(fakeWalletRepository);
+            }));
 
         var httpClient = web.CreateClient();
 
@@ -178,13 +172,12 @@ public class GameProviderTests
         var transactionId = Guid.NewGuid();
         var postBalance = 12345M;
 
-        await using var web = new TestCashApplication(builder =>
-        {
-            builder.ConfigureServices(services =>
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services =>
             {
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -192,7 +185,7 @@ public class GameProviderTests
                         PlayerCode = "Player1"
                     });
 
-                fakeWalletRepository
+                _ = fakeWalletRepository
                     .ExchangeAsync(
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
@@ -204,9 +197,8 @@ public class GameProviderTests
                         Arg.Any<Guid?>())
                     .Returns((transactionId, postBalance));
 
-                services.AddSingleton(fakeWalletRepository);
-            });
-        });
+                _ = services.AddSingleton(fakeWalletRepository);
+            }));
 
         var httpClient = web.CreateClient();
 

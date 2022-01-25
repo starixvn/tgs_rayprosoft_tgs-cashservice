@@ -1,25 +1,90 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using Npgsql;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Instrumentation.AspNetCore;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
-namespace Tgs.CashService
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("/config/appsettings.json", true);
+
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddControllers();
+builder.Services.AddSwaggerGen(c =>
 {
-    public class Program
-    {
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(builder =>
-                {
-                    builder.AddJsonFile("/config/appsettings.json", true);
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+    var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
+    foreach (var xmlFileName in xmlFileNames)
+        c.IncludeXmlComments(xmlFileName);
 
-        public static void Main(string[] args)
+    c.SwaggerDoc("v1",
+        new OpenApiInfo
         {
-            CreateHostBuilder(args).Build().Run();
-        }
-    }
-}
+            Title = "Tgs.CashService",
+            Version = "v1"
+        });
+});
+
+builder.Services.AddDbRepository((sp, dbBuilder) =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+    _ = dbBuilder
+        .UseLazyLoadingProxies()
+        .UseNpgsql(config.GetConnectionString("Tgs"));
+});
+
+builder.Services.AddCashServiceCore();
+builder.Services.AddHealthChecks();
+
+builder.Services
+    .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
+        sp => new ConfigureNamedOptions<OtlpExporterOptions>(
+            Microsoft.Extensions.Options.Options.DefaultName,
+            exporterOptions =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                var nodeIp = config.GetValue<string>("NODE_IP");
+
+                if (!string.IsNullOrWhiteSpace(nodeIp))
+                    exporterOptions.Endpoint = new Uri($"http://{nodeIp}:4317");
+
+                config.GetSection("Opentelemetry:Tracing").Bind(exporterOptions);
+            }))
+    .AddOpenTelemetryTracing(
+        tracingBuilder => tracingBuilder
+            .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddEnvironmentVariableDetector())
+            .AddSource("Tgs.*")
+            .AddSource("TGS.*")
+            .AddNpgsql()
+            .AddAspNetCoreInstrumentation()
+            .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
+            .AddProfileViewExporter()
+            .AddOtlpExporter())
+    .AddProfileViewer()
+    .Configure<AspNetCoreInstrumentationOptions>(options =>
+    {
+        options.Filter = httpContext =>
+        {
+            return !httpContext.Request.Path.HasValue
+                || !httpContext.Request.Path.StartsWithSegments("/swagger")
+                && !httpContext.Request.Path.StartsWithSegments("/healthz")
+                && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+                && !new[] { "html", "ico", "png", "jpg" }.Any(
+                    ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
+        };
+    });
+
+var app = builder.Build();
+
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tgs.CashService v1"));
+
+app.MapControllers();
+app.MapSwagger();
+app.MapHealthChecks("/healthz");
+app.MapProfileViewer();
+
+app.Run();
