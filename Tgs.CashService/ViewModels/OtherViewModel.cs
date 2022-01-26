@@ -2,14 +2,14 @@
 
 namespace Tgs.CashService.ViewModels
 {
-    public class OtherViewModel
+    public record OtherViewModel
     {
-        public decimal Amount { get; set; }
+        public decimal Amount { get; init; }
 
-        public string Description { get; set; } = default!;
+        public string Description { get; init; } = default!;
 
-        public string ExternalId { get; set; } = default!;
+        public string ExternalId { get; init; } = default!;
 
-        public Guid CreatedByUserId { get; set; }
+        public Guid CreatedByUserId { get; init; }
     }
 }

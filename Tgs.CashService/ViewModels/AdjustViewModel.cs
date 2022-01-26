@@ -2,7 +2,7 @@
 
 namespace Tgs.CashService.ViewModels
 {
-    public class AdjustViewModel
+    public record AdjustViewModel
     {
         public decimal Amount { get; set; }
 

@@ -5,7 +5,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record WithdrawalService : IGetService<WithdrawalCommand, ExchangeResult>
+    public class WithdrawalService : IGetService<WithdrawalCommand, ExchangeResult>
     {
         private readonly IWalletRepository _walletRepository;
 

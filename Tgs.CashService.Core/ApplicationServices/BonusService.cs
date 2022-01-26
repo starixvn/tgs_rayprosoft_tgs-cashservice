@@ -5,7 +5,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices
 {
-    public record BonusService : IGetService<BonusCommand, ExchangeResult>
+    public class BonusService : IGetService<BonusCommand, ExchangeResult>
     {
         private readonly IWalletRepository _walletRepository;
 
