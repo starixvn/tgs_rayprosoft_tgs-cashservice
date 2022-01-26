@@ -30,6 +30,8 @@ internal class WalletReception : IDisposable
 
         _cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
+        _ = _cancellationSource.Token.Register(() => _exchangeTasks.CompleteAdding());
+
         _backgroundTask = Task.Run(async () =>
         {
             foreach (var exchangeTask in _exchangeTasks.GetConsumingEnumerable(_cancellationSource.Token))
@@ -46,9 +48,16 @@ internal class WalletReception : IDisposable
         if (_cancellationSource?.IsCancellationRequested == false)
             _cancellationSource?.Cancel();
 
-        _exchangeTasks.CompleteAdding();
-
-        _backgroundTask?.Wait();
+        try
+        {
+            if (_exchangeTasks.TryGetNonEnumeratedCount(out var count)
+                && count > 0
+                && _backgroundTask?.IsCompleted == false)
+                _backgroundTask?.Wait();
+        }
+        catch (AggregateException ex) when (ex.InnerException is TaskCanceledException)
+        {
+        }
     }
 
     public void Dispose()

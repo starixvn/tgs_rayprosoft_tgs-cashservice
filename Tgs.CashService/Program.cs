@@ -7,6 +7,8 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
+ThreadPool.SetMinThreads(512, 100);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("/config/appsettings.json", true);
