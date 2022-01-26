@@ -1,5 +1,6 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Core.ApplicationServices;
@@ -13,8 +14,10 @@ public class ManagementTests
     public async Task Can_Create_Adjust_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
 
-        var sut = new AdjustCommandService(fakeWalletRepository);
+        var sut = new AdjustCommandService(fakeWalletRepository, exchanger);
 
         var query = new AdjustCommand(
             Guid.NewGuid(),
@@ -22,6 +25,26 @@ public class ManagementTests
             Guid.NewGuid().ToString("N"),
             "測試調整",
             Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
             .Returns(new Wallet
@@ -50,13 +73,36 @@ public class ManagementTests
     public async Task Can_Create_Bonus_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
-        var sut = new BonusCommandService(fakeWalletRepository);
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
+
+        var sut = new BonusCommandService(fakeWalletRepository, exchanger);
 
         var query = new BonusCommand(
             Guid.NewGuid(),
             100,
             Guid.NewGuid().ToString("N"),
             "測試紅利");
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
             .Returns(new Wallet
@@ -83,14 +129,36 @@ public class ManagementTests
     public async Task Can_Create_Rebate_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
 
-        var sut = new RebateCommandService(fakeWalletRepository);
+        var sut = new RebateCommandService(fakeWalletRepository, exchanger);
 
         var query = new RebateCommand(
             Guid.NewGuid(),
             100M,
             Guid.NewGuid().ToString("N"),
             "測試反水");
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
             .Returns(new Wallet
@@ -117,8 +185,10 @@ public class ManagementTests
     public async Task Can_Create_Other_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
 
-        var sut = new OtherCommandService(fakeWalletRepository);
+        var sut = new OtherCommandService(fakeWalletRepository, exchanger);
 
         var query = new OtherCommand(
             Guid.NewGuid(),
@@ -126,6 +196,26 @@ public class ManagementTests
             Guid.NewGuid().ToString("N"),
             "測試其他",
             Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
             .Returns(new Wallet
@@ -153,8 +243,10 @@ public class ManagementTests
     public async Task Can_Create_UnsettledBetManualCommand_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
 
-        var sut = new UnsettledBetManualCommandService(fakeWalletRepository);
+        var sut = new UnsettledBetManualCommandService(fakeWalletRepository, exchanger);
 
         var command = new UnsettledBetManualCommand(
             Guid.NewGuid(),
@@ -162,6 +254,26 @@ public class ManagementTests
             "測試Open Round Page",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
             .Returns(new Wallet
@@ -190,8 +302,10 @@ public class ManagementTests
     public async Task Can_Create_AdjustResettledBetManualCommand_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
 
-        var sut = new AdjustResettledBetManualService(fakeWalletRepository);
+        var sut = new AdjustResettledBetManualCommandService(fakeWalletRepository, exchanger);
 
         var command = new AdjustResettledBetManualCommand(
             Guid.NewGuid(),
@@ -199,6 +313,26 @@ public class ManagementTests
             "測試Closed Round Page",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
             .Returns(new Wallet

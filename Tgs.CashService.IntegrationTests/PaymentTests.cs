@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.CashService.Client;
@@ -41,7 +39,7 @@ public class PaymentTests
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns((transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance));
 
                 _ = services.AddSingleton(fakeWalletRepository);
             }));
@@ -91,7 +89,7 @@ public class PaymentTests
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns((transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance));
 
                 _ = services.AddSingleton(fakeWalletRepository);
             }));
@@ -141,7 +139,7 @@ public class PaymentTests
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns((transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance));
 
                 _ = services.AddSingleton(fakeWalletRepository);
             }));

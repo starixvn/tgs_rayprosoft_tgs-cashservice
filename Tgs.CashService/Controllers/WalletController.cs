@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Tgs.CashService.Core;
 using Tgs.CashService.Core.ApplicationServices;
 using Tgs.CashService.ViewModels;
@@ -21,7 +19,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///     Post
     ///         {
     ///             "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -57,8 +55,8 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
-    ///     Get 
+    ///
+    ///     Get
     ///         /36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     /// </remarks>
     [HttpGet("{walletId}", Name = "GetBalance")]
@@ -76,7 +74,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///         {
     ///             "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -111,7 +109,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -173,7 +171,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -208,7 +206,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -243,7 +241,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -278,7 +276,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -313,7 +311,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -351,7 +349,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -388,7 +386,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -425,7 +423,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -461,7 +459,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -496,7 +494,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -531,7 +529,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -566,7 +564,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
@@ -601,7 +599,7 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    /// 
+    ///
     ///         Post
     ///             {
     ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",

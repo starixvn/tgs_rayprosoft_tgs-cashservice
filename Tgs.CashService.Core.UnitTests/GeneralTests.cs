@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Core.ApplicationServices;
 

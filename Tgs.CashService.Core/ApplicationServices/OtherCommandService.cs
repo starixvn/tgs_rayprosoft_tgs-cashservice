@@ -1,37 +1,37 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Tgs.ServiceUtility;
+﻿using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
-public class OtherCommandService : IGetService<OtherCommand, ExchangeResult>
+internal class OtherCommandService : IGetService<OtherCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
+    private readonly WalletExchanger _walletExchanger;
 
-    public OtherCommandService(IWalletRepository walletRepository)
+    public OtherCommandService(IWalletRepository walletRepository, WalletExchanger walletExchanger)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
+        _walletExchanger = walletExchanger ?? throw new ArgumentNullException(nameof(walletExchanger));
     }
 
     public async ValueTask<ExchangeResult> GetAsync(OtherCommand command, CancellationToken cancellationToken = default)
     {
-        var wallet = await _walletRepository.GetWalletAsync(command.WalletId);
+        var wallet = await _walletRepository
+            .GetWalletAsync(command.WalletId)
+            .ConfigureAwait(false);
 
         if (wallet == null)
             throw new InvalidOperationException("Can't found wallet.");
 
-        var (transactionId, postBalance) = await _walletRepository.ExchangeAsync(
-            wallet.BrandId,
+        var request = new ExchangeRequest(
             command.WalletId,
-            wallet.PlayerCode,
             TransactionType.Other,
+            wallet.BrandId,
+            wallet.PlayerCode,
             command.Amount,
             command.Description,
             command.ExternalId,
-            command.CreatedByUserId)
-            .ConfigureAwait(false);
+            command.CreatedByUserId);
 
-        return new ExchangeResult(transactionId, postBalance);
+        return await _walletExchanger.RequestAsync(request).ConfigureAwait(false);
     }
 }

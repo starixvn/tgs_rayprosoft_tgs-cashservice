@@ -1,36 +1,36 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Tgs.ServiceUtility;
+﻿using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
-public class GameProviderWithdrawalCommandService : IGetService<GameProviderWithdrawalCommand, ExchangeResult>
+internal class GameProviderWithdrawalCommandService : IGetService<GameProviderWithdrawalCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
+    private readonly WalletExchanger _walletExchanger;
 
-    public GameProviderWithdrawalCommandService(IWalletRepository walletRepository)
+    public GameProviderWithdrawalCommandService(IWalletRepository walletRepository, WalletExchanger walletExchanger)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
+        _walletExchanger = walletExchanger ?? throw new ArgumentNullException(nameof(walletExchanger));
     }
 
     public async ValueTask<ExchangeResult> GetAsync(GameProviderWithdrawalCommand command, CancellationToken cancellationToken = default)
     {
-        var wallet = await _walletRepository.GetWalletAsync(command.WalletId);
+        var wallet = await _walletRepository
+            .GetWalletAsync(command.WalletId)
+            .ConfigureAwait(false);
 
         if (wallet == null)
             throw new InvalidOperationException("Can't found wallet.");
 
-        var (transactionId, postBalance) = await _walletRepository.ExchangeAsync(
-            wallet.BrandId,
+        var request = new ExchangeRequest(
             command.WalletId,
-            wallet.PlayerCode,
             TransactionType.GameProviderWithdrawal,
+            wallet.BrandId,
+            wallet.PlayerCode,
             command.Amount,
             command.Description,
-            command.ExternalId)
-            .ConfigureAwait(false);
+            command.ExternalId);
 
-        return new ExchangeResult(transactionId, postBalance);
+        return await _walletExchanger.RequestAsync(request).ConfigureAwait(false);
     }
 }

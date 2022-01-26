@@ -1,5 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Core.ApplicationServices;
@@ -13,8 +14,10 @@ public class PromotionTests
     public async Task Can_Create_Promotion_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
 
-        var sut = new PromotionCommandService(fakeWalletRepository);
+        var sut = new PromotionCommandService(fakeWalletRepository, exchanger);
 
         var command = new PromotionCommand(
             Guid.NewGuid(),
@@ -22,6 +25,26 @@ public class PromotionTests
             Guid.NewGuid().ToString("N"),
             "測試活動紅利",
             null);
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
             .Returns(new Wallet
@@ -48,14 +71,36 @@ public class PromotionTests
     public async Task Can_Create_Promotion_VipLevel_Upgrad_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
 
-        var sut = new PromotionVipLevelupgradeCommandService(fakeWalletRepository);
+        var sut = new PromotionVipLevelupgradeCommandService(fakeWalletRepository, exchanger);
 
         var command = new PromotionVipLevelUpgradeCommand(
             Guid.NewGuid(),
             100M,
             "測試VIP等級升級",
             Guid.NewGuid().ToString("N"));
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
             .Returns(new Wallet
@@ -82,14 +127,36 @@ public class PromotionTests
     public async Task Can_Create_Promotion_VipLevel_Season_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
 
-        var sut = new PromotionVipLevelSeasonCommandService(fakeWalletRepository);
+        var sut = new PromotionVipLevelSeasonCommandService(fakeWalletRepository, exchanger);
 
         var command = new PromotionVipLevelSeasonCommand(
             Guid.NewGuid(),
             100M,
             "測試VIP季福利",
             Guid.NewGuid().ToString("N"));
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
             .Returns(new Wallet
