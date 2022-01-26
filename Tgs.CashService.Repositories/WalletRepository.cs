@@ -17,7 +17,7 @@ internal class WalletRepository : IWalletRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async ValueTask<(Guid TransactionId, decimal PostBalance)> ExchangeAsync(
+    public async ValueTask<ExchangeResult> ExchangeAsync(
         Guid brandId,
         Guid walletId,
         string playerCode,
@@ -37,7 +37,7 @@ internal class WalletRepository : IWalletRepository
 
         var postBalance = await connection.QueryFirstOrDefaultAsync<decimal>(
             sql,
-             new Dictionary<string, object>
+            new Dictionary<string, object>
             {
                     {":player_code", playerCode},
                     {":wallet_id", walletId},
@@ -45,7 +45,7 @@ internal class WalletRepository : IWalletRepository
                     {":updated_on", updatedOn}
             },
             commandType: CommandType.StoredProcedure,
-            transaction: transaction);
+            transaction: transaction).ConfigureAwait(false);
 
         _ = await _context.Transactions
             .AddAsync(new()
@@ -68,7 +68,7 @@ internal class WalletRepository : IWalletRepository
 
         scope.Complete();
 
-        return (transactionId, postBalance);
+        return new ExchangeResult(transactionId, postBalance);
     }
 
     public async ValueTask<decimal?> GetBalanceAsync(Guid walletId)

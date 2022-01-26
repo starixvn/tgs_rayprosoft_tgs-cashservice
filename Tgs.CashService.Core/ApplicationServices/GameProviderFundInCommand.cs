@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tgs.CashService.Core.ApplicationServices;
+﻿namespace Tgs.CashService.Core.ApplicationServices;
 
 public record GameProviderFundInCommand(
     Guid WalletId,

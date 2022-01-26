@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tgs.CashService.ViewModels;
+﻿namespace Tgs.CashService.ViewModels;
 
 public record AdjustResettledBetManualViewModel(
    decimal Amount,

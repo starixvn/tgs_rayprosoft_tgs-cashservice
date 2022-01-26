@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Core;
@@ -33,7 +31,7 @@ public class WalletRepositoryUnitTest
             description,
             externalId,
             createdByUserId)
-            .Returns(ValueTask.FromResult<(Guid TransactionId, decimal PostBalance)>(new(transactionId, postBalance)));
+            .Returns(ValueTask.FromResult(new ExchangeResult(transactionId, postBalance)));
         (Guid TransactionId, decimal PostBalance) = await fakeRoundRepository.ExchangeAsync(
            brandId,
            walletId,

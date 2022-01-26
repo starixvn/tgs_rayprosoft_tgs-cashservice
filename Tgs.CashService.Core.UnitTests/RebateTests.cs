@@ -1,5 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Core.ApplicationServices;
@@ -13,14 +14,36 @@ public class RebateTests
     public async Task Can_Create_Rebate_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
 
-        var sut = new RebateService(fakeWalletRepository);
+        var sut = new RebateCommandService(fakeWalletRepository, exchanger);
 
         var command = new RebateCommand(
             Guid.NewGuid(),
             100M,
             "新增玩家返水",
             Guid.NewGuid().ToString("N"));
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
             .Returns(new Wallet
@@ -47,14 +70,36 @@ public class RebateTests
     public async Task Can_Create_Dividend_All_Agent_Rebate_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeServiceProvider = Substitute.For<IServiceProvider>();
+        var exchanger = new WalletExchanger(fakeServiceProvider);
 
-        var sut = new DividendAllAgentRebateService(fakeWalletRepository);
+        var sut = new DividendAllAgentRebateCommandService(fakeWalletRepository, exchanger);
 
         var command = new DividendAllAgentRebateCommand(
             Guid.NewGuid(),
             100M,
             "新增玩家全民代理返水",
             Guid.NewGuid().ToString("N"));
+
+        var fakeScope = Substitute.For<IServiceScope>();
+        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
+        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _ = fakeScopeFactory.CreateScope()
+            .Returns(fakeScope);
+
+        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
+            .Returns(callInfo =>
+            {
+                var type = callInfo.Arg<Type>();
+
+                return type switch
+                {
+                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
+                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
+                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
+                    _ => null
+                };
+            });
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
             .Returns(new Wallet

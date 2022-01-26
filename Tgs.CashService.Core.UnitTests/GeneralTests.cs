@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Core.ApplicationServices;
 
@@ -14,7 +12,7 @@ public class GeneralTests
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-        var sut = new BalanceService(fakeWalletRepository);
+        var sut = new GetBalanceQueryService(fakeWalletRepository);
 
         var query = new GetBalanceQuery(Guid.NewGuid());
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Tgs.CashService.Client;
+﻿namespace Tgs.CashService.Client;
 
 public interface ICashServiceClient
 {

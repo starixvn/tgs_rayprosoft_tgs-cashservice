@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Tgs.CashService.Core;
+﻿namespace Tgs.CashService.Core;
 
 public interface IWalletRepository
 {
-    ValueTask<(Guid TransactionId, decimal PostBalance)> ExchangeAsync(
+    ValueTask<ExchangeResult> ExchangeAsync(
       Guid brandId,
       Guid walletId,
       string playerCode,

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Tgs.ServiceUtility;
+﻿using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
-public class BalanceService : IGetService<GetBalanceQuery, decimal>
+public class GetBalanceQueryService : IGetService<GetBalanceQuery, decimal>
 {
     private readonly IWalletRepository _walletRepository;
 
-    public BalanceService(IWalletRepository walletRepository)
+    public GetBalanceQueryService(IWalletRepository walletRepository)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
     }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tgs.CashService.Client;
+﻿namespace Tgs.CashService.Client;
 
 public record TransactionResponse
 {
