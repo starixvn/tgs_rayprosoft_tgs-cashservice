@@ -7,7 +7,7 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-ThreadPool.SetMinThreads(512, 100);
+ThreadPool.SetMinThreads(Environment.ProcessorCount * 20, Environment.ProcessorCount);
 
 var builder = WebApplication.CreateBuilder(args);
 
