@@ -38,7 +38,12 @@ builder.Services.AddDbRepository((sp, dbBuilder) =>
         .UseNpgsql(config.GetConnectionString("Tgs"));
 });
 
-builder.Services.AddCashServiceCore();
+builder.Services.AddCashServiceCore((options, sp) =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+    options.RedisConnectionString = config.GetConnectionString("Redis");
+});
 builder.Services.AddHealthChecks();
 
 builder.Services

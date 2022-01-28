@@ -1,16 +1,17 @@
-﻿using Tgs.ServiceUtility;
+﻿using Tgs.Cash.Protos;
+using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
 internal class PromotionVipLevelupgradeCommandService : IGetService<PromotionVipLevelUpgradeCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
-    private readonly WalletExchanger _walletExchanger;
+    private readonly IWalletExchangeService _walletExchangeService;
 
-    public PromotionVipLevelupgradeCommandService(IWalletRepository walletRepository, WalletExchanger walletExchanger)
+    public PromotionVipLevelupgradeCommandService(IWalletRepository walletRepository, IWalletExchangeService walletExchangeService)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
-        _walletExchanger = walletExchanger ?? throw new ArgumentNullException(nameof(walletExchanger));
+        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
     public async ValueTask<ExchangeResult> GetAsync(PromotionVipLevelUpgradeCommand command, CancellationToken cancellationToken = default)
@@ -22,15 +23,17 @@ internal class PromotionVipLevelupgradeCommandService : IGetService<PromotionVip
         if (wallet == null)
             throw new InvalidOperationException("Can't found wallet.");
 
-        var request = new ExchangeRequest(
-            command.WalletId,
-            TransactionType.PromotionVipLevelUpgrade,
-            wallet.BrandId,
-            wallet.PlayerCode,
-            command.Amount,
-            command.Description,
-            command.ExternalId);
+        var request = new WalletExchangeRequest
+        {
+            WalletId = command.WalletId,
+            TransactionType = TransactionType.PromotionVipLevelUpgrade.ToString(),
+            BrandId = wallet.BrandId,
+            PlayerCode = wallet.PlayerCode,
+            Amount = command.Amount,
+            Description = command.Description ?? string.Empty,
+            ExternalId = command.ExternalId ?? string.Empty
+        };
 
-        return await _walletExchanger.RequestAsync(request).ConfigureAwait(false);
+        return await _walletExchangeService.SendRequestAsync(request).ConfigureAwait(false);
     }
 }

@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
+using Tgs.Cash.Protos;
 using Tgs.CashService.Core.ApplicationServices;
 
 namespace Tgs.CashService.Core.UnitTests;
@@ -14,10 +12,9 @@ public class GameProviderTests
     public async Task Can_Create_GameProviderDeposit_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
-        var fakeServiceProvider = Substitute.For<IServiceProvider>();
-        var exchanger = new WalletExchanger(fakeServiceProvider);
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new GameProviderDepositCommandService(fakeWalletRepository, exchanger);
+        var sut = new GameProviderDepositCommandService(fakeWalletRepository, fakeWalletExchangeService);
 
         var command = new GameProviderDepositCommand(
             Guid.NewGuid(),
@@ -25,25 +22,38 @@ public class GameProviderTests
             Guid.NewGuid().ToString("N"),
             "測試遊戲上分");
 
-        var fakeScope = Substitute.For<IServiceScope>();
-        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
-        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
-        _ = fakeScopeFactory.CreateScope()
-            .Returns(fakeScope);
-
-        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
-            .Returns(callInfo =>
+        _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
+            .Returns(new Wallet
             {
-                var type = callInfo.Arg<Type>();
-
-                return type switch
-                {
-                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
-                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
-                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
-                    _ => null
-                };
+                Id = command.WalletId,
+                BrandId = Guid.NewGuid(),
+                PlayerCode = "Player1"
             });
+
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.GameProviderDeposit.ToString()
+                    && request.Amount == -command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
+    }
+
+    [Test]
+    public async Task Can_Create_GameProviderFundIn_Exchange()
+    {
+        var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new GameProviderFundInCommandService(fakeWalletRepository, fakeWalletExchangeService);
+
+        var command = new GameProviderFundInCommand(
+            Guid.NewGuid(),
+            100M,
+            Guid.NewGuid().ToString("N"),
+            "測試轉入主錢包");
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
             .Returns(new Wallet
@@ -55,81 +65,22 @@ public class GameProviderTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletRepository.Received(1)
-            .ExchangeAsync(
-                Arg.Any<Guid>(),
-                Arg.Is(command.WalletId),
-                Arg.Any<string>(),
-                Arg.Is(TransactionType.GameProviderDeposit),
-                Arg.Is(-command.Amount),
-                Arg.Is(command.Description),
-                Arg.Is(command.ExternalId));
-    }
-
-    [Test]
-    public async Task Can_Create_GameProviderFundIn_Exchange()
-    {
-        var fakeWalletRepository = Substitute.For<IWalletRepository>();
-        var fakeServiceProvider = Substitute.For<IServiceProvider>();
-        var exchanger = new WalletExchanger(fakeServiceProvider);
-
-        var sut = new GameProviderFundInCommandService(fakeWalletRepository, exchanger);
-
-        var query = new GameProviderFundInCommand(
-            Guid.NewGuid(),
-            100M,
-            Guid.NewGuid().ToString("N"),
-            "測試轉入主錢包");
-
-        var fakeScope = Substitute.For<IServiceScope>();
-        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
-        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
-        _ = fakeScopeFactory.CreateScope()
-            .Returns(fakeScope);
-
-        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
-            .Returns(callInfo =>
-            {
-                var type = callInfo.Arg<Type>();
-
-                return type switch
-                {
-                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
-                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
-                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
-                    _ => null
-                };
-            });
-
-        _ = fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
-            .Returns(new Wallet
-            {
-                Id = query.WalletId,
-                BrandId = Guid.NewGuid(),
-                PlayerCode = "Player1"
-            });
-
-        _ = await sut.GetAsync(query).ConfigureAwait(false);
-
-        _ = fakeWalletRepository.Received(1)
-            .ExchangeAsync(
-                Arg.Any<Guid>(),
-                Arg.Is(query.WalletId),
-                Arg.Any<string>(),
-                Arg.Is(TransactionType.GameProviderFundIn),
-                Arg.Is(query.Amount),
-                Arg.Is(query.Description),
-                Arg.Is(query.ExternalId));
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.GameProviderFundIn.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
     }
 
     [Test]
     public async Task Can_Create_GameProviderFundOut_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
-        var fakeServiceProvider = Substitute.For<IServiceProvider>();
-        var exchanger = new WalletExchanger(fakeServiceProvider);
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new GameProviderFundOutCommandService(fakeWalletRepository, exchanger);
+        var sut = new GameProviderFundOutCommandService(fakeWalletRepository, fakeWalletExchangeService);
 
         var command = new GameProviderFundOutCommand(
             Guid.NewGuid(),
@@ -137,26 +88,6 @@ public class GameProviderTests
             Guid.NewGuid().ToString("N"),
             "測試轉出主錢包");
 
-        var fakeScope = Substitute.For<IServiceScope>();
-        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
-        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
-        _ = fakeScopeFactory.CreateScope()
-            .Returns(fakeScope);
-
-        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
-            .Returns(callInfo =>
-            {
-                var type = callInfo.Arg<Type>();
-
-                return type switch
-                {
-                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
-                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
-                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
-                    _ => null
-                };
-            });
-
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
             .Returns(new Wallet
             {
@@ -167,26 +98,22 @@ public class GameProviderTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletRepository
-            .Received(1)
-            .ExchangeAsync(
-                Arg.Any<Guid>(),
-                Arg.Is(command.WalletId),
-                Arg.Any<string>(),
-                Arg.Is(TransactionType.GameProviderFundOut),
-                Arg.Is(-command.Amount),
-                Arg.Is(command.Description),
-                Arg.Is(command.ExternalId));
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.GameProviderFundOut.ToString()
+                    && request.Amount == -command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
     }
 
     [Test]
     public async Task Can_Create_GameProviderWithdrawal_Exchange()
     {
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
-        var fakeServiceProvider = Substitute.For<IServiceProvider>();
-        var exchanger = new WalletExchanger(fakeServiceProvider);
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new GameProviderWithdrawalCommandService(fakeWalletRepository, exchanger);
+        var sut = new GameProviderWithdrawalCommandService(fakeWalletRepository, fakeWalletExchangeService);
 
         var command = new GameProviderWithdrawalCommand(
             Guid.NewGuid(),
@@ -194,25 +121,7 @@ public class GameProviderTests
             Guid.NewGuid().ToString("N"),
             "測試遊戲下分");
 
-        var fakeScope = Substitute.For<IServiceScope>();
-        _ = fakeScope.ServiceProvider.Returns(fakeServiceProvider);
-        var fakeScopeFactory = Substitute.For<IServiceScopeFactory>();
-        _ = fakeScopeFactory.CreateScope()
-            .Returns(fakeScope);
-
-        _ = fakeServiceProvider.GetService(Arg.Any<Type>())
-            .Returns(callInfo =>
-            {
-                var type = callInfo.Arg<Type>();
-
-                return type switch
-                {
-                    Type logger when logger == typeof(ILogger<WalletReception>) => NullLogger<WalletReception>.Instance,
-                    Type repos when repos == typeof(IWalletRepository) => fakeWalletRepository,
-                    Type factory when factory == typeof(IServiceScopeFactory) => fakeScopeFactory,
-                    _ => null
-                };
-            });
+        ;
 
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
             .Returns(new Wallet
@@ -224,15 +133,12 @@ public class GameProviderTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletRepository
-            .Received(1)
-            .ExchangeAsync(
-                Arg.Any<Guid>(),
-                Arg.Is(command.WalletId),
-                Arg.Any<string>(),
-                Arg.Is(TransactionType.GameProviderWithdrawal),
-                Arg.Is(command.Amount),
-                Arg.Is(command.Description),
-                Arg.Is(command.ExternalId));
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.GameProviderWithdrawal.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
     }
 }

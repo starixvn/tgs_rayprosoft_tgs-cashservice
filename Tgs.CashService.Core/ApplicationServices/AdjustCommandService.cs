@@ -1,16 +1,19 @@
-﻿using Tgs.ServiceUtility;
+﻿using Tgs.Cash.Protos;
+using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
 internal class AdjustCommandService : IGetService<AdjustCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
-    private readonly WalletExchanger _walletExchanger;
+    private readonly IWalletExchangeService _walletExchangeService;
 
-    public AdjustCommandService(IWalletRepository walletRepository, WalletExchanger walletExchanger)
+    public AdjustCommandService(
+        IWalletRepository walletRepository,
+        IWalletExchangeService walletExchangeService)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
-        _walletExchanger = walletExchanger ?? throw new ArgumentNullException(nameof(walletExchanger));
+        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
     public async ValueTask<ExchangeResult> GetAsync(AdjustCommand command, CancellationToken cancellationToken = default)
@@ -22,16 +25,20 @@ internal class AdjustCommandService : IGetService<AdjustCommand, ExchangeResult>
         if (wallet == null)
             throw new InvalidOperationException("Can't found wallet.");
 
-        var request = new ExchangeRequest(
-            command.WalletId,
-            TransactionType.Adjust,
-            wallet.BrandId,
-            wallet.PlayerCode,
-            command.Amount,
-            command.Description,
-            command.ExternalId,
-            command.CreatedByUserId);
+        var request = new WalletExchangeRequest
+        {
+            WalletId = command.WalletId,
+            TransactionType = TransactionType.Adjust.ToString(),
+            BrandId = wallet.BrandId,
+            PlayerCode = wallet.PlayerCode,
+            Amount = command.Amount,
+            Description = command.Description ?? String.Empty,
+            ExternalId = command.ExternalId ?? String.Empty,
+            CreatedUser = command.CreatedByUserId
+        };
 
-        return await _walletExchanger.RequestAsync(request).ConfigureAwait(false);
+        return await _walletExchangeService
+            .SendRequestAsync(request)
+            .ConfigureAwait(false);
     }
 }

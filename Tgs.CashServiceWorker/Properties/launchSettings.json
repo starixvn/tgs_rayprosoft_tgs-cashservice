@@ -1,0 +1,12 @@
+﻿{
+  "profiles": {
+    "Tgs.CashServiceWorker": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7159;http://localhost:5159",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
