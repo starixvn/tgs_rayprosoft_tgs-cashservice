@@ -85,6 +85,18 @@ builder.Services
         };
     });
 
+builder.Services
+    .AddMessageQueue()
+    .AddNatsMessageQueue(config => config
+        .ConfigQueueOptions((options, sp) =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+
+            options.Url = configuration.GetConnectionString("Nats");
+        }))
+    .ClearAllExchanges()
+    .AddNatsGlobPatternExchange("*");
+
 var app = builder.Build();
 
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tgs.CashService v1"));
