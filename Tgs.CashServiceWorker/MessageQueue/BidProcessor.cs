@@ -22,17 +22,18 @@ internal class BidProcessor : IMessageProcessor
         var request = BidRequest.Parser.ParseFrom(data);
 
         var redisKey = new RedisKey($"Tgs:Cash:{request.WalletId.ToGuid():D}");
+        var currentSubject = $"tgs.cash.worker.{Environment.MachineName}";
 
         var isGot = await _redisDatabase.StringSetAsync(
             redisKey,
-            "test",
+            currentSubject,
             expiry: TimeSpan.FromMinutes(1),
             when: When.NotExists).ConfigureAwait(false);
 
         var response = new BidResponse();
 
         if (isGot)
-            response.Subject = $"tgs.cash.worker.{Environment.MachineName}";
+            response.Subject = currentSubject;
         else
         {
             var subject = await _redisDatabase
