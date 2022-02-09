@@ -10,6 +10,13 @@ namespace Tgs.CashService.Controllers;
 [ApiController]
 public class WalletController : ControllerBase
 {
+    private readonly ILogger<WalletController> _logger;
+
+    public WalletController(ILogger<WalletController> logger)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
     /// <summary>
     ///     Adjusts the exchange asynchronous.
     /// </summary>
@@ -89,12 +96,16 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] BonusViewModel request)
     {
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(HttpContext.RequestAborted);
+
+        cts.CancelAfter(10000);
+
         var result = await service
             .GetAsync(new BonusCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId))
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);

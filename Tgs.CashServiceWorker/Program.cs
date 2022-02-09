@@ -34,7 +34,8 @@ builder.Services
             options.Url = configuration.GetConnectionString("Nats");
         })
         .AddProcessor<BidProcessor>("tgs.cash.bid")
-        .AddProcessor<RequestProcessor>($"tgs.cash.worker.{Environment.MachineName}"))
+        .AddSession<RequestSession>($"tgs.cash.worker.{Environment.MachineName}")
+        .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");
 builder.Services.AddHealthChecks();

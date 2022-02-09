@@ -8,18 +8,20 @@ namespace Tgs.CashServiceWorker.MessageQueue;
 internal class BidProcessor : IMessageProcessor
 {
     private readonly IDatabase _redisDatabase;
+    private readonly ILogger<BidProcessor> _logger;
 
-    public BidProcessor(RedisConnectionManager redisConnectionManager)
+    public BidProcessor(RedisConnectionManager redisConnectionManager, ILogger<BidProcessor> logger)
     {
         if (redisConnectionManager is null)
             throw new ArgumentNullException(nameof(redisConnectionManager));
 
         _redisDatabase = redisConnectionManager.Database;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async ValueTask<byte[]> HandleAsync(byte[] data, CancellationToken cancellationToken = default)
+    public async ValueTask<ReadOnlyMemory<byte>> HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
     {
-        var request = BidRequest.Parser.ParseFrom(data);
+        var request = BidRequest.Parser.ParseFrom(data.Span);
 
         var redisKey = new RedisKey($"Tgs:Cash:{request.WalletId.ToGuid():D}");
         var currentSubject = $"tgs.cash.worker.{Environment.MachineName}";
@@ -42,6 +44,8 @@ internal class BidProcessor : IMessageProcessor
 
             response.Subject = subject;
         }
+
+        _logger.LogInformation($"Subject: {response.Subject}");
 
         return response.ToByteArray();
     }

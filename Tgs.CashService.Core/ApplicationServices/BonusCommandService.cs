@@ -1,4 +1,5 @@
-﻿using Tgs.Cash.Protos;
+﻿using Microsoft.Extensions.Logging;
+using Tgs.Cash.Protos;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
@@ -7,11 +8,16 @@ internal class BonusCommandService : IGetService<BonusCommand, ExchangeResult>
 {
     private readonly IWalletRepository _walletRepository;
     private readonly IWalletExchangeService _walletExchangeService;
+    private readonly ILogger<BonusCommandService> _logger;
 
-    public BonusCommandService(IWalletRepository walletRepository, IWalletExchangeService walletExchangeService)
+    public BonusCommandService(
+        IWalletRepository walletRepository,
+        IWalletExchangeService walletExchangeService,
+        ILogger<BonusCommandService> logger)
     {
         _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async ValueTask<ExchangeResult> GetAsync(BonusCommand command, CancellationToken cancellationToken = default)
@@ -34,6 +40,8 @@ internal class BonusCommandService : IGetService<BonusCommand, ExchangeResult>
             ExternalId = command.ExternalId ?? string.Empty
         };
 
-        return await _walletExchangeService.SendRequestAsync(request).ConfigureAwait(false);
+        return await _walletExchangeService
+            .SendRequestAsync(request, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

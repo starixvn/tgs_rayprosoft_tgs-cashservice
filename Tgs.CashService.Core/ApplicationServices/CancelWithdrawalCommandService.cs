@@ -35,6 +35,8 @@ internal class CancelWithdrawalCommandService : IGetService<CancelWithdrawalComm
             CreatedUser = command.CreatedByUserId
         };
 
-        return await _walletExchangeService.SendRequestAsync(request).ConfigureAwait(false);
+        return await _walletExchangeService
+            .SendRequestAsync(request, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

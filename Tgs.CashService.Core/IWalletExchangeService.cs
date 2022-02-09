@@ -4,5 +4,5 @@ namespace Tgs.CashService.Core;
 
 internal interface IWalletExchangeService
 {
-    ValueTask<ExchangeResult> SendRequestAsync(WalletExchangeRequest request);
+    ValueTask<ExchangeResult> SendRequestAsync(WalletExchangeRequest request, CancellationToken cancellationToken = default);
 }

@@ -93,7 +93,8 @@ builder.Services
             var configuration = sp.GetRequiredService<IConfiguration>();
 
             options.Url = configuration.GetConnectionString("Nats");
-        }))
+        })
+        .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");
 

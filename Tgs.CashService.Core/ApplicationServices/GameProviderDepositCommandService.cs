@@ -34,6 +34,8 @@ internal class GameProviderDepositCommandService : IGetService<GameProviderDepos
             ExternalId = command.ExternalId ?? string.Empty
         };
 
-        return await _walletExchangeService.SendRequestAsync(request).ConfigureAwait(false);
+        return await _walletExchangeService
+            .SendRequestAsync(request, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

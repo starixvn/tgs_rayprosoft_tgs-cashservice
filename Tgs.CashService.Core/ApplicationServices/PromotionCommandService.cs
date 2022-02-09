@@ -34,6 +34,8 @@ internal class PromotionCommandService : IGetService<PromotionCommand, ExchangeR
             ExternalId = command.ExternalId ?? string.Empty
         };
 
-        return await _walletExchangeService.SendRequestAsync(request).ConfigureAwait(false);
+        return await _walletExchangeService
+            .SendRequestAsync(request, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

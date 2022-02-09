@@ -38,7 +38,7 @@ internal class AdjustCommandService : IGetService<AdjustCommand, ExchangeResult>
         };
 
         return await _walletExchangeService
-            .SendRequestAsync(request)
+            .SendRequestAsync(request, cancellationToken)
             .ConfigureAwait(false);
     }
 }

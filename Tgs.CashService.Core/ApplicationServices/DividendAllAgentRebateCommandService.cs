@@ -35,6 +35,8 @@ internal class DividendAllAgentRebateCommandService : IGetService<DividendAllAge
             ExternalId = command.ExternalId ?? string.Empty
         };
 
-        return await _walletExchangeService.SendRequestAsync(request).ConfigureAwait(false);
+        return await _walletExchangeService
+            .SendRequestAsync(request, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

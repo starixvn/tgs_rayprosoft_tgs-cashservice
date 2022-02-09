@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.Cash.Protos;
@@ -49,7 +50,7 @@ public class ManagementTests
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new BonusCommandService(fakeWalletRepository, fakeWalletExchangeService);
+        var sut = new BonusCommandService(fakeWalletRepository, fakeWalletExchangeService, NullLogger<BonusCommandService>.Instance);
 
         var command = new BonusCommand(
             Guid.NewGuid(),

@@ -35,6 +35,8 @@ internal class AdjustResettledBetManualCommandService : IGetService<AdjustResett
             CreatedUser = command.CreatedByUserId
         };
 
-        return await _walletExchangeService.SendRequestAsync(request).ConfigureAwait(false);
+        return await _walletExchangeService
+            .SendRequestAsync(request, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

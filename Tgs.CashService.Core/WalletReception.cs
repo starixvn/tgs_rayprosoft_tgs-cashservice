@@ -15,8 +15,13 @@ internal class WalletReception : IDisposable
 
     public bool IsStartReceive { get; private set; } = false;
 
-    public WalletReception(IServiceProvider serviceProvider, ILogger<WalletReception> logger)
+    public DateTime Expired { get; set; } = DateTime.Now.AddMinutes(1).AddSeconds(20);
+
+    public Guid WalletId { get; }
+
+    public WalletReception(Guid walletId, IServiceProvider serviceProvider, ILogger<WalletReception> logger)
     {
+        WalletId = walletId;
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -26,6 +31,9 @@ internal class WalletReception : IDisposable
 
     public void StartReceive(CancellationToken cancellationToken)
     {
+        if (IsStartReceive)
+            return;
+
         IsStartReceive = true;
 
         _cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -36,6 +44,8 @@ internal class WalletReception : IDisposable
         {
             foreach (var exchangeTask in _exchangeTasks.GetConsumingEnumerable(_cancellationSource.Token))
             {
+                Expired = DateTime.Now.AddMinutes(1).AddSeconds(20);
+
                 await HandleExchangeAsync(
                     exchangeTask,
                     _cancellationSource.Token).ConfigureAwait(false);
