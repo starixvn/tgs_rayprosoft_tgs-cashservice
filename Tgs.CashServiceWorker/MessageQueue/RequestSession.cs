@@ -60,11 +60,10 @@ internal class RequestSession : IMessageSession
             Balance = result.Balance
         };
 
-        var a = await question
+        _ = await question
             .AskAsync(response.ToByteArray(), cancellationToken)
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(5))
             .ConfigureAwait(false);
-
-        await a.CompleteAsync(Array.Empty<byte>(), cancellationToken).ConfigureAwait(false);
-        _logger.LogInformation("aaa");
     }
 }

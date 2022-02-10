@@ -57,7 +57,9 @@ internal class WalletExchangeService : IWalletExchangeService
             .AskAsync(subject, request.ToByteArray(), cancellationToken)
             .ConfigureAwait(false);
         var response = WalletExchangeResponse.Parser.ParseFrom(exchangeAnswer.Result.Span);
-        await exchangeAnswer.AskAsync(Array.Empty<byte>(), cancellationToken).ConfigureAwait(false);
+        await exchangeAnswer
+            .CompleteAsync(Array.Empty<byte>(), cancellationToken)
+            .ConfigureAwait(false);
 
         return new ExchangeResult(response.TransactionId, response.Balance);
     }
