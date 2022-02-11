@@ -41,7 +41,9 @@ Common labels
 Selector labels
 */}}
 {{- define "cashservice-api.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "cashservice-api.name" . }}
 app: {{ include "cashservice-api.name" . }}
+tgs.kind: cash
 {{- end }}
 
 {{/*

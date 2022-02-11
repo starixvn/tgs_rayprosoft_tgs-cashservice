@@ -6,7 +6,9 @@ ThreadPool.SetMinThreads(Environment.ProcessorCount * 20, Environment.ProcessorC
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("/config/appsettings.json", true);
+builder.Configuration
+    .AddJsonFile("/config/appsettings.json", true)
+    .AddEnvironmentVariables();
 
 builder.Services.AddDbRepository((sp, dbBuilder) =>
 {
