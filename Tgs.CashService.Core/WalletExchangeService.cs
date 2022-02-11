@@ -59,7 +59,7 @@ internal class WalletExchangeService : IWalletExchangeService
     private async ValueTask<string> GetProcessorSubjectAsync(Guid walletId, CancellationToken cancellationToken)
     {
         var processorKey = $"Tgs:Cash:{walletId:D}";
-        _logger.LogInformation(processorKey);
+        _logger.LogDebug(processorKey);
 
         var processorSubjectValue = await _redisDatabase
             .StringGetAsync(processorKey)
