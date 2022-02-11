@@ -5,31 +5,20 @@ namespace Tgs.CashService.Core.ApplicationServices;
 
 internal class DividendAllAgentRebateCommandService : IGetService<DividendAllAgentRebateCommand, ExchangeResult>
 {
-    private readonly IWalletRepository _walletRepository;
     private readonly IWalletExchangeService _walletExchangeService;
 
-    public DividendAllAgentRebateCommandService(IWalletRepository walletRepository, IWalletExchangeService walletExchangeService)
+    public DividendAllAgentRebateCommandService(IWalletExchangeService walletExchangeService)
     {
-        _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
     public async ValueTask<ExchangeResult> GetAsync(DividendAllAgentRebateCommand command,
         CancellationToken cancellationToken = default)
     {
-        var wallet = await _walletRepository
-            .GetWalletAsync(command.WalletId)
-            .ConfigureAwait(false);
-
-        if (wallet == null)
-            throw new InvalidOperationException("Can't found wallet.");
-
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
             TransactionType = TransactionType.DividendAllAgentRebate.ToString(),
-            BrandId = wallet.BrandId,
-            PlayerCode = wallet.PlayerCode,
             Amount = command.Amount,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty

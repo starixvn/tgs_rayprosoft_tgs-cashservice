@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Npgsql;
@@ -27,15 +26,6 @@ builder.Services.AddSwaggerGen(c =>
             Title = "Tgs.CashService",
             Version = "v1"
         });
-});
-
-builder.Services.AddDbRepository((sp, dbBuilder) =>
-{
-    var config = sp.GetRequiredService<IConfiguration>();
-
-    _ = dbBuilder
-        .UseLazyLoadingProxies()
-        .UseNpgsql(config.GetConnectionString("Tgs"));
 });
 
 builder.Services.AddCashServiceCore((options, sp) =>

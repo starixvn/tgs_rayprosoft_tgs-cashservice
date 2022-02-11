@@ -21,17 +21,54 @@ internal class WalletExchangeService : IWalletExchangeService
 
     public async ValueTask<ExchangeResult> SendRequestAsync(WalletExchangeRequest request, CancellationToken cancellationToken)
     {
-        var processorKey = $"Tgs:Cash:{request.WalletId.ToGuid():D}";
+        var machineName = await GetProcessorSubjectAsync(
+            request.WalletId,
+            cancellationToken).ConfigureAwait(false);
+
+        var exchangeAnswer = await _messageSender
+            .AskAsync($"tgs.cash.worker.{machineName}", request.ToByteArray(), cancellationToken)
+            .ConfigureAwait(false);
+        var response = WalletExchangeResponse.Parser.ParseFrom(exchangeAnswer.Result.Span);
+        await exchangeAnswer
+            .CompleteAsync(Array.Empty<byte>(), cancellationToken)
+            .ConfigureAwait(false);
+
+        return new ExchangeResult(response.TransactionId, response.Balance);
+    }
+
+    public async ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
+    {
+        var machineName = await GetProcessorSubjectAsync(
+            walletId,
+            cancellationToken).ConfigureAwait(false);
+
+        var request = new BalanceRequest
+        {
+            WalletId = walletId
+        };
+
+        var responseData = await _messageSender
+            .RequestAsync($"tgs.cash.balance.{machineName}", request.ToByteArray(), cancellationToken)
+            .ConfigureAwait(false);
+
+        var response = BalanceResponse.Parser.ParseFrom(responseData.Span);
+
+        return response.Balance;
+    }
+
+    private async ValueTask<string> GetProcessorSubjectAsync(Guid walletId, CancellationToken cancellationToken)
+    {
+        var processorKey = $"Tgs:Cash:{walletId:D}";
         _logger.LogInformation(processorKey);
 
         var processorSubjectValue = await _redisDatabase
             .StringGetAsync(processorKey)
             .ConfigureAwait(false);
 
-        string subject;
+        string machineName;
         if (processorSubjectValue.HasValue)
         {
-            subject = processorSubjectValue;
+            machineName = processorSubjectValue;
         }
         else
         {
@@ -43,24 +80,16 @@ internal class WalletExchangeService : IWalletExchangeService
                 "tgs.cash.bid",
                 new BidRequest
                 {
-                    WalletId = request.WalletId
+                    WalletId = walletId
                 }.ToByteArray(),
                 bidCts.Token).ConfigureAwait(false);
 
             var bidResponse = BidResponse.Parser.ParseFrom(bidResponseData.Span);
 
-            subject = bidResponse.Subject;
-            _logger.LogInformation($"Subject is {subject}");
+            machineName = bidResponse.Subject;
+            _logger.LogInformation($"Subject is {machineName}");
         }
 
-        var exchangeAnswer = await _messageSender
-            .AskAsync(subject, request.ToByteArray(), cancellationToken)
-            .ConfigureAwait(false);
-        var response = WalletExchangeResponse.Parser.ParseFrom(exchangeAnswer.Result.Span);
-        await exchangeAnswer
-            .CompleteAsync(Array.Empty<byte>(), cancellationToken)
-            .ConfigureAwait(false);
-
-        return new ExchangeResult(response.TransactionId, response.Balance);
+        return machineName;
     }
 }

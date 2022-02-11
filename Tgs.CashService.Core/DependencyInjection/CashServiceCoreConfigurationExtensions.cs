@@ -17,7 +17,6 @@ public static class CashServiceCoreConfigurationExtensions
             .RegisterAllServiceUtilityTypes(
                 Assembly.GetExecutingAssembly(),
                 ServiceLifetime.Transient)
-            .AddSingleton<WalletExchanger>()
             .AddSingleton(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<CashOptions>>().Value;
@@ -29,6 +28,5 @@ public static class CashServiceCoreConfigurationExtensions
                 var connectionManager = sp.GetRequiredService<RedisConnectionManager>();
 
                 return ActivatorUtilities.CreateInstance<WalletExchangeService>(sp, connectionManager.Database);
-            })
-            .AddHostedService<WalletExchangeBackgroundService>();
+            });
 }

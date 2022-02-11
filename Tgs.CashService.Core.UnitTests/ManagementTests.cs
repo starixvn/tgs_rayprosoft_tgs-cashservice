@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.Cash.Protos;
@@ -12,10 +11,9 @@ public class ManagementTests
     [Test]
     public async Task Can_Create_Adjust_Exchange()
     {
-        var fakeWalletRepository = Substitute.For<IWalletRepository>();
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new AdjustCommandService(fakeWalletRepository, fakeWalletExchangeService);
+        var sut = new AdjustCommandService(fakeWalletExchangeService);
 
         var command = new AdjustCommand(
             Guid.NewGuid(),
@@ -23,14 +21,6 @@ public class ManagementTests
             Guid.NewGuid().ToString("N"),
             "測試調整",
             Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
-
-        _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-            .Returns(new Wallet
-            {
-                Id = command.WalletId,
-                BrandId = Guid.NewGuid(),
-                PlayerCode = "Player1"
-            });
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
@@ -47,24 +37,15 @@ public class ManagementTests
     [Test]
     public async Task Can_Create_Bonus_Exchange()
     {
-        var fakeWalletRepository = Substitute.For<IWalletRepository>();
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new BonusCommandService(fakeWalletRepository, fakeWalletExchangeService, NullLogger<BonusCommandService>.Instance);
+        var sut = new BonusCommandService(fakeWalletExchangeService);
 
         var command = new BonusCommand(
             Guid.NewGuid(),
             100,
             Guid.NewGuid().ToString("N"),
             "測試紅利");
-
-        _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-            .Returns(new Wallet
-            {
-                Id = command.WalletId,
-                BrandId = Guid.NewGuid(),
-                PlayerCode = "Player1"
-            });
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
@@ -80,24 +61,15 @@ public class ManagementTests
     [Test]
     public async Task Can_Create_Rebate_Exchange()
     {
-        var fakeWalletRepository = Substitute.For<IWalletRepository>();
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new RebateCommandService(fakeWalletRepository, fakeWalletExchangeService);
+        var sut = new RebateCommandService(fakeWalletExchangeService);
 
         var command = new RebateCommand(
             Guid.NewGuid(),
             100M,
             Guid.NewGuid().ToString("N"),
             "測試反水");
-
-        _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-            .Returns(new Wallet
-            {
-                Id = command.WalletId,
-                BrandId = Guid.NewGuid(),
-                PlayerCode = "Player1"
-            });
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
@@ -113,10 +85,9 @@ public class ManagementTests
     [Test]
     public async Task Can_Create_Other_Exchange()
     {
-        var fakeWalletRepository = Substitute.For<IWalletRepository>();
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new OtherCommandService(fakeWalletRepository, fakeWalletExchangeService);
+        var sut = new OtherCommandService(fakeWalletExchangeService);
 
         var command = new OtherCommand(
             Guid.NewGuid(),
@@ -124,14 +95,6 @@ public class ManagementTests
             Guid.NewGuid().ToString("N"),
             "測試其他",
             Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
-
-        _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-            .Returns(new Wallet
-            {
-                Id = command.WalletId,
-                BrandId = Guid.NewGuid(),
-                PlayerCode = "Player1"
-            });
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
@@ -148,10 +111,9 @@ public class ManagementTests
     [Test]
     public async Task Can_Create_UnsettledBetManualCommand_Exchange()
     {
-        var fakeWalletRepository = Substitute.For<IWalletRepository>();
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new UnsettledBetManualCommandService(fakeWalletRepository, fakeWalletExchangeService);
+        var sut = new UnsettledBetManualCommandService(fakeWalletExchangeService);
 
         var command = new UnsettledBetManualCommand(
             Guid.NewGuid(),
@@ -159,14 +121,6 @@ public class ManagementTests
             "測試Open Round Page",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
-
-        _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-            .Returns(new Wallet
-            {
-                Id = command.WalletId,
-                BrandId = Guid.NewGuid(),
-                PlayerCode = "Player1"
-            });
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
@@ -183,10 +137,9 @@ public class ManagementTests
     [Test]
     public async Task Can_Create_AdjustResettledBetManualCommand_Exchange()
     {
-        var fakeWalletRepository = Substitute.For<IWalletRepository>();
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new AdjustResettledBetManualCommandService(fakeWalletRepository, fakeWalletExchangeService);
+        var sut = new AdjustResettledBetManualCommandService(fakeWalletExchangeService);
 
         var command = new AdjustResettledBetManualCommand(
             Guid.NewGuid(),
@@ -194,14 +147,6 @@ public class ManagementTests
             "測試Closed Round Page",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
-
-        _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-            .Returns(new Wallet
-            {
-                Id = command.WalletId,
-                BrandId = Guid.NewGuid(),
-                PlayerCode = "Player1"
-            });
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 

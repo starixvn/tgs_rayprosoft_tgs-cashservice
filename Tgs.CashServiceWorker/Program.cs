@@ -17,7 +17,7 @@ builder.Services.AddDbRepository((sp, dbBuilder) =>
 });
 
 builder.Services
-    .AddCashServiceCore((options, sp) => { })
+    .AddCashServiceWorker((options, sp) => { })
     .AddSingleton(sp =>
     {
         var config = sp.GetService<IConfiguration>();
@@ -35,6 +35,7 @@ builder.Services
         })
         .AddProcessor<BidProcessor>("tgs.cash.bid")
         .AddSession<RequestSession>($"tgs.cash.worker.{Environment.MachineName}")
+        .AddProcessor<GetBalanceProcessor>($"tgs.cash.balance.{Environment.MachineName}")
         .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");

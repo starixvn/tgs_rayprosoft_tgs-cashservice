@@ -5,30 +5,19 @@ namespace Tgs.CashService.Core.ApplicationServices;
 
 internal class GameProviderFundInCommandService : IGetService<GameProviderFundInCommand, ExchangeResult>
 {
-    private readonly IWalletRepository _walletRepository;
     private readonly IWalletExchangeService _walletExchangeService;
 
-    public GameProviderFundInCommandService(IWalletRepository walletRepository, IWalletExchangeService walletExchangeService)
+    public GameProviderFundInCommandService(IWalletExchangeService walletExchangeService)
     {
-        _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
     public async ValueTask<ExchangeResult> GetAsync(GameProviderFundInCommand command, CancellationToken cancellationToken = default)
     {
-        var wallet = await _walletRepository
-            .GetWalletAsync(command.WalletId)
-            .ConfigureAwait(false);
-
-        if (wallet == null)
-            throw new InvalidOperationException("Can't found wallet.");
-
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
             TransactionType = TransactionType.GameProviderFundIn.ToString(),
-            BrandId = wallet.BrandId,
-            PlayerCode = wallet.PlayerCode,
             Amount = command.Amount,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty

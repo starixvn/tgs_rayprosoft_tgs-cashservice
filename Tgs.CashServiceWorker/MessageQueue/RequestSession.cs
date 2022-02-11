@@ -46,8 +46,6 @@ internal class RequestSession : IMessageSession
             new ExchangeWalletCommand(
                 request.WalletId,
                 Enum.Parse<TransactionType>(request.TransactionType, true),
-                request.BrandId,
-                request.PlayerCode,
                 request.Amount,
                 request.Description,
                 request.ExternalId,

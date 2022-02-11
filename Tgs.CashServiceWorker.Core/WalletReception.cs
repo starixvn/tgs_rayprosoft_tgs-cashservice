@@ -108,10 +108,17 @@ internal class WalletReception : IDisposable
             await using var scope = _serviceProvider.CreateAsyncScope();
             var repository = scope.ServiceProvider.GetRequiredService<IWalletRepository>();
 
+            var wallet = await repository
+            .GetWalletAsync(exchangeTask.Request.WalletId)
+            .ConfigureAwait(false);
+
+            if (wallet == null)
+                throw new InvalidOperationException("Can't found wallet.");
+
             var result = await repository.ExchangeAsync(
-                exchangeTask.Request.BrandId,
+                wallet.BrandId,
                 exchangeTask.Request.WalletId,
-                exchangeTask.Request.PlayerCode,
+                wallet.PlayerCode,
                 exchangeTask.Request.TransactionType,
                 exchangeTask.Request.Amount,
                 exchangeTask.Request.Description,

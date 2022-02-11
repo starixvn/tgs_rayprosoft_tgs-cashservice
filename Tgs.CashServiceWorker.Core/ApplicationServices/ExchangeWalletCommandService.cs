@@ -16,8 +16,6 @@ internal class ExchangeWalletCommandService : IGetService<ExchangeWalletCommand,
         var request = new ExchangeRequest(
             command.WalletId,
             command.TransactionType,
-            command.BrandId,
-            command.PlayerCode,
             command.Amount,
             command.Description,
             command.ExternalId,

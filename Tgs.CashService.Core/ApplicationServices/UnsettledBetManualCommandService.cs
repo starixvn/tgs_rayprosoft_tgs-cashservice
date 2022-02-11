@@ -5,30 +5,19 @@ namespace Tgs.CashService.Core.ApplicationServices;
 
 internal class UnsettledBetManualCommandService : IGetService<UnsettledBetManualCommand, ExchangeResult>
 {
-    private readonly IWalletRepository _walletRepository;
     private readonly IWalletExchangeService _walletExchangeService;
 
-    public UnsettledBetManualCommandService(IWalletRepository walletRepository, IWalletExchangeService walletExchangeService)
+    public UnsettledBetManualCommandService(IWalletExchangeService walletExchangeService)
     {
-        _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
     public async ValueTask<ExchangeResult> GetAsync(UnsettledBetManualCommand command, CancellationToken cancellationToken = default)
     {
-        var wallet = await _walletRepository
-            .GetWalletAsync(command.WalletId)
-            .ConfigureAwait(false);
-
-        if (wallet == null)
-            throw new InvalidOperationException("Can't found wallet.");
-
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
             TransactionType = TransactionType.UnsettledBetManual.ToString(),
-            BrandId = wallet.BrandId,
-            PlayerCode = wallet.PlayerCode,
             Amount = command.Amount,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty,

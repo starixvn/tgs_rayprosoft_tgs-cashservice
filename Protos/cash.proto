@@ -17,15 +17,21 @@ message BidResponse {
 message WalletExchangeRequest {
 	phoenix.protobuf.GuidValue wallet_id = 1;
 	string TransactionType = 2;
-	phoenix.protobuf.GuidValue brand_id = 3;
-	string player_code = 4;
-	phoenix.protobuf.DecimalValue amount = 5;
-	optional string description = 6;
-	optional string external_id = 7;
-	optional phoenix.protobuf.GuidValue created_user = 8;
+	phoenix.protobuf.DecimalValue amount = 3;
+	optional string description = 4;
+	optional string external_id = 5;
+	optional phoenix.protobuf.GuidValue created_user = 6;
 }
 
 message WalletExchangeResponse {
 	phoenix.protobuf.GuidValue transaction_id = 1;
 	phoenix.protobuf.DecimalValue balance = 2;
+}
+
+message BalanceRequest {
+	phoenix.protobuf.GuidValue wallet_id = 1;
+}
+
+message BalanceResponse {
+	phoenix.protobuf.DecimalValue balance = 1;
 }

@@ -32,9 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\cash.proto">
-      <Access>Internal</Access>
-      <GrpcServices>Client</GrpcServices>
+    <Folder Include="Protos\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\Protos\cash.proto" GrpcServices="Client" Access="Internal">
+      <Link>Protos\cash.proto</Link>
     </Protobuf>
   </ItemGroup>
 
