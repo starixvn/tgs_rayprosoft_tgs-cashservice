@@ -20,6 +20,8 @@ public class PaymentTests
         await using var web = new TestCashApplication(
             builder => builder.ConfigureServices(services =>
             {
+                services.AddSingleton<WalletExchanger>();
+
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
                 _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
@@ -50,7 +52,7 @@ public class PaymentTests
                 {
                     var exchanger = sp.GetRequiredService<WalletExchanger>();
 
-                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>())
+                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
                         .Returns(callInfo =>
                         {
                             var req = callInfo.Arg<WalletExchangeRequest>();
@@ -58,8 +60,6 @@ public class PaymentTests
                             return exchanger.RequestAsync(new ExchangeRequest(
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
-                                req.BrandId,
-                                req.PlayerCode,
                                 req.Amount,
                                 req.Description,
                                 req.ExternalId,
@@ -95,6 +95,8 @@ public class PaymentTests
         await using var web = new TestCashApplication(
             builder => builder.ConfigureServices(services =>
             {
+                services.AddSingleton<WalletExchanger>();
+
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
                 _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
@@ -125,7 +127,7 @@ public class PaymentTests
                 {
                     var exchanger = sp.GetRequiredService<WalletExchanger>();
 
-                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>())
+                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
                         .Returns(callInfo =>
                         {
                             var req = callInfo.Arg<WalletExchangeRequest>();
@@ -133,8 +135,6 @@ public class PaymentTests
                             return exchanger.RequestAsync(new ExchangeRequest(
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
-                                req.BrandId,
-                                req.PlayerCode,
                                 req.Amount,
                                 req.Description,
                                 req.ExternalId,
@@ -170,6 +170,8 @@ public class PaymentTests
         await using var web = new TestCashApplication(
             builder => builder.ConfigureServices(services =>
             {
+                services.AddSingleton<WalletExchanger>();
+
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
                 _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
@@ -200,7 +202,7 @@ public class PaymentTests
                 {
                     var exchanger = sp.GetRequiredService<WalletExchanger>();
 
-                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>())
+                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
                         .Returns(callInfo =>
                         {
                             var req = callInfo.Arg<WalletExchangeRequest>();
@@ -208,8 +210,6 @@ public class PaymentTests
                             return exchanger.RequestAsync(new ExchangeRequest(
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
-                                req.BrandId,
-                                req.PlayerCode,
                                 req.Amount,
                                 req.Description,
                                 req.ExternalId,

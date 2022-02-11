@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using Tgs.Cash.Protos;
 using Tgs.CashService.Client;
 using Tgs.CashService.Core;
 
@@ -18,12 +19,31 @@ public class GeneralTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
+                services.AddSingleton<WalletExchanger>();
+
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
                 _ = fakeWalletRepository.GetBalanceAsync(Arg.Is(walletId))
                     .Returns(expectedAmount);
 
                 _ = services.AddSingleton(fakeWalletRepository);
+
+                var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+                _ = services.AddSingleton(sp =>
+                {
+                    var exchanger = sp.GetRequiredService<WalletExchanger>();
+
+                    _ = fakeWalletExchangeService.GetBalanceAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                        .Returns(callInfo =>
+                        {
+                            var walletId = callInfo.Arg<Guid>();
+
+                            return fakeWalletRepository.GetBalanceAsync(walletId);
+                        });
+
+                    return fakeWalletExchangeService;
+                });
             }));
 
         var httpClient = web.CreateClient();

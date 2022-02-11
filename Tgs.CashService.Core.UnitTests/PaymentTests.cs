@@ -35,26 +35,6 @@ public class PaymentTests
     }
 
     [Test]
-    public void Create_Deposit_Exchange_With_Invalid_WalletId_Will_Throw_Exception()
-    {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
-
-        var sut = new DepositCommandService(fakeWalletExchangeService);
-
-        var command = new DepositCommand(
-            Guid.NewGuid(),
-            100,
-            Guid.NewGuid().ToString("N"),
-            "測試存款",
-            null);
-
-        _ = Assert.ThrowsAsync<InvalidOperationException>(async () => await sut.GetAsync(command));
-
-        _ = fakeWalletExchangeService.DidNotReceive()
-            .SendRequestAsync(Arg.Any<WalletExchangeRequest>());
-    }
-
-    [Test]
     public async Task Can_Create_Withdrawal_Exchange()
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
