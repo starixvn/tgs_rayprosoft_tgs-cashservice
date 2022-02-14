@@ -4,6 +4,7 @@ using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Tgs.CashService.Core;
+using Tgs.SerialNumberGenerator;
 using TGS.GameProviders.Repositories.Entities;
 
 namespace Tgs.CashService.Repositories;
@@ -11,10 +12,12 @@ namespace Tgs.CashService.Repositories;
 internal class WalletRepository : IWalletRepository
 {
     private readonly TgsContext _context;
+    private readonly ISerialNumberGenerator _serialNumberGenerator;
 
-    public WalletRepository(TgsContext context)
+    public WalletRepository(TgsContext context, ISerialNumberGenerator serialNumberGenerator)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
     }
 
     public async ValueTask<ExchangeResult> ExchangeAsync(
@@ -29,7 +32,9 @@ internal class WalletRepository : IWalletRepository
     {
         const string sql = "dbo.wallet_update_wallet_balance";
         var updatedOn = DateTime.UtcNow;
-        var transactionId = Guid.NewGuid();
+        var transactionId = await _serialNumberGenerator
+            .GenerateAsync()
+            .ConfigureAwait(false);
 
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         var connection = _context.Database.GetDbConnection();
