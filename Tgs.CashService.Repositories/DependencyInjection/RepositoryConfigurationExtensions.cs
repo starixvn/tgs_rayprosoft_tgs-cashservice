@@ -10,9 +10,8 @@ public static class RepositoryConfigurationExtensions
     public static IServiceCollection AddDbRepository(
         this IServiceCollection services,
         Action<IServiceProvider, DbContextOptionsBuilder> efConfigure)
-    {
-        _ = services.AddDbContext<TgsContext>(efConfigure);
-        return services
+        => services
+            .AddSerialNumberGenerator()
+            .AddDbContext<TgsContext>(efConfigure)
             .AddTransient<IWalletRepository, WalletRepository>();
-    }
 }
