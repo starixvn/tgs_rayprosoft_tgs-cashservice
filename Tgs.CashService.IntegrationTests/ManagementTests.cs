@@ -69,6 +69,8 @@ public class ManagementTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -146,6 +148,8 @@ public class ManagementTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -218,6 +222,8 @@ public class ManagementTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -295,6 +301,8 @@ public class ManagementTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -371,6 +379,8 @@ public class ManagementTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();

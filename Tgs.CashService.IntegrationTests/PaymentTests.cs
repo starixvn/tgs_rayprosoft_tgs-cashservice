@@ -68,6 +68,8 @@ public class PaymentTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -143,6 +145,8 @@ public class PaymentTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -218,6 +222,8 @@ public class PaymentTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
