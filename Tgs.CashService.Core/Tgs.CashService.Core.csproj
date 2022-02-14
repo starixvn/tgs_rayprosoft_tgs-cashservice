@@ -17,7 +17,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="StackExchange.Redis" Version="2.2.88" />
-    <PackageReference Include="Tgs.MessageQueue" Version="1.5.12-alpha" />
+    <PackageReference Include="Tgs.MessageQueue" Version="2.0.0" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.1.0" />
   </ItemGroup>
 
