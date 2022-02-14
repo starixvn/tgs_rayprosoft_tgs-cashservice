@@ -10,6 +10,6 @@ public class Config
     public static void Setup(TestContext context)
 #pragma warning restore IDE0060 // 移除未使用的參數
     {
-        _ = ThreadPool.SetMinThreads(512, 10);
+        _ = ThreadPool.SetMinThreads(Environment.ProcessorCount * 20, Environment.ProcessorCount);
     }
 }

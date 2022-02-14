@@ -1,3 +1,4 @@
+@Library('global-shared-library') _
 def message = "";
 
 pipeline {
@@ -5,7 +6,8 @@ pipeline {
 	
 	environment {
 		BuildConfiguration="Debug"
-		ImageName="harbor.rpgp.cc/tgs/cashservice-api"
+		ServiceImageName="harbor.rpgp.cc/tgs/cashservice-api"
+		WorkerImageName="harbor.rpgp.cc/tgs/cashservice-worker"
 	}
 
 	stages {
@@ -76,13 +78,15 @@ pipeline {
 
 		stage('Build Docker Image') {
 			steps {
-				sh 'dotnet build "Tgs.CashService/Tgs.CashService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:${TAG}" --no-restore '
+				sh 'dotnet build "Tgs.CashService/Tgs.CashService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ServiceImageName:$TAG" --no-restore '
+                sh 'dotnet build "Tgs.CashServiceWorker/Tgs.CashServiceWorker.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$WorkerImageName:$TAG" --no-restore'
 			}
 		}
 
 		stage('Push Docker Image') {
 			steps {
-				sh 'sudo docker push $ImageName:${TAG}'
+				sh 'sudo docker push $ServiceImageName:$TAG'
+				sh 'sudo docker push $WorkerImageName:$TAG'
 			}
 		}
 
@@ -102,37 +106,66 @@ pipeline {
             }
         }
 
-		stage('Deploy to k8s') {
+		stage('Deploy cash-api to k8s') {
+            environment {
+                resource = getResources(env.k8s_config,env.kube_ns,"cashservice-api")
+            }
 			steps {
 				withKubeConfig([credentialsId: env.k8s_config]) {
-                    withCredentials([string(credentialsId: "tgs-${kube_ns}-connectionstring", variable: "tgs_tgs")]) {
-                        sh '''
-                            cat << EOF | yq e -P | helm template deployment/k8s/cashservice-api \
-                                -n ${kube_ns} \
-                                --set image.tag=${TAG} \
-                                --set namespace=${kube_ns} \
-                                --set autoscaling.enabled=${tgs_autoscaling} \
-                                --set connectionStrings.tgs="$tgs_tgs" \
-                                -f -
-                            {
-                                "nodeSelector": $node_selector,
-                                "tolerations": [$dedicated]
-                            }
-                        '''
-                        sh '''
-                            cat << EOF | yq e -P | helm template deployment/k8s/cashservice-api \
-                                -n ${kube_ns} \
-                                --set image.tag=${TAG} \
-                                --set namespace=${kube_ns} \
-                                --set autoscaling.enabled=${tgs_autoscaling} \
-                                --set connectionStrings.tgs="$tgs_tgs" \
-                                -f - | kubectl -n ${kube_ns} apply -f -
-                            {
-                                "nodeSelector": $node_selector,
-                                "tolerations": [$dedicated]
-                            }
-                        '''
-                    }
+                    sh '''
+                        cat << EOF | yq e -P | helm template deployment/k8s/cashservice-api \
+                            -n ${kube_ns} \
+                            --set image.tag=${TAG} \
+                            -f -
+                        {
+                            "nodeSelector": $node_selector,
+                            "tolerations": [$dedicated],
+                            "resources": $resources
+                        }
+                    '''
+                    sh '''
+                        cat << EOF | yq e -P | helm template deployment/k8s/cashservice-api \
+                            -n ${kube_ns} \
+                            --set image.tag=${TAG} \
+                            -f - | kubectl -n ${kube_ns} apply -f -
+                        {
+                            "nodeSelector": $node_selector,
+                            "tolerations": [$dedicated],
+                            "resources": $resources
+                        }
+                    '''
+				}
+			}
+		}
+
+        stage('Deploy cash-worker to k8s') {
+            environment {
+                resource = getResources(env.k8s_config,env.kube_ns,"cashservice-api")
+            }
+			steps {
+				withKubeConfig([credentialsId: env.k8s_config]) {
+                    sh '''
+                        cat << EOF | yq e -P | helm template deployment/k8s/cashservice-worker \
+                            -n ${kube_ns} \
+                            --set image.tag=${TAG} \
+                            -f -
+                        {
+                            "nodeSelector": $node_selector,
+                            "tolerations": [$dedicated],
+                            "resources": $resources
+                        }
+                    '''
+                    sh '''
+                        cat << EOF | yq e -P | helm template deployment/k8s/cashservice-worker \
+                            -n ${kube_ns} \
+                            --set image.tag=${TAG} \
+                            -f - | kubectl -n ${kube_ns} apply -f -
+                        {
+                            "nodeSelector": $node_selector,
+                            "tolerations": [$dedicated],
+                            "resources": $resources
+                        }
+                    '''
 				}
 			}
 		}
@@ -163,19 +196,4 @@ pipeline {
             sendTelegram("<b>Failed Pipeline:</b> ${currentBuild.fullDisplayName} Something is wrong with ${env.BUILD_URL}/console\n${currentBuild.getBuildCauses()[0].shortDescription}\n")
         }
 	}
-}
-
-
-def sendTelegram(message) {
-    def encodedMessage = URLEncoder.encode(message, "UTF-8")
-
-    withCredentials([string(credentialsId: "telegramToken", variable: "TOKEN"), string(credentialsId: "telegramChatId", variable: "CHAT_ID")]) {
-
-        response = httpRequest (consoleLogResponseBody: true,
-                contentType: 'APPLICATION_JSON',
-                httpMode: 'GET',
-                url: "https://api.telegram.org/bot${TOKEN}/sendMessage?text=${encodedMessage}&chat_id=${CHAT_ID}",
-                validResponseCodes: '200')
-        return response
-    }
 }

@@ -1,36 +1,30 @@
-﻿using Tgs.ServiceUtility;
+﻿using Tgs.Cash.Protos;
+using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Core.ApplicationServices;
 
 internal class GameProviderFundOutCommandService : IGetService<GameProviderFundOutCommand, ExchangeResult>
 {
-    private readonly IWalletRepository _walletRepository;
-    private readonly WalletExchanger _walletExchanger;
+    private readonly IWalletExchangeService _walletExchangeService;
 
-    public GameProviderFundOutCommandService(IWalletRepository walletRepository, WalletExchanger walletExchanger)
+    public GameProviderFundOutCommandService(IWalletExchangeService walletExchangeService)
     {
-        _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
-        _walletExchanger = walletExchanger ?? throw new ArgumentNullException(nameof(walletExchanger));
+        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
     public async ValueTask<ExchangeResult> GetAsync(GameProviderFundOutCommand command, CancellationToken cancellationToken = default)
     {
-        var wallet = await _walletRepository
-            .GetWalletAsync(command.WalletId)
+        var request = new WalletExchangeRequest
+        {
+            WalletId = command.WalletId,
+            TransactionType = TransactionType.GameProviderFundOut.ToString(),
+            Amount = -command.Amount,
+            Description = command.Description ?? string.Empty,
+            ExternalId = command.ExternalId ?? string.Empty
+        };
+
+        return await _walletExchangeService
+            .SendRequestAsync(request, cancellationToken)
             .ConfigureAwait(false);
-
-        if (wallet == null)
-            throw new InvalidOperationException("Can't found wallet.");
-
-        var request = new ExchangeRequest(
-            command.WalletId,
-            TransactionType.GameProviderFundOut,
-            wallet.BrandId,
-            wallet.PlayerCode,
-            -command.Amount,
-            command.Description,
-            command.ExternalId);
-
-        return await _walletExchanger.RequestAsync(request).ConfigureAwait(false);
     }
 }

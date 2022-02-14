@@ -23,6 +23,7 @@ internal class WalletExchanger
         var queue = _exchangeQueuePool.GetOrAdd(
             request.WalletId,
             _ => new WalletReception(
+                request.WalletId,
                 _serviceProvider,
                 _serviceProvider.GetRequiredService<ILogger<WalletReception>>()));
 
@@ -41,7 +42,27 @@ internal class WalletExchanger
             _cancellationTokenSource.Cancel();
 
         Task.WaitAll(_exchangeQueuePool
-            .Select(p => Task.Run(() => p.Value.StopReceive()))
+            .Values
+            .Select(reception => Task.Run(() => reception.StopReceive()))
+            .ToArray());
+    }
+
+    public void ScanExpiredQueues()
+    {
+        var currentTime = DateTime.Now;
+
+        Task.WaitAll(_exchangeQueuePool
+            .Values
+            .Where(reception => reception.Expired < currentTime)
+            .Select(reception => Task.Run(() =>
+            {
+                if (_exchangeQueuePool.TryRemove(reception.WalletId, out _))
+                {
+                    reception.StopReceive();
+
+                    reception.Dispose();
+                }
+            }))
             .ToArray());
     }
 }

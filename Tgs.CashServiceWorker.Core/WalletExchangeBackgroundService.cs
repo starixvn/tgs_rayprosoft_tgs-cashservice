@@ -15,6 +15,17 @@ internal class WalletExchangeBackgroundService : BackgroundService
     {
         _ = stoppingToken.Register(() => _walletExchanger.StopReceive());
 
-        return Task.CompletedTask;
+        return Task.Run(async () =>
+        {
+            while (true)
+            {
+                if (stoppingToken.IsCancellationRequested)
+                    break;
+
+                _walletExchanger.ScanExpiredQueues();
+
+                await Task.Delay(10000, stoppingToken);
+            }
+        }, stoppingToken);
     }
 }

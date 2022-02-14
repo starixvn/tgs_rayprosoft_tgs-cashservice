@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace Tgs.CashService.Core.UnitTests;
 
@@ -8,6 +9,6 @@ public class Config
     [OneTimeSetUp]
     public void Setup()
     {
-        _ = ThreadPool.SetMinThreads(512, 10);
+        _ = ThreadPool.SetMinThreads(Environment.ProcessorCount * 20, Environment.ProcessorCount);
     }
 }

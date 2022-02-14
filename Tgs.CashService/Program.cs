@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Npgsql;
@@ -7,11 +6,13 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-ThreadPool.SetMinThreads(512, 100);
+ThreadPool.SetMinThreads(Environment.ProcessorCount * 20, Environment.ProcessorCount);
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("/config/appsettings.json", true);
+builder.Configuration
+    .AddJsonFile("/config/appsettings.json", true)
+    .AddEnvironmentVariables();
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
@@ -29,16 +30,12 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
-builder.Services.AddDbRepository((sp, dbBuilder) =>
+builder.Services.AddCashServiceCore((options, sp) =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
 
-    _ = dbBuilder
-        .UseLazyLoadingProxies()
-        .UseNpgsql(config.GetConnectionString("Tgs"));
+    options.RedisConnectionString = config.GetConnectionString("Redis");
 });
-
-builder.Services.AddCashServiceCore();
 builder.Services.AddHealthChecks();
 
 builder.Services
@@ -79,6 +76,19 @@ builder.Services
                     ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
         };
     });
+
+builder.Services
+    .AddMessageQueue()
+    .AddNatsMessageQueue(config => config
+        .ConfigQueueOptions((options, sp) =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+
+            options.Url = configuration.GetConnectionString("Nats");
+        })
+        .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
+    .ClearAllExchanges()
+    .AddNatsGlobPatternExchange("*");
 
 var app = builder.Build();
 

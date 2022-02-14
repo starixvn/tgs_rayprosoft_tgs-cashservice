@@ -30,6 +30,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Tgs.CashService.Core\Tgs.CashService.Core.csproj" />
+	  <ProjectReference Include="..\Tgs.CashServiceWorker.Core\Tgs.CashServiceWorker.Core.csproj" />
 	</ItemGroup>
 </Project>

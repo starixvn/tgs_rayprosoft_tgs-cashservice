@@ -10,8 +10,15 @@ namespace Tgs.CashService.Controllers;
 [ApiController]
 public class WalletController : ControllerBase
 {
+    private readonly ILogger<WalletController> _logger;
+
+    public WalletController(ILogger<WalletController> logger)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
     /// <summary>
-    ///     Adjusts the exchange asynchronous.
+    /// Adjusts the exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -19,15 +26,13 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///     Post
-    ///         {
-    ///             "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///             "amount": 10,
-    ///             "description": "測試調整",
-    ///             "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    ///             "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-    ///         }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試調整",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
+    /// }
     /// </remarks>
     [HttpPut("adjust/{walletId}", Name = "Adjust")]
     public async ValueTask<TransactionResultViewModel> AdjustAsync(
@@ -41,14 +46,14 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId))
+                request.CreatedByUserId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
 
     /// <summary>
-    ///     Balances the asynchronous.
+    /// Balances the asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId">The wallet identifier.</param>
@@ -66,7 +71,7 @@ public class WalletController : ControllerBase
         => service.GetAsync(new GetBalanceQuery(walletId));
 
     /// <summary>
-    ///     Bonuses the exchange asynchronous.
+    /// Bonuses the exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -74,14 +79,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///         {
-    ///             "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///             "amount": 10,
-    ///             "description": "測試紅利",
-    ///             "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///         }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試紅利",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("bonus/{walletId}", Name = "Bonus")]
     public async ValueTask<TransactionResultViewModel> BonusAsync(
@@ -94,14 +97,14 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId))
+                request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
 
     /// <summary>
-    ///     Cancels the withdrawal exchange asynchronous.
+    /// Cancels the withdrawal exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -109,15 +112,13 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試取消提款",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    ///                 "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試取消提款",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
+    /// }
     /// </remarks>
     [HttpDelete("withdrawal/{walletId}", Name = "CancelWithdrawal")]
     public async ValueTask<TransactionResultViewModel> CancelWithdrawalAsync(
@@ -131,14 +132,14 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId))
+                request.CreatedByUserId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
 
     /// <summary>
-    ///     Deposits the exchange asynchronous.
+    /// Deposits the exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -156,14 +157,14 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId))
+                request.CreatedByUserId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
 
     /// <summary>
-    ///     Games the provider deposit exchange asynchronous.
+    /// Games the provider deposit exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -171,14 +172,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試遊戲上分",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試遊戲上分",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("gp/deposit/{walletId}", Name = "GameProviderDeposit")]
     public async ValueTask<TransactionResultViewModel> GameProviderDepositAsync(
@@ -191,14 +190,14 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId))
+                request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
 
     /// <summary>
-    ///     Games the provider fund in exchange asynchronous.
+    /// Games the provider fund in exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -206,14 +205,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試主錢包轉入(GP->TGS)",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試主錢包轉入(GP->TGS)",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("gp/fund-in/{walletId}", Name = "GameProviderFundIn")]
     public async ValueTask<TransactionResultViewModel> GameProviderFundInAsync(
@@ -226,14 +223,14 @@ public class WalletController : ControllerBase
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
-                viewModel.ExternalId))
+                viewModel.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
 
     /// <summary>
-    ///     Games the provider fund out exchange asynchronous.
+    /// Games the provider fund out exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -241,14 +238,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試主錢包轉出(TGS->GP)",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試主錢包轉出(TGS->GP)",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("gp/fund-out/{walletId}", Name = "GameProviderFundOut")]
     public async ValueTask<TransactionResultViewModel> GameProviderFundOutAsync(
@@ -261,14 +256,14 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId))
+                request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
 
     /// <summary>
-    ///     Games the provider withdrawal exchange asynchronous.
+    /// Games the provider withdrawal exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -276,14 +271,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試遊戲下分",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試遊戲下分",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("gp/withdrawal/{walletId}", Name = "GameProviderWithdrawal")]
     public async ValueTask<TransactionResultViewModel> GameProviderWithdrawalAsync(
@@ -296,7 +289,7 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId))
+                request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -311,15 +304,13 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試Open Round Page",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    ///                 "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試Open Round Page",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
+    /// }
     /// </remarks>
     [HttpPut("unsettled/{walletId}", Name = "UnsettledBetManual")]
     public async ValueTask<TransactionResultViewModel> UnsettledBetManualAsync(
@@ -333,7 +324,7 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId))
+                request.CreatedByUserId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -349,15 +340,13 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試Closed Round Page",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    ///                 "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試Closed Round Page",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
+    /// }
     /// </remarks>
     [HttpPut("adjust/resettled/{walletId}", Name = "AdjustResettledBetManual")]
     public async ValueTask<TransactionResultViewModel> AdjustResettledBetManualAsync(
@@ -371,7 +360,7 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId))
+                request.CreatedByUserId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -386,15 +375,13 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試其他",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    ///                 "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試其他",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
+    /// }
     /// </remarks>
     [HttpPut("other/{walletId}", Name = "Other")]
     public async ValueTask<TransactionResultViewModel> OtherAsync(
@@ -408,14 +395,14 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId))
+                request.CreatedByUserId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
 
     /// <summary>
-    ///     Promotions the exchange asynchronous.
+    /// Promotions the exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -423,14 +410,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試活動",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試活動",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("promotion/{walletId}", Name = "Promotion")]
     public async ValueTask<TransactionResultViewModel> PromotionAsync(
@@ -444,7 +429,7 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId))
+                request.CreatedByUserId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -459,14 +444,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試VIPLevel季福利",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試VIPLevel季福利",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("promotion/vip/season/{walletId}", Name = "PromotionVipLevelSeason")]
     public async ValueTask<TransactionResultViewModel> PromotionVipLevelSeasonAsync(
@@ -479,7 +462,7 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId))
+                request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -494,14 +477,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試VIPLevel升級福利",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試VIPLevel升級福利",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("promotion/vip/upgrad/{walletId}", Name = "PromotionVipLevelUpgrad")]
     public async ValueTask<TransactionResultViewModel> PromotionVipLevelUpgradeAsync(
@@ -514,14 +495,14 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId))
+                request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
 
     /// <summary>
-    ///     Rebates the exchange asynchronous.
+    /// Rebates the exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -529,14 +510,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試活動",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試活動",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("rebate/{walletId}", Name = "Rebate")]
     public async ValueTask<TransactionResultViewModel> RebateAsync(
@@ -549,14 +528,14 @@ public class WalletController : ControllerBase
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
-                viewModel.ExternalId))
+                viewModel.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
 
     /// <summary>
-    ///     Withdrawals the exchange asynchronous.
+    /// Withdrawals the exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -564,14 +543,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試提款",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試提款",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("withdrawal/{walletId}", Name = "Withdrawal")]
     public async ValueTask<TransactionResultViewModel> WithdrawalAsync(
@@ -584,7 +561,7 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId))
+                request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -599,14 +576,12 @@ public class WalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
-    ///
-    ///         Post
-    ///             {
-    ///                 "walletId": "36a6cdef-094f-eb11-8d88-70b5e82b6b8d",
-    ///                 "amount": 10,
-    ///                 "description": "測試全民代理",
-    ///                 "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    /// Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    /// {
+    ///     "amount": 10,
+    ///     "description": "測試全民代理",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    /// }
     /// </remarks>
     [HttpPut("dividend/allAgentRebate/{walletId}", Name = "DividendAllAgentRebate")]
     public async ValueTask<TransactionResultViewModel> DividendAllAgentRebateAsync(
@@ -619,9 +594,17 @@ public class WalletController : ControllerBase
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
-                viewModel.ExternalId))
+                viewModel.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
+    }
+
+    private CancellationToken CreateCancellationToken()
+    {
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(HttpContext.RequestAborted);
+        cts.CancelAfter(TimeSpan.FromSeconds(10));
+
+        return cts.Token;
     }
 }

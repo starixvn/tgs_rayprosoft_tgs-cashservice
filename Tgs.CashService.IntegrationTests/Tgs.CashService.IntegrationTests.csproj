@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tgs.CashService.Client\Tgs.CashService.Client.csproj" />
+    <ProjectReference Include="..\Tgs.CashServiceWorker.Core\Tgs.CashServiceWorker.Core.csproj" />
     <ProjectReference Include="..\Tgs.CashService\Tgs.CashService.csproj" />
   </ItemGroup>
 

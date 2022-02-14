@@ -28,11 +28,11 @@
 		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc8" />
 		<PackageReference Include="ProfileViewer.OpenTelemetry.Exporter" Version="0.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+		<PackageReference Include="Tgs.MessageQueue.Nats" Version="1.5.33-alpha" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Tgs.CashService.Core\Tgs.CashService.Core.csproj" />
-		<ProjectReference Include="..\Tgs.CashService.Repositories\Tgs.CashService.Repositories.csproj" />
 	</ItemGroup>
 
 </Project>
