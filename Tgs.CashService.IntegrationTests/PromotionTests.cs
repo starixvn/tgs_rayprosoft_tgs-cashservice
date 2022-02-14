@@ -69,6 +69,8 @@ public class PromotionTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -146,6 +148,8 @@ public class PromotionTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -222,6 +226,8 @@ public class PromotionTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();

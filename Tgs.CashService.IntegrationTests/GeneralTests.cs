@@ -44,6 +44,8 @@ public class GeneralTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();

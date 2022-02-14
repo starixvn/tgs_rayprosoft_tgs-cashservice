@@ -69,6 +69,8 @@ public class GameProviderTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -145,6 +147,8 @@ public class GameProviderTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -221,6 +225,8 @@ public class GameProviderTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
@@ -297,6 +303,8 @@ public class GameProviderTests
 
                     return fakeWalletExchangeService;
                 });
+
+                _ = services.AddFakeNatsMessageQueue();
             }));
 
         var httpClient = web.CreateClient();
