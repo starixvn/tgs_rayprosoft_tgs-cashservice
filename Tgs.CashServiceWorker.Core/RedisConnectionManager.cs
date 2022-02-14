@@ -2,7 +2,7 @@
 
 namespace Tgs.CashServiceWorker;
 
-internal class RedisConnectionManager : IDisposable
+public class RedisConnectionManager : IDisposable
 {
     private readonly ConnectionMultiplexer _connectionMultiplexer;
     private bool _disposedValue;
