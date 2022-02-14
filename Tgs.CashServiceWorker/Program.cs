@@ -19,13 +19,13 @@ builder.Services.AddDbRepository((sp, dbBuilder) =>
 });
 
 builder.Services
-    .AddCashServiceWorker((options, sp) => { })
-    .AddSingleton(sp =>
+    .AddCashServiceWorker((options, sp) =>
     {
         var config = sp.GetService<IConfiguration>();
 
-        return new RedisConnectionManager(config.GetConnectionString("Redis"));
+        options.RedisConnectionString = config.GetConnectionString("Redis");
     });
+
 builder.Services
     .AddMessageQueue()
     .AddNatsMessageQueue(config => config
