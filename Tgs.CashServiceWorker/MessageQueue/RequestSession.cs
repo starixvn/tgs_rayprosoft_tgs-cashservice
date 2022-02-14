@@ -31,12 +31,11 @@ internal class RequestSession : IMessageSession
     {
         var request = WalletExchangeRequest.Parser.ParseFrom(question.Data.Span);
         var redisKey = new RedisKey($"Tgs:Cash:{request.WalletId.ToGuid():D}");
-        var currentSubject = $"tgs.cash.worker.{Environment.MachineName}";
 
-        var subject = await _redisDatabase.StringGetAsync(redisKey).ConfigureAwait(false);
+        var subjectKey = await _redisDatabase.StringGetAsync(redisKey).ConfigureAwait(false);
 
-        if (!subject.HasValue || (string)subject != currentSubject)
-            throw new Exception();
+        if (!subjectKey.HasValue || (string)subjectKey != Environment.MachineName)
+            throw new RequestInvalidSubjectException($"This machine ({Environment.MachineName}) not match {subjectKey}");
 
         _ = await _redisDatabase
             .KeyExpireAsync(redisKey, TimeSpan.FromMinutes(1), CommandFlags.FireAndForget)
