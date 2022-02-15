@@ -4,6 +4,7 @@ metadata:
   name: {{ include "cashservice-api.fullname" . }}
   labels:
     {{- include "cashservice-api.labels" . | nindent 4 }}
+  configmap.reloader.stakater.com/reload: "configmap-{{ include "cashservice-api.fullname" . }}"
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -12,7 +13,7 @@ spec:
     matchLabels:
       {{- include "cashservice-api.selectorLabels" . | nindent 6 }}
   template:
-    metadata:
+    metadata: 
       {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
