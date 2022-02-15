@@ -110,7 +110,7 @@ pipeline {
 			steps {
 				withKubeConfig([credentialsId: env.k8s_config]) {
                     script {
-                        def resources = getResources(env.k8s_config, env.kube_ns, "cashservice-api")
+                        env.resources = getResources(env.k8s_config, env.kube_ns, "cashservice-api")
                     }
 
                     sh '''
@@ -143,7 +143,7 @@ pipeline {
 			steps {
 				withKubeConfig([credentialsId: env.k8s_config]) {
                     script{
-                        def resources = getResources(env.k8s_config, env.kube_ns, "cashservice-worker")
+                        env.resources = getResources(env.k8s_config, env.kube_ns, "cashservice-worker")
                     }
                     
                     sh '''
