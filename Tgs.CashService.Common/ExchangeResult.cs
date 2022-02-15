@@ -1,4 +1,4 @@
-﻿namespace Tgs.CashService.Core;
+﻿namespace Tgs.CashService;
 
 public record ExchangeResult(
     Guid TransactionId,

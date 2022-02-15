@@ -1,8 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Tgs.CashService;
 
-namespace Tgs.CashService.Core;
+namespace Tgs.CashServiceWorker;
 
 internal class WalletExchanger
 {

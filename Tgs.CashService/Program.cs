@@ -6,7 +6,6 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Tgs.CashService;
-using Tgs.CashService.Core;
 
 ThreadPool.SetMinThreads(Environment.ProcessorCount * 20, Environment.ProcessorCount);
 

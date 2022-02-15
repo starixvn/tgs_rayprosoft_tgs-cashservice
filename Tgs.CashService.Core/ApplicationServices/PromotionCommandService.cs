@@ -1,7 +1,7 @@
 ﻿using Tgs.Cash.Protos;
 using Tgs.ServiceUtility;
 
-namespace Tgs.CashService.Core.ApplicationServices;
+namespace Tgs.CashService.ApplicationServices;
 
 internal class PromotionCommandService : IGetService<PromotionCommand, ExchangeResult>
 {

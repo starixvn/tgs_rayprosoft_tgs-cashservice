@@ -1,6 +1,6 @@
 ﻿using Tgs.Cash.Protos;
 
-namespace Tgs.CashService.Core;
+namespace Tgs.CashService;
 
 public interface IWalletExchangeService
 {

@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis;
 
-namespace Tgs.CashServiceWorker;
+namespace Tgs.CashService;
 
 internal class RedisConnectionManager : IDisposable
 {

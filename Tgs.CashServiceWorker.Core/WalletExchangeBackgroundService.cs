@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-namespace Tgs.CashService.Core;
+namespace Tgs.CashServiceWorker;
 
 internal class WalletExchangeBackgroundService : BackgroundService
 {

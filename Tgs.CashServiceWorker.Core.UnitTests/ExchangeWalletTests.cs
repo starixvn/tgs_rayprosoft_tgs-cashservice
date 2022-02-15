@@ -3,10 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
-using Tgs.Cash.Protos;
-using Tgs.CashService.Core;
-using Tgs.CashService.Core.ApplicationServices;
-using Tgs.CashService.Worker.ApplicationServices;
+using Tgs.CashService;
+using Tgs.CashServiceWorker.ApplicationServices;
 
 namespace Tgs.CashServiceWorker.Core.UnitTests;
 

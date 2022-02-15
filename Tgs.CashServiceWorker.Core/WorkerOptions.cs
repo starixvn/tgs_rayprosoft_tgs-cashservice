@@ -1,4 +1,4 @@
-﻿namespace Tgs.CashService.Worker;
+﻿namespace Tgs.CashServiceWorker;
 
 public class WorkerOptions
 {

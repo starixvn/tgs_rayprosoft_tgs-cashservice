@@ -1,7 +1,6 @@
 ﻿using NATS.Client;
 using Polly;
 using Tgs.Cash.Protos;
-using Tgs.CashService.Core;
 
 namespace Tgs.CashService;
 

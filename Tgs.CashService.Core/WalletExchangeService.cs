@@ -4,7 +4,7 @@ using StackExchange.Redis;
 using Tgs.Cash.Protos;
 using Tgs.MessageQueue;
 
-namespace Tgs.CashService.Core;
+namespace Tgs.CashService;
 
 internal class WalletExchangeService : IWalletExchangeService
 {

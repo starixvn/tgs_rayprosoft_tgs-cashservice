@@ -1,4 +1,4 @@
-﻿namespace Tgs.CashService.Core;
+﻿namespace Tgs.CashServiceWorker;
 
 public class Wallet
 {

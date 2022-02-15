@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Tgs.CashService.Core;
 using Tgs.CashService.Repositories;
+using Tgs.CashServiceWorker;
 using TGS.GameProviders.Repositories.Entities;
 
 namespace Microsoft.Extensions.DependencyInjection;
