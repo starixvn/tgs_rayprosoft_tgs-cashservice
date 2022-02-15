@@ -5,6 +5,7 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Tgs.CashService;
 
 ThreadPool.SetMinThreads(Environment.ProcessorCount * 20, Environment.ProcessorCount);
 
@@ -13,6 +14,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .AddJsonFile("/config/appsettings.json", true)
     .AddEnvironmentVariables();
+
+builder.Logging
+    .AddOpenTelemetry(options =>
+    {
+        options.IncludeFormattedMessage = true;
+        options.ParseStateValues = true;
+        _ = options.AddFluentdForwardExporter(fluentOptions =>
+        {
+            var nodeIp = builder.Configuration.GetValue<string>("NODE_IP");
+            fluentOptions.Host = nodeIp;
+            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
+            fluentOptions.UseMessagePack();
+        });
+    });
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
@@ -30,12 +45,14 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
-builder.Services.AddCashServiceCore((options, sp) =>
-{
-    var config = sp.GetRequiredService<IConfiguration>();
+builder.Services
+    .AddCashServiceCore((options, sp) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
 
-    options.RedisConnectionString = config.GetConnectionString("Redis");
-});
+        options.RedisConnectionString = config.GetConnectionString("Redis");
+    })
+    .Decorate<IWalletExchangeService, WalletExchangeServiceDecorator>();
 builder.Services.AddHealthChecks();
 
 builder.Services
@@ -89,6 +106,10 @@ builder.Services
         .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");
+
+builder.Services
+    .AddInterceptionService()
+    .AddServiceUtiltiyInterceptors();
 
 var app = builder.Build();
 

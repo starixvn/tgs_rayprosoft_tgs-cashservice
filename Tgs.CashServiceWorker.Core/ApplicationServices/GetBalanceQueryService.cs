@@ -1,7 +1,6 @@
-﻿using Tgs.CashService.Core;
-using Tgs.ServiceUtility;
+﻿using Tgs.ServiceUtility;
 
-namespace Tgs.CashService.Worker.ApplicationServices;
+namespace Tgs.CashServiceWorker.ApplicationServices;
 
 internal class GetBalanceQueryService : IGetService<GetBalanceQuery, decimal>
 {

@@ -1,8 +1,8 @@
 ﻿using Google.Protobuf;
 using StackExchange.Redis;
 using Tgs.Cash.Protos;
-using Tgs.CashService.Core;
-using Tgs.CashService.Core.ApplicationServices;
+using Tgs.CashService;
+using Tgs.CashServiceWorker.ApplicationServices;
 using Tgs.MessageQueue;
 using Tgs.ServiceUtility;
 

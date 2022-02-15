@@ -4,7 +4,7 @@ using StackExchange.Redis;
 using Tgs.Cash.Protos;
 using Tgs.MessageQueue;
 
-namespace Tgs.CashService.Core;
+namespace Tgs.CashService;
 
 internal class WalletExchangeService : IWalletExchangeService
 {
@@ -54,6 +54,15 @@ internal class WalletExchangeService : IWalletExchangeService
         var response = BalanceResponse.Parser.ParseFrom(responseData.Span);
 
         return response.Balance;
+    }
+
+    public async ValueTask DiscardBidAsync(Guid walletId)
+    {
+        var processorKey = $"Tgs:Cash:{walletId:D}";
+
+        await _redisDatabase
+            .KeyDeleteAsync(processorKey)
+            .ConfigureAwait(false);
     }
 
     private async ValueTask<string> GetProcessorSubjectAsync(Guid walletId, CancellationToken cancellationToken)

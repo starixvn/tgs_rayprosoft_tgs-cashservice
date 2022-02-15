@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
 using Tgs.Cash.Protos;
-using Tgs.CashService.Worker.ApplicationServices;
+using Tgs.CashServiceWorker.ApplicationServices;
 using Tgs.MessageQueue;
 using Tgs.ServiceUtility;
 

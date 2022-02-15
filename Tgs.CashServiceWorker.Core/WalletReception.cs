@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Tgs.CashService.Core;
+namespace Tgs.CashServiceWorker;
 
 internal class WalletReception : IDisposable
 {

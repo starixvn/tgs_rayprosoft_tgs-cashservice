@@ -3,7 +3,7 @@ using System.Transactions;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Tgs.CashService.Core;
+using Tgs.CashServiceWorker;
 using Tgs.SerialNumberGenerator;
 using TGS.GameProviders.Repositories.Entities;
 

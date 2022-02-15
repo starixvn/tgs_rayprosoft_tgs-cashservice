@@ -1,6 +1,7 @@
-﻿using Tgs.ServiceUtility;
+﻿using Tgs.CashService;
+using Tgs.ServiceUtility;
 
-namespace Tgs.CashService.Core.ApplicationServices;
+namespace Tgs.CashServiceWorker.ApplicationServices;
 
 internal class ExchangeWalletCommandService : IGetService<ExchangeWalletCommand, ExchangeResult>
 {

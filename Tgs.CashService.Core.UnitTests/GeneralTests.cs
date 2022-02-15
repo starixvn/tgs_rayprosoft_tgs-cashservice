@@ -1,6 +1,6 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
-using Tgs.CashService.Core.ApplicationServices;
+using Tgs.CashService.ApplicationServices;
 
 namespace Tgs.CashService.Core.UnitTests;
 

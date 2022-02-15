@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tgs.CashService.Core;
-using Tgs.CashService.Core.ApplicationServices;
+using Tgs.CashService.ApplicationServices;
 using Tgs.CashService.ViewModels;
 using Tgs.ServiceUtility;
 

@@ -1,4 +1,6 @@
-﻿namespace Tgs.CashService.Core;
+﻿using Tgs.CashService;
+
+namespace Tgs.CashServiceWorker;
 
 public interface IWalletRepository
 {

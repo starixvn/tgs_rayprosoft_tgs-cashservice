@@ -1,4 +1,6 @@
-﻿namespace Tgs.CashService.Core.ApplicationServices;
+﻿using Tgs.CashService;
+
+namespace Tgs.CashServiceWorker.ApplicationServices;
 
 public record ExchangeWalletCommand(
     Guid WalletId,

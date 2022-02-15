@@ -1,10 +1,12 @@
 ﻿using Tgs.Cash.Protos;
 
-namespace Tgs.CashService.Core;
+namespace Tgs.CashService;
 
-internal interface IWalletExchangeService
+public interface IWalletExchangeService
 {
+    ValueTask DiscardBidAsync(Guid walletId);
+
     ValueTask<ExchangeResult> SendRequestAsync(WalletExchangeRequest request, CancellationToken cancellationToken = default);
 
-    ValueTask<decimal?> GetBalanceAsync(Guid WalletId, CancellationToken cancellationToken = default);
+    ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default);
 }

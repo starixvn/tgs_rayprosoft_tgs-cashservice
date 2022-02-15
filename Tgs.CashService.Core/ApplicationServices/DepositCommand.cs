@@ -1,4 +1,4 @@
-﻿namespace Tgs.CashService.Core.ApplicationServices;
+﻿namespace Tgs.CashService.ApplicationServices;
 
 public record DepositCommand(
     Guid WalletId,
