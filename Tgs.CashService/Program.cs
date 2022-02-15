@@ -5,6 +5,8 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Tgs.CashService;
+using Tgs.CashService.Core;
 
 ThreadPool.SetMinThreads(Environment.ProcessorCount * 20, Environment.ProcessorCount);
 
@@ -30,12 +32,14 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
-builder.Services.AddCashServiceCore((options, sp) =>
-{
-    var config = sp.GetRequiredService<IConfiguration>();
+builder.Services
+    .AddCashServiceCore((options, sp) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
 
-    options.RedisConnectionString = config.GetConnectionString("Redis");
-});
+        options.RedisConnectionString = config.GetConnectionString("Redis");
+    })
+    .Decorate<IWalletExchangeService, WalletExchangeServiceDecorator>();
 builder.Services.AddHealthChecks();
 
 builder.Services

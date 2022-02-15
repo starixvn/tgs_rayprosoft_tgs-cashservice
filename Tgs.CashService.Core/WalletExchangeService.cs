@@ -56,6 +56,15 @@ internal class WalletExchangeService : IWalletExchangeService
         return response.Balance;
     }
 
+    public async ValueTask DiscardBidAsync(Guid walletId)
+    {
+        var processorKey = $"Tgs:Cash:{walletId:D}";
+
+        await _redisDatabase
+            .KeyDeleteAsync(processorKey)
+            .ConfigureAwait(false);
+    }
+
     private async ValueTask<string> GetProcessorSubjectAsync(Guid walletId, CancellationToken cancellationToken)
     {
         var processorKey = $"Tgs:Cash:{walletId:D}";

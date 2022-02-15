@@ -107,11 +107,10 @@ pipeline {
         }
 
 		stage('Deploy cash-api to k8s') {
-            environment {
-                resource = getResources(env.k8s_config,env.kube_ns,"cashservice-api")
-            }
 			steps {
 				withKubeConfig([credentialsId: env.k8s_config]) {
+                    def resources = getResources(env.k8s_config, env.kube_ns, "cashservice-api")
+
                     sh '''
                         cat << EOF | yq e -P | helm template deployment/k8s/cashservice-api \
                             -n ${kube_ns} \
@@ -139,17 +138,17 @@ pipeline {
 		}
 
         stage('Deploy cash-worker to k8s') {
-            environment {
-                resource = getResources(env.k8s_config,env.kube_ns,"cashservice-api")
-            }
 			steps {
 				withKubeConfig([credentialsId: env.k8s_config]) {
+                    def resources = getResources(env.k8s_config, env.kube_ns, "cashservice-worker")
+
                     sh '''
                         cat << EOF | yq e -P | helm template deployment/k8s/cashservice-worker \
                             -n ${kube_ns} \
                             --set image.tag=${TAG} \
                             -f -
                         {
+
                             "nodeSelector": $node_selector,
                             "tolerations": [$dedicated],
                             "resources": $resources
