@@ -93,6 +93,11 @@ builder.Services
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");
 
+builder.Services
+    .AddInterceptionService()
+    .AddServiceUtiltiyInterceptors();
+
+
 var app = builder.Build();
 
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tgs.CashService v1"));

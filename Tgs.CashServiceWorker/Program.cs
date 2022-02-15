@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using OpenTelemetry.Exporter;
@@ -86,6 +87,10 @@ builder.Services
                     ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
         };
     });
+
+builder.Services
+    .AddInterceptionService()
+    .AddServiceUtiltiyInterceptors();
 
 var app = builder.Build();
 
