@@ -1,226 +1,162 @@
-using System;
-using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Tgs.CashService.Core.ApplicationServices;
+using Tgs.Cash.Protos;
+using Tgs.CashService.ApplicationServices;
 
-namespace Tgs.CashService.Core.UnitTests
+namespace Tgs.CashService.Core.UnitTests;
+
+[TestFixture]
+public class ManagementTests
 {
-    [TestFixture]
-    public class ManagementTests
+    [Test]
+    public async Task Can_Create_Adjust_Exchange()
     {
-        [Test]
-        public async Task Can_Create_Adjust_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-            var sut = new AdjustService(fakeWalletRepository);
+        var sut = new AdjustCommandService(fakeWalletExchangeService);
 
-            var query = new AdjustCommand(
-                Guid.NewGuid(),
-                100M,
-                Guid.NewGuid().ToString("N"),
-                "測試調整",
-                Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
+        var command = new AdjustCommand(
+            Guid.NewGuid(),
+            100M,
+            Guid.NewGuid().ToString("N"),
+            "測試調整",
+            Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = query.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.Adjust.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId
+                    && request.CreatedUser == command.CreatedByUserId));
+    }
 
-            _ = fakeWalletRepository
-                .Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(query.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.Adjust),
-                    Arg.Is(query.Amount),
-                    Arg.Is(query.Description),
-                    Arg.Is(query.ExternalId),
-                    Arg.Is(query.CreatedByUserId));
-        }
+    [Test]
+    public async Task Can_Create_Bonus_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        [Test]
-        public async Task Can_Create_Bonus_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
-            var sut = new BonusService(fakeWalletRepository);
+        var sut = new BonusCommandService(fakeWalletExchangeService);
 
-            var query = new BonusCommand(
-                Guid.NewGuid(),
-                100,
-                Guid.NewGuid().ToString("N"),
-                "測試紅利");
+        var command = new BonusCommand(
+            Guid.NewGuid(),
+            100,
+            Guid.NewGuid().ToString("N"),
+            "測試紅利");
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = query.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.Bonus.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
+    }
 
-            _ = fakeWalletRepository.Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(query.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.Bonus),
-                    Arg.Is(query.Amount),
-                    Arg.Is(query.Description),
-                    Arg.Is(query.ExternalId));
-        }
+    [Test]
+    public async Task Can_Create_Rebate_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        [Test]
-        public async Task Can_Create_Rebate_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var sut = new RebateCommandService(fakeWalletExchangeService);
 
-            var sut = new RebateService(fakeWalletRepository);
+        var command = new RebateCommand(
+            Guid.NewGuid(),
+            100M,
+            Guid.NewGuid().ToString("N"),
+            "測試反水");
 
-            var query = new RebateCommand(
-                Guid.NewGuid(),
-                100M,
-                Guid.NewGuid().ToString("N"),
-                "測試反水");
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = query.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.Rebate.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
+    }
 
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
+    [Test]
+    public async Task Can_Create_Other_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-            _ = fakeWalletRepository.Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(query.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.Rebate),
-                    Arg.Is(query.Amount),
-                    Arg.Is(query.Description),
-                    Arg.Is(query.ExternalId));
-        }
+        var sut = new OtherCommandService(fakeWalletExchangeService);
 
-        [Test]
-        public async Task Can_Create_Other_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var command = new OtherCommand(
+            Guid.NewGuid(),
+            100,
+            Guid.NewGuid().ToString("N"),
+            "測試其他",
+            Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
 
-            var sut = new OtherService(fakeWalletRepository);
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            var query = new OtherCommand(
-                Guid.NewGuid(),
-                100,
-                Guid.NewGuid().ToString("N"),
-                "測試其他",
-                Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.Other.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId
+                    && request.CreatedUser == command.CreatedByUserId));
+    }
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = query.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
+    [Test]
+    public async Task Can_Create_UnsettledBetManualCommand_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
+        var sut = new UnsettledBetManualCommandService(fakeWalletExchangeService);
 
-            _ = fakeWalletRepository.Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(query.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.Other),
-                    Arg.Is(query.Amount),
-                    Arg.Is(query.Description),
-                    Arg.Is(query.ExternalId),
-                    Arg.Is(query.CreatedByUserId));
-        }
+        var command = new UnsettledBetManualCommand(
+            Guid.NewGuid(),
+            100,
+            "測試Open Round Page",
+            Guid.NewGuid().ToString("N"),
+            Guid.NewGuid());
 
-        [Test]
-        public async Task Can_Create_UnsettledBetManualCommand_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            var sut = new UnsettledBetManualService(fakeWalletRepository);
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.UnsettledBetManual.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId
+                    && request.CreatedUser == command.CreatedByUserId));
+    }
 
-            var command = new UnsettledBetManualCommand(
-                Guid.NewGuid(),
-                100,
-                "測試Open Round Page",
-                Guid.NewGuid().ToString("N"),
-                Guid.NewGuid());
+    [Test]
+    public async Task Can_Create_AdjustResettledBetManualCommand_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = command.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
+        var sut = new AdjustResettledBetManualCommandService(fakeWalletExchangeService);
 
-            _ = await sut.GetAsync(command).ConfigureAwait(false);
+        var command = new AdjustResettledBetManualCommand(
+            Guid.NewGuid(),
+            100,
+            "測試Closed Round Page",
+            Guid.NewGuid().ToString("N"),
+            Guid.NewGuid());
 
-            _ = fakeWalletRepository
-                .Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(command.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.UnsettledBetManual),
-                    Arg.Is(command.Amount),
-                    Arg.Is(command.Description),
-                    Arg.Is(command.ExternalId),
-                    Arg.Is(command.CreatedByUserId));
-        }
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        [Test]
-        public async Task Can_Create_AdjustResettledBetManualCommand_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
-
-            var sut = new AdjustResettledBetManualService(fakeWalletRepository);
-
-            var command = new AdjustResettledBetManualCommand(
-                Guid.NewGuid(),
-                100,
-                "測試Closed Round Page",
-                Guid.NewGuid().ToString("N"),
-                Guid.NewGuid());
-
-            fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = command.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
-
-            _ = await sut.GetAsync(command).ConfigureAwait(false);
-
-            _ = fakeWalletRepository
-                .Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(command.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.AdjustResettledBetManual),
-                    Arg.Is(command.Amount),
-                    Arg.Is(command.Description),
-                    Arg.Is(command.ExternalId),
-                    Arg.Is(command.CreatedByUserId));
-        }
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.AdjustResettledBetManual.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId
+                    && request.CreatedUser == command.CreatedByUserId));
     }
 }

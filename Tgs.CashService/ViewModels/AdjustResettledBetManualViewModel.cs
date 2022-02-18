@@ -1,10 +1,7 @@
-﻿using System;
+﻿namespace Tgs.CashService.ViewModels;
 
-namespace Tgs.CashService.ViewModels
-{
-    public record AdjustResettledBetManualViewModel(
-       decimal Amount,
-       string Description,
-       string ExternalId,
-       Guid CreatedByUserId);
-}
+public record AdjustResettledBetManualViewModel(
+   decimal Amount,
+   string Description,
+   string ExternalId,
+   Guid CreatedByUserId);

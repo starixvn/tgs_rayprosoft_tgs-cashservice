@@ -1,6 +1,3 @@
-﻿using System;
+﻿namespace Tgs.CashService.ApplicationServices;
 
-namespace Tgs.CashService.Core
-{
-    public record GetBalanceQuery(Guid WalletId);
-}
+public record GetBalanceQuery(Guid WalletId);

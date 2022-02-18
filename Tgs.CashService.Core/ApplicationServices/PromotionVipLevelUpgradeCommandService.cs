@@ -1,38 +1,30 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Tgs.Cash.Protos;
 using Tgs.ServiceUtility;
 
-namespace Tgs.CashService.Core.ApplicationServices
+namespace Tgs.CashService.ApplicationServices;
+
+internal class PromotionVipLevelupgradeCommandService : IGetService<PromotionVipLevelUpgradeCommand, ExchangeResult>
 {
-    public class PromotionVipLevelupgradeCommandService : IGetService<PromotionVipLevelUpgradeCommand, ExchangeResult>
+    private readonly IWalletExchangeService _walletExchangeService;
+
+    public PromotionVipLevelupgradeCommandService(IWalletExchangeService walletExchangeService)
     {
-        private readonly IWalletRepository _walletRepository;
+        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
+    }
 
-        public PromotionVipLevelupgradeCommandService(IWalletRepository walletRepository)
+    public async ValueTask<ExchangeResult> GetAsync(PromotionVipLevelUpgradeCommand command, CancellationToken cancellationToken = default)
+    {
+        var request = new WalletExchangeRequest
         {
-            _walletRepository = walletRepository ?? throw new ArgumentNullException(nameof(walletRepository));
-        }
+            WalletId = command.WalletId,
+            TransactionType = TransactionType.PromotionVipLevelUpgrade.ToString(),
+            Amount = command.Amount,
+            Description = command.Description ?? string.Empty,
+            ExternalId = command.ExternalId ?? string.Empty
+        };
 
-        public async ValueTask<ExchangeResult> GetAsync(PromotionVipLevelUpgradeCommand query, CancellationToken cancellationToken = default)
-        {
-            var wallet = await _walletRepository.GetWalletAsync(query.WalletId);
-
-            if (wallet == null)
-                throw new InvalidOperationException("Can't found wallet.");
-
-            var (transactionId, postBalance) = await _walletRepository
-                .ExchangeAsync(
-                    wallet.BrandId,
-                    query.WalletId,
-                    wallet.PlayerCode,
-                    TransactionType.PromotionVipLevelUpgrade,
-                    query.Amount,
-                    query.Description,
-                    query.ExternalId)
-                .ConfigureAwait(false);
-
-            return new ExchangeResult(transactionId, postBalance);
-        }
+        return await _walletExchangeService
+            .SendRequestAsync(request, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

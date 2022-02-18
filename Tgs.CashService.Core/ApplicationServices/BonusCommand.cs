@@ -1,10 +1,7 @@
-﻿using System;
+﻿namespace Tgs.CashService.ApplicationServices;
 
-namespace Tgs.CashService.Core.ApplicationServices
-{
-    public record BonusCommand(
-        Guid WalletId,
-        decimal Amount,
-        string? Description,
-        string? ExternalId);
-}
+public record BonusCommand(
+    Guid WalletId,
+    decimal Amount,
+    string? Description,
+    string? ExternalId);

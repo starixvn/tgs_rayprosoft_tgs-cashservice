@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace Tgs.CashService.Client;
 
-namespace Tgs.CashService.Client
+public record TransactionResponse
 {
-    public record TransactionResponse
-    {
-        public Guid TransactionId { get; init; }
+    public Guid TransactionId { get; init; }
 
-        public decimal Balance { get; init; }
-    }
+    public decimal Balance { get; init; }
 }

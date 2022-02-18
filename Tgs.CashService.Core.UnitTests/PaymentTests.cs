@@ -1,149 +1,86 @@
-﻿using System;
-using System.Threading.Tasks;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
-using Tgs.CashService.Core.ApplicationServices;
+using Tgs.Cash.Protos;
+using Tgs.CashService.ApplicationServices;
 
-namespace Tgs.CashService.Core.UnitTests
+namespace Tgs.CashService.Core.UnitTests;
+
+[TestFixture]
+public class PaymentTests
 {
-    [TestFixture]
-    public class PaymentTests
+    [Test]
+    public async Task Can_Create_Deposit_Exchange()
     {
-        [Test]
-        public async Task Can_Create_Deposit_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-            var sut = new DepositService(fakeWalletRepository);
+        var sut = new DepositCommandService(fakeWalletExchangeService);
 
-            var command = new DepositCommand(
-                Guid.NewGuid(),
-                100M,
-                Guid.NewGuid().ToString("N"),
-                "測試存款",
-                Guid.NewGuid());
+        var command = new DepositCommand(
+            Guid.NewGuid(),
+            100M,
+            Guid.NewGuid().ToString("N"),
+            "測試存款",
+            Guid.NewGuid());
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = command.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            _ = await sut.GetAsync(command).ConfigureAwait(false);
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.Deposit.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId
+                    && request.CreatedUser == command.CreatedByUserId));
+    }
 
-            _ = fakeWalletRepository
-                .Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(command.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.Deposit),
-                    Arg.Is(command.Amount),
-                    Arg.Is(command.Description),
-                    Arg.Is(command.ExternalId),
-                    Arg.Is(command.CreatedByUserId));
-        }
+    [Test]
+    public async Task Can_Create_Withdrawal_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        [Test]
-        public void Create_Deposit_Exchange_With_Invalid_WalletId_Will_Throw_Exception()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var sut = new WithdrawalCommandService(fakeWalletExchangeService);
 
-            var sut = new DepositService(fakeWalletRepository);
+        var command = new WithdrawalCommand(
+            Guid.NewGuid(),
+            100,
+            Guid.NewGuid().ToString("N"),
+            "測試反水");
 
-            var command = new DepositCommand(
-                Guid.NewGuid(),
-                100,
-                Guid.NewGuid().ToString("N"),
-                "測試存款",
-                null);
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await sut.GetAsync(command));
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.Withdrawal.ToString()
+                    && request.Amount == -command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
+    }
 
-            _ = fakeWalletRepository.DidNotReceive()
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(command.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.Deposit),
-                    Arg.Any<decimal>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<Guid?>());
-        }
+    [Test]
+    public async Task Can_Create_CancelWithdrawal_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        [Test]
-        public async Task Can_Create_Withdrawal_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var sut = new CancelWithdrawalCommandService(fakeWalletExchangeService);
 
-            var sut = new WithdrawalService(fakeWalletRepository);
+        var command = new CancelWithdrawalCommand(
+            Guid.NewGuid(),
+            100M,
+            Guid.NewGuid().ToString("N"),
+            "測試取消提款單",
+            Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
 
-            var query = new WithdrawalCommand(
-                Guid.NewGuid(),
-                100,
-                Guid.NewGuid().ToString("N"),
-                "測試反水");
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = query.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
-
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
-
-            _ = fakeWalletRepository
-                .Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(query.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.Withdrawal),
-                    Arg.Is(-query.Amount),
-                    Arg.Is(query.Description),
-                    Arg.Is(query.ExternalId));
-        }
-
-        [Test]
-        public async Task Can_Create_CancelWithdrawal_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
-
-            var sut = new CancelWithdrawalService(fakeWalletRepository);
-
-            var query = new CancelWithdrawalCommand(
-                Guid.NewGuid(),
-                100M,
-                Guid.NewGuid().ToString("N"),
-                "測試取消提款單",
-                Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
-
-            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
-                .Returns(new Wallet
-                {
-                    BrandId = Guid.NewGuid(),
-                    Id = query.WalletId,
-                    PlayerCode = "Player1"
-                });
-
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
-
-            _ = fakeWalletRepository
-                .Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(query.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.CancelWithdrawal),
-                    Arg.Is(query.Amount),
-                    Arg.Is(query.Description),
-                    Arg.Is(query.ExternalId),
-                    Arg.Is(query.CreatedByUserId));
-        }
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.CancelWithdrawal.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId
+                    && request.CreatedUser == command.CreatedByUserId));
     }
 }

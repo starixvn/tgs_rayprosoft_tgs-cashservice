@@ -1,10 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Tgs.CashService.IntegrationTests;
 
-internal class TestCashApplication : WebApplicationFactory<Startup>
+internal class TestCashApplication : WebApplicationFactory<Program>
 {
     private readonly Action<IWebHostBuilder>? _webHostConfigure;
 

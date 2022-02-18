@@ -1,520 +1,516 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
-namespace Tgs.CashService.Client
+namespace Tgs.CashService.Client;
+
+internal class CashServiceClient : ICashServiceClient
 {
-    internal class CashServiceClient : ICashServiceClient
+    private static readonly JsonSerializerOptions _SerializerOptions = new()
     {
-        private static readonly JsonSerializerOptions _SerializerOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters =
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters =
             {
                 new JsonStringEnumConverter()
             }
+    };
+
+    private readonly HttpClient _httpClient;
+
+    public CashServiceClient(HttpClient httpClient)
+        => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+
+    public async ValueTask<TransactionResponse> AdjustAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid createdByUserId)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
         };
 
-        private readonly HttpClient _httpClient;
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-        public CashServiceClient(HttpClient httpClient)
-            => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/adjust/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-        public async ValueTask<TransactionResponse> AdjustAsync(
-            Guid walletId,
-            decimal amount,
-            string? description,
-            string? externalId,
-            Guid createdByUserId)
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
+
+    public async ValueTask<decimal> GetBalanceAsync(Guid walletId)
+    {
+        var response = await _httpClient
+            .GetAsync($"/wallet/{walletId}")
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<decimal>(contentJson);
+    }
+
+    public async ValueTask<TransactionResponse> BonusAsync(Guid walletId, decimal amount, string? description,
+        string? externalId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId,
-                CreatedByUserId = createdByUserId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/adjust/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/bonus/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<decimal> GetBalanceAsync(Guid walletId)
+    public async ValueTask<TransactionResponse> CancelWithdrawalAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid? createdByUserId)
+    {
+        var request = new
         {
-            var response = await _httpClient
-                .GetAsync($"/wallet/{walletId}")
-                .ConfigureAwait(false);
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
+        };
 
-            response.EnsureSuccessStatusCode();
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            return JsonSerializer.Deserialize<decimal>(contentJson);
-        }
-
-        public async ValueTask<TransactionResponse> BonusAsync(Guid walletId, decimal amount, string? description,
-            string? externalId)
+        using var requestMessage = new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"/wallet/withdrawal/{walletId}")
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
+            Content = requestContent
+        };
+        var response = await _httpClient
+            .SendAsync(requestMessage)
+            .ConfigureAwait(false);
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        _ = response.EnsureSuccessStatusCode();
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/bonus/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
-
-        public async ValueTask<TransactionResponse> CancelWithdrawalAsync(
-            Guid walletId,
-            decimal amount,
-            string? description,
-            string? externalId,
-            Guid? createdByUserId)
+    public async ValueTask<TransactionResponse> DepositAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid? createdByUserId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId,
-                CreatedByUserId = createdByUserId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var requestMessage = new HttpRequestMessage(
-                HttpMethod.Delete,
-                $"/wallet/withdrawal/{walletId}");
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/deposit/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            requestMessage.Content = requestContent;
+        _ = response.EnsureSuccessStatusCode();
 
-            var response = await _httpClient
-                .SendAsync(requestMessage)
-                .ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
-
-        public async ValueTask<TransactionResponse> DepositAsync(
-            Guid walletId,
-            decimal amount,
-            string? description,
-            string? externalId,
-            Guid? createdByUserId)
+    public async ValueTask<TransactionResponse> GameProviderDepositAsync(Guid walletId, decimal amount,
+        string? description, string? externalId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId,
-                CreatedByUserId = createdByUserId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/deposit/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/gp/deposit/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> GameProviderDepositAsync(Guid walletId, decimal amount,
-            string? description, string? externalId)
+    public async ValueTask<TransactionResponse> GameProviderFundInAsync(Guid walletId, decimal amount,
+        string? description, string? externalId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/gp/deposit/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/gp/fund-in/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> GameProviderFundInAsync(Guid walletId, decimal amount,
-            string? description, string? externalId)
+    public async ValueTask<TransactionResponse> GameProviderFundOutAsync(Guid walletId, decimal amount,
+        string? description, string? externalId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/gp/fund-in/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/gp/fund-out/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> GameProviderFundOutAsync(Guid walletId, decimal amount,
-            string? description, string? externalId)
+    public async ValueTask<TransactionResponse> GameProviderWithdrawalAsync(Guid walletId, decimal amount,
+        string? description, string? externalId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/gp/fund-out/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/gp/withdrawal/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> GameProviderWithdrawalAsync(Guid walletId, decimal amount,
-            string? description, string? externalId)
+    public async ValueTask<TransactionResponse> OtherAsync(
+        Guid walletId,
+        decimal amount,
+        string description,
+        string externalId,
+        Guid createdByUserId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/gp/withdrawal/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/other/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> OtherAsync(
-            Guid walletId,
-            decimal amount,
-            string description,
-            string externalId,
-            Guid createdByUserId)
+    public async ValueTask<TransactionResponse> PromotionAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid? createByUserId)
+
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId,
-                CreatedByUserId = createdByUserId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreateByUserId = createByUserId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/other/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/promotion/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> PromotionAsync(
-            Guid walletId,
-            decimal amount,
-            string? description,
-            string? externalId,
-            Guid? createByUserId)
-
+    public async ValueTask<TransactionResponse> RebateAsync(Guid walletId, decimal amount, string? description,
+        string? externalId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId,
-                CreateByUserId = createByUserId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/promotion/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/rebate/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> RebateAsync(Guid walletId, decimal amount, string? description,
-            string? externalId)
+    public async ValueTask<TransactionResponse> WithdrawalAsync(Guid walletId, decimal amount, string? description,
+        string? externalId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/rebate/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/withdrawal/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> WithdrawalAsync(Guid walletId, decimal amount, string? description,
-            string? externalId)
+    public async ValueTask<TransactionResponse> UnsettledBetManualAsync(
+        Guid walletId,
+        decimal amount,
+        string description,
+        string externalId,
+        Guid createdByUserId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/withdrawal/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/unsettled/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> UnsettledBetManualAsync(
-            Guid walletId,
-            decimal amount,
-            string description,
-            string externalId,
-            Guid createdByUserId)
+    public async ValueTask<TransactionResponse> AdjustResettledBetManualAsync(
+        Guid walletId,
+        decimal amount,
+        string description,
+        string externalId,
+        Guid createdByUserId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId,
-                CreatedByUserId = createdByUserId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/unsettled/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/adjust/resettled/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> AdjustResettledBetManualAsync(
-            Guid walletId,
-            decimal amount,
-            string description,
-            string externalId,
-            Guid createdByUserId)
+    public async ValueTask<TransactionResponse> DividendAllAgentRebateAsync(Guid walletId, decimal amount,
+        string? description, string? externalId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId,
-                CreatedByUserId = createdByUserId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/adjust/resettled/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/dividend/allAgentRebate/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> DividendAllAgentRebateAsync(Guid walletId, decimal amount,
-            string? description, string? externalId)
+    public async ValueTask<TransactionResponse> PromotionVipLevelUpgradeAsync(Guid walletId, decimal amount, string? description, string? externalId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/dividend/allAgentRebate/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/promotion/vip/upgrad/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 
-        public async ValueTask<TransactionResponse> PromotionVipLevelUpgradeAsync(Guid walletId, decimal amount, string? description, string? externalId)
+    public async ValueTask<TransactionResponse> PromotionVipLevelSeasonAsync(Guid walletId, decimal amount, string? description, string? externalId)
+    {
+        var request = new
         {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
 
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/promotion/vip/upgrad/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/promotion/vip/season/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
-
-        public async ValueTask<TransactionResponse> PromotionVipLevelSeasonAsync(Guid walletId, decimal amount, string? description, string? externalId)
-        {
-            var request = new
-            {
-                Amount = amount,
-                Description = description,
-                ExternalId = externalId
-            };
-
-            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-
-            var response = await _httpClient
-                .PutAsync(
-                    $"/wallet/promotion/vip/season/{walletId}",
-                    requestContent)
-                .ConfigureAwait(false);
-
-            response.EnsureSuccessStatusCode();
-
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-        }
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 }

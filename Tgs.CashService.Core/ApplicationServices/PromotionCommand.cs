@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace Tgs.CashService.ApplicationServices;
 
-namespace Tgs.CashService.Core.ApplicationServices
-{
-    public record PromotionCommand(
-        Guid WalletId,
-        decimal Amount,
-        string? Description,
-        string? ExternalId,
-        Guid? CreateByUserId);
-}
+public record PromotionCommand(
+    Guid WalletId,
+    decimal Amount,
+    string? Description,
+    string? ExternalId,
+    Guid? CreateByUserId);
