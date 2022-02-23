@@ -4,6 +4,8 @@ metadata:
   name: {{ include "cashservice-api.fullname" . }}
   labels:
     {{- include "cashservice-api.labels" . | nindent 4 }}
+  annotations:
+    configmap.reloader.stakater.com/reload: "configmap-{{ include "cashservice-api.fullname" . }}"
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -12,7 +14,7 @@ spec:
     matchLabels:
       {{- include "cashservice-api.selectorLabels" . | nindent 6 }}
   template:
-    metadata:
+    metadata: 
       {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
@@ -24,6 +26,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "cashservice-api.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -33,46 +36,53 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: Logging__Console__FormatterName
-              value: Simple
+            - name: OTEL_SERVICE_NAME
+              value: Cash-Api({{ .Release.Namespace }})
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: ConnectionStrings__Redis
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: redis
+            - name: ConnectionStrings__Nats
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: nats
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
-          volumeMounts:
-            - mountPath: /config/appsettings.json
-              name: appsettings
-              readOnly: true
-              subPath: appsettings.json
           livenessProbe:
             httpGet:
               path: /healthz
               port: http
-          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          startupProbe:
             httpGet:
               path: /healthz
               port: http
+            failureThreshold: 30
+            periodSeconds: 2
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
         - name: appsettings
           configMap:
             name: configmap-{{ include "cashservice-api.fullname" . }}
-      {{ if eq .Values.namespace "staging" }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-        dedicated: nonprod
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
-      - effect: NoSchedule
-        key: dedicated
-        operator: Equal
-        value: nonprod
-      {{ end }}
-      {{ if eq .Values.namespace "prod" }}
-      nodeSelector:
-        dedicated: prod
-      tolerations:
-      - effect: NoSchedule
-        key: dedicated
-        operator: Equal
-        value: prod
-      {{ end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

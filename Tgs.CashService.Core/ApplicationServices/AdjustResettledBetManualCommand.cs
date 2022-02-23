@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace Tgs.CashService.ApplicationServices;
 
-namespace Tgs.CashService.Core.ApplicationServices
-{
-    public record AdjustResettledBetManualCommand(
-       Guid WalletId,
-       decimal Amount,
-       string Description,
-       string ExternalId,
-       Guid CreatedByUserId);
-}
+public record AdjustResettledBetManualCommand(
+   Guid WalletId,
+   decimal Amount,
+   string Description,
+   string ExternalId,
+   Guid CreatedByUserId);

@@ -1,3 +1,4 @@
+@Library('global-shared-library') _
 def message = "";
 
 pipeline {
@@ -5,7 +6,8 @@ pipeline {
 	
 	environment {
 		BuildConfiguration="Debug"
-		ImageName="harbor.rpgp.cc/tgs/cashservice-api"
+		ServiceImageName="harbor.rpgp.cc/tgs/cashservice-api"
+		WorkerImageName="harbor.rpgp.cc/tgs/cashservice-worker"
 	}
 
 	stages {
@@ -18,14 +20,20 @@ pipeline {
                         case ['origin/main','main']:
                             env.kube_ns = "prod";
                             env.k8s_config = 'stag-k8s-config';
+                            env.node_selector = '{ "dedicated": "prod" }';
+                            env.dedicated = '{"effect":"NoSchedule","key": "dedicated", "operator": "Equal", "value": "prod"}';
                             break;
                         case ['origin/release','release']:
                             env.kube_ns = "staging";
                             env.k8s_config = 'stag-k8s-config';
+                            env.node_selector = '{ "dedicated": "nonprod" }';
+                            env.dedicated = '{"effect":"NoSchedule","key": "dedicated", "operator": "Equal", "value": "nonprod"}';
                             break;
                         default:
                             env.kube_ns = "dev";
-                            env.k8s_config = 'k8s-kube-config' 
+                            env.k8s_config = 'k8s-kube-config';
+                            env.node_selector = '{}';
+                            env.dedicated = '';
                             break;
                     }
                 }
@@ -36,12 +44,12 @@ pipeline {
                             envItems.each { key, value -> env."tgs_${key}" = value;
                         }
                         env.TAG = sh(script: "echo `date +%Y%m%d%H%M`", returnStdout: true).trim() + '-' + env.kube_ns;
-                        message += "\nBranch: ${env.GIT_BRANCH}" 
-                        message += "\nTag: ${env.TAG}"
-                        message += "\nEnv: ${env.kube_ns}"
+                        message += "\nBranch: ${env.GIT_BRANCH}";
+                        message += "\nTag: ${env.TAG}";
+                        message += "\nEnv: ${env.kube_ns}";
                         env.commit_url = "${env.GIT_URL}".replace("git@gitlab.com:","https://gitlab.com/")
-                            .replace(".git","/-/commit/") + "${env.GIT_COMMIT}"
-                        message += "\n Commit: ${env.commit_url}"
+                            .replace(".git","/-/commit/") + "${env.GIT_COMMIT}";
+                        message += "\n Commit: ${env.commit_url}";
                     }
                 }
                 sh "echo tag: $TAG"
@@ -70,13 +78,15 @@ pipeline {
 
 		stage('Build Docker Image') {
 			steps {
-				sh 'dotnet build "Tgs.CashService/Tgs.CashService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:${TAG}" --no-restore '
+				sh 'dotnet build "Tgs.CashService/Tgs.CashService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ServiceImageName:$TAG" --no-restore '
+                sh 'dotnet build "Tgs.CashServiceWorker/Tgs.CashServiceWorker.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$WorkerImageName:$TAG" --no-restore'
 			}
 		}
 
 		stage('Push Docker Image') {
 			steps {
-				sh 'sudo docker push $ImageName:${TAG}'
+				sh 'sudo docker push $ServiceImageName:$TAG'
+				sh 'sudo docker push $WorkerImageName:$TAG'
 			}
 		}
 
@@ -96,26 +106,69 @@ pipeline {
             }
         }
 
-		stage('Deploy to k8s') {
+		stage('Deploy cash-api to k8s') {
 			steps {
 				withKubeConfig([credentialsId: env.k8s_config]) {
-                    withCredentials([string(credentialsId: "tgs-${kube_ns}-connectionstring", variable: "tgs_tgs")]) {
-                        sh '''
-                            helm template deployment/k8s/cashservice-api \
-                                --set image.tag=${TAG} \
-                                --set namespace=${kube_ns} \
-                                --set autoscaling.enabled=${tgs_autoscaling} \
-                                --set connectionStrings.tgs="$tgs_tgs" \
-                        '''
-                        sh '''
-                            helm template deployment/k8s/cashservice-api \
-                                --set image.tag=${TAG} \
-                                --set namespace=${kube_ns} \
-                                --set autoscaling.enabled=${tgs_autoscaling} \
-                                --set connectionStrings.tgs="$tgs_tgs" \
-                                | kubectl -n ${kube_ns} apply -f -
-                        '''
+                    script {
+                        env.resources = getResources(env.k8s_config, env.kube_ns, "cashservice-api")
                     }
+
+                    sh '''
+                        cat << EOF | yq e -P | helm template deployment/k8s/cashservice-api \
+                            -n ${kube_ns} \
+                            --set image.tag=${TAG} \
+                            -f -
+                        {
+                            "nodeSelector": $node_selector,
+                            "tolerations": [$dedicated],
+                            "resources": $resources
+                        }
+                    '''
+                    sh '''
+                        cat << EOF | yq e -P | helm template deployment/k8s/cashservice-api \
+                            -n ${kube_ns} \
+                            --set image.tag=${TAG} \
+                            -f - | kubectl -n ${kube_ns} apply -f -
+                        {
+                            "nodeSelector": $node_selector,
+                            "tolerations": [$dedicated],
+                            "resources": $resources
+                        }
+                    '''
+				}
+			}
+		}
+
+        stage('Deploy cash-worker to k8s') {
+			steps {
+				withKubeConfig([credentialsId: env.k8s_config]) {
+                    script{
+                        env.resources = getResources(env.k8s_config, env.kube_ns, "cashservice-worker")
+                    }
+                    
+                    sh '''
+                        cat << EOF | yq e -P | helm template deployment/k8s/cashservice-worker \
+                            -n ${kube_ns} \
+                            --set image.tag=${TAG} \
+                            -f -
+                        {
+
+                            "nodeSelector": $node_selector,
+                            "tolerations": [$dedicated],
+                            "resources": $resources
+                        }
+                    '''
+                    sh '''
+                        cat << EOF | yq e -P | helm template deployment/k8s/cashservice-worker \
+                            -n ${kube_ns} \
+                            --set image.tag=${TAG} \
+                            -f - | kubectl -n ${kube_ns} apply -f -
+                        {
+                            "nodeSelector": $node_selector,
+                            "tolerations": [$dedicated],
+                            "resources": $resources
+                        }
+                    '''
 				}
 			}
 		}
@@ -146,19 +199,4 @@ pipeline {
             sendTelegram("<b>Failed Pipeline:</b> ${currentBuild.fullDisplayName} Something is wrong with ${env.BUILD_URL}/console\n${currentBuild.getBuildCauses()[0].shortDescription}\n")
         }
 	}
-}
-
-
-def sendTelegram(message) {
-    def encodedMessage = URLEncoder.encode(message, "UTF-8")
-
-    withCredentials([string(credentialsId: "telegramToken", variable: "TOKEN"), string(credentialsId: "telegramChatId", variable: "CHAT_ID")]) {
-
-        response = httpRequest (consoleLogResponseBody: true,
-                contentType: 'APPLICATION_JSON',
-                httpMode: 'GET',
-                url: "https://api.telegram.org/bot${TOKEN}/sendMessage?text=${encodedMessage}&chat_id=${CHAT_ID}",
-                validResponseCodes: '200')
-        return response
-    }
 }

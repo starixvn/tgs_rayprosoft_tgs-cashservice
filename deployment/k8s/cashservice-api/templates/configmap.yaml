@@ -5,7 +5,4 @@ metadata:
 data:
   appsettings.json: |
     {
-      "ConnectionStrings": {
-        "Tgs": "{{ .Values.connectionStrings.tgs }}"
-      } 
     }

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.CashService.Client;
-using Tgs.CashService.Core;
+using Tgs.CashServiceWorker;
 
 namespace Tgs.CashService.IntegrationTests;
 
@@ -17,18 +15,37 @@ public class GeneralTests
         var walletId = Guid.NewGuid();
         var expectedAmount = 1000M;
 
-        await using var web = new TestCashApplication(builder =>
-        {
-            builder.ConfigureServices(services =>
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services =>
             {
+                services.AddSingleton<WalletExchanger>();
+
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                fakeWalletRepository.GetBalanceAsync(Arg.Is(walletId))
+                _ = fakeWalletRepository.GetBalanceAsync(Arg.Is(walletId))
                     .Returns(expectedAmount);
 
-                services.AddSingleton(fakeWalletRepository);
-            });
-        });
+                _ = services.AddSingleton(fakeWalletRepository);
+
+                var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+                _ = services.AddSingleton(sp =>
+                {
+                    var exchanger = sp.GetRequiredService<WalletExchanger>();
+
+                    _ = fakeWalletExchangeService.GetBalanceAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                        .Returns(callInfo =>
+                        {
+                            var walletId = callInfo.Arg<Guid>();
+
+                            return fakeWalletRepository.GetBalanceAsync(walletId);
+                        });
+
+                    return fakeWalletExchangeService;
+                });
+
+                _ = services.AddFakeNatsMessageQueue();
+            }));
 
         var httpClient = web.CreateClient();
 

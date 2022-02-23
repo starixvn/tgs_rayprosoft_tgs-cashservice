@@ -1,150 +1,106 @@
-﻿using System;
-using System.Threading.Tasks;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
-using Tgs.CashService.Core.ApplicationServices;
+using Tgs.Cash.Protos;
+using Tgs.CashService.ApplicationServices;
 
-namespace Tgs.CashService.Core.UnitTests
+namespace Tgs.CashService.Core.UnitTests;
+
+[TestFixture]
+public class GameProviderTests
 {
-    [TestFixture]
-    public class GameProviderTests
+    [Test]
+    public async Task Can_Create_GameProviderDeposit_Exchange()
     {
-        [Test]
-        public async Task Can_Create_GameProviderDeposit_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-            var sut = new GameProviderDepositService(fakeWalletRepository);
+        var sut = new GameProviderDepositCommandService(fakeWalletExchangeService);
 
-            var query = new GameProviderDepositCommand(
-                Guid.NewGuid(),
-                100M,
-                Guid.NewGuid().ToString("N"),
-                "測試遊戲上分");
+        var command = new GameProviderDepositCommand(
+            Guid.NewGuid(),
+            100M,
+            Guid.NewGuid().ToString("N"),
+            "測試遊戲上分");
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = query.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.GameProviderDeposit.ToString()
+                    && request.Amount == -command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
+    }
 
-            _ = fakeWalletRepository.Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(query.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.GameProviderDeposit),
-                    Arg.Is(-query.Amount),
-                    Arg.Is(query.Description),
-                    Arg.Is(query.ExternalId));
-        }
+    [Test]
+    public async Task Can_Create_GameProviderFundIn_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        [Test]
-        public async Task Can_Create_GameProviderFundIn_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var sut = new GameProviderFundInCommandService(fakeWalletExchangeService);
 
-            var sut = new GameProviderFundInService(fakeWalletRepository);
+        var command = new GameProviderFundInCommand(
+            Guid.NewGuid(),
+            100M,
+            Guid.NewGuid().ToString("N"),
+            "測試轉入主錢包");
 
-            var query = new GameProviderFundInCommand(
-                Guid.NewGuid(),
-                100M,
-                Guid.NewGuid().ToString("N"),
-                "測試轉入主錢包");
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(query.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = query.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.GameProviderFundIn.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
+    }
 
-            _ = await sut.GetAsync(query).ConfigureAwait(false);
+    [Test]
+    public async Task Can_Create_GameProviderFundOut_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-            _ = fakeWalletRepository.Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(query.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.GameProviderFundIn),
-                    Arg.Is(query.Amount),
-                    Arg.Is(query.Description),
-                    Arg.Is(query.ExternalId));
-        }
+        var sut = new GameProviderFundOutCommandService(fakeWalletExchangeService);
 
-        [Test]
-        public async Task Can_Create_GameProviderFundOut_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var command = new GameProviderFundOutCommand(
+            Guid.NewGuid(),
+            100M,
+            Guid.NewGuid().ToString("N"),
+            "測試轉出主錢包");
 
-            var sut = new GameProviderFundOutService(fakeWalletRepository);
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            var command = new GameProviderFundOutCommand(
-                Guid.NewGuid(),
-                100M,
-                Guid.NewGuid().ToString("N"),
-                "測試轉出主錢包");
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.GameProviderFundOut.ToString()
+                    && request.Amount == -command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
+    }
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = command.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
+    [Test]
+    public async Task Can_Create_GameProviderWithdrawal_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-            _ = await sut.GetAsync(command).ConfigureAwait(false);
+        var sut = new GameProviderWithdrawalCommandService(fakeWalletExchangeService);
 
-            _ = fakeWalletRepository
-                .Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(command.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.GameProviderFundOut),
-                    Arg.Is(-command.Amount),
-                    Arg.Is(command.Description),
-                    Arg.Is(command.ExternalId));
-        }
+        var command = new GameProviderWithdrawalCommand(
+            Guid.NewGuid(),
+            100,
+            Guid.NewGuid().ToString("N"),
+            "測試遊戲下分");
 
-        [Test]
-        public async Task Can_Create_GameProviderWithdrawal_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            var sut = new GameProviderWithdrawalService(fakeWalletRepository);
-
-            var command = new GameProviderWithdrawalCommand(
-                Guid.NewGuid(),
-                100,
-                Guid.NewGuid().ToString("N"),
-                "測試遊戲下分");
-
-            fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = command.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
-
-            _ = await sut.GetAsync(command).ConfigureAwait(false);
-
-            _ = fakeWalletRepository
-                .Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(command.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.GameProviderWithdrawal),
-                    Arg.Is(command.Amount),
-                    Arg.Is(command.Description),
-                    Arg.Is(command.ExternalId));
-        }
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.GameProviderWithdrawal.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
     }
 }

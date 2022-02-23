@@ -1,80 +1,58 @@
-﻿using System;
-using System.Threading.Tasks;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
-using Tgs.CashService.Core.ApplicationServices;
+using Tgs.Cash.Protos;
+using Tgs.CashService.ApplicationServices;
 
-namespace Tgs.CashService.Core.UnitTests
+namespace Tgs.CashService.Core.UnitTests;
+
+[TestFixture]
+public class RebateTests
 {
-    [TestFixture]
-    public class RebateTests
+    [Test]
+    public async Task Can_Create_Rebate_Exchange()
     {
-        [Test]
-        public async Task Can_Create_Rebate_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-            var sut = new RebateService(fakeWalletRepository);
+        var sut = new RebateCommandService(fakeWalletExchangeService);
 
-            var command = new RebateCommand(
-                Guid.NewGuid(),
-                100M,
-                "新增玩家返水",
-                Guid.NewGuid().ToString("N"));
+        var command = new RebateCommand(
+            Guid.NewGuid(),
+            100M,
+            "新增玩家返水",
+            Guid.NewGuid().ToString("N"));
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = command.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            _ = await sut.GetAsync(command).ConfigureAwait(false);
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.Rebate.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
+    }
 
-            _ = fakeWalletRepository.Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(command.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.Rebate),
-                    Arg.Is(command.Amount),
-                    Arg.Is(command.Description),
-                    Arg.Is(command.ExternalId));
-        }
+    [Test]
+    public async Task Can_Create_Dividend_All_Agent_Rebate_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        [Test]
-        public async Task Can_Create_Dividend_All_Agent_Rebate_Exchange()
-        {
-            var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var sut = new DividendAllAgentRebateCommandService(fakeWalletExchangeService);
 
-            var sut = new DividendAllAgentRebateService(fakeWalletRepository);
+        var command = new DividendAllAgentRebateCommand(
+            Guid.NewGuid(),
+            100M,
+            "新增玩家全民代理返水",
+            Guid.NewGuid().ToString("N"));
 
-            var command = new DividendAllAgentRebateCommand(
-                Guid.NewGuid(),
-                100M,
-                "新增玩家全民代理返水",
-                Guid.NewGuid().ToString("N"));
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
-                .Returns(new Wallet
-                {
-                    Id = command.WalletId,
-                    BrandId = Guid.NewGuid(),
-                    PlayerCode = "Player1"
-                });
-
-            _ = await sut.GetAsync(command).ConfigureAwait(false);
-
-            _ = fakeWalletRepository.Received(1)
-                .ExchangeAsync(
-                    Arg.Any<Guid>(),
-                    Arg.Is(command.WalletId),
-                    Arg.Any<string>(),
-                    Arg.Is(TransactionType.DividendAllAgentRebate),
-                    Arg.Is(command.Amount),
-                    Arg.Is(command.Description),
-                    Arg.Is(command.ExternalId));
-        }
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.DividendAllAgentRebate.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
     }
 }
