@@ -31,14 +31,14 @@ public class WalletController : ControllerBase
     ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/{walletId}", Name = "Adjust")]
-    public async ValueTask<TransactionResultViewModel> AdjustAsync(
-        [FromServices] IGetService<AdjustCommand, ExchangeResult> service,
+    [HttpPut("adjust/companyAdjust/{walletId}", Name = "CompanyAdjust")]
+    public async ValueTask<TransactionResultViewModel> CompanyAdjustAsync(
+        [FromServices] IGetService<CompanyAdjustCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] AdjustViewModel request)
+        [FromBody] CompanyAdjustViewModel request)
     {
         var result = await service
-            .GetAsync(new AdjustCommand(
+            .GetAsync(new CompanyAdjustCommand(
                 walletId,
                 request.Amount,
                 request.Description,

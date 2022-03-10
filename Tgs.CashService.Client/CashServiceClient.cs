@@ -21,7 +21,7 @@ internal class CashServiceClient : ICashServiceClient
     public CashServiceClient(HttpClient httpClient)
         => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
-    public async ValueTask<TransactionResponse> AdjustAsync(
+    public async ValueTask<TransactionResponse> CompanyAdjustAsync(
         Guid walletId,
         decimal amount,
         string? description,
@@ -41,7 +41,7 @@ internal class CashServiceClient : ICashServiceClient
 
         var response = await _httpClient
             .PutAsync(
-                $"/wallet/adjust/{walletId}",
+                $"/wallet/adjust/companyAdjust/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 

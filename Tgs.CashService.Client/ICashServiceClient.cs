@@ -2,7 +2,7 @@
 
 public interface ICashServiceClient
 {
-    ValueTask<TransactionResponse> AdjustAsync(
+    ValueTask<TransactionResponse> CompanyAdjustAsync(
         Guid walletId,
         decimal amount,
         string? description,

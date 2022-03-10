@@ -8,7 +8,7 @@ public enum TransactionType
     /// <summary>
     ///     Adjust = 公司調帳
     /// </summary>
-    Adjust = 2,
+    CompanyAdjust = 2,
     Bonus = 3,
     Rebate = 4,
     Dividend = 5,
