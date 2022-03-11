@@ -2,7 +2,7 @@
 
 public interface ICashServiceClient
 {
-    ValueTask<TransactionResponse> AdjustAsync(
+    ValueTask<TransactionResponse> CompanyAdjustAsync(
         Guid walletId,
         decimal amount,
         string? description,
@@ -79,4 +79,66 @@ public interface ICashServiceClient
         decimal amount,
         string? description,
         string? externalId);
+
+    ValueTask<TransactionResponse> AgentAdjustAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid createdByUserId);
+
+    ValueTask<TransactionResponse> SystemAdjustAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid createdByUserId);
+
+    //ValueTask<TransactionResponse> PlaceBetAsync(
+    //    Guid walletId,
+    //    decimal amount,
+    //    string? description,
+    //    string? externalId);
+
+    //ValueTask<TransactionResponse> WinBetAsync(
+    //    Guid walletId,
+    //    decimal amount,
+    //    string? description,
+    //    string? externalId);
+
+    //ValueTask<TransactionResponse> LoseBetAsync(
+    //    Guid walletId,
+    //    decimal amount,
+    //    string? description,
+    //    string? externalId);
+
+    //ValueTask<TransactionResponse> FreeBetAsync(
+    //    Guid walletId,
+    //    decimal amount,
+    //    string? description,
+    //    string? externalId);
+
+    //ValueTask<TransactionResponse> TieBetAsync(
+    //    Guid walletId,
+    //    decimal amount,
+    //    string? description,
+    //    string? externalId);
+
+    //ValueTask<TransactionResponse> CancelTransactionAsync(
+    //    Guid walletId,
+    //    decimal amount,
+    //    string? description,
+    //    string? externalId);
+
+    //ValueTask<TransactionResponse> LockAmountAsync(
+    //    Guid walletId,
+    //    decimal amount,
+    //    string? description,
+    //    string? externalId);
+
+    //ValueTask<TransactionResponse> UnlockAmountAsync(
+    //    Guid walletId,
+    //    decimal amount,
+    //    string? description,
+    //    string? externalId);
 }

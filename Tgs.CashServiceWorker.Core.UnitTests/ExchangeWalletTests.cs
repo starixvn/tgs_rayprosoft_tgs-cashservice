@@ -25,7 +25,7 @@ public class ExchangeWalletTests
 
         var command = new ExchangeWalletCommand(
             Guid.NewGuid(),
-            TransactionType.Adjust,
+            TransactionType.CompanyAdjust,
             100M,
             null,
             null,
@@ -40,14 +40,14 @@ public class ExchangeWalletTests
             });
 
         fakeWalletRepository.ExchangeAsync(
-            Arg.Any<Guid>(),
-            Arg.Is(command.WalletId),
-            Arg.Any<string>(),
-            Arg.Is(command.TransactionType),
-            Arg.Is(command.Amount),
-            Arg.Is(command.Description),
-            Arg.Is(command.ExternalId),
-            Arg.Is(command.CreatedByUserId))
+                Arg.Any<Guid>(),
+                Arg.Is(command.WalletId),
+                Arg.Any<string>(),
+                Arg.Is(command.TransactionType),
+                Arg.Is(command.Amount),
+                Arg.Is(command.Description),
+                Arg.Is(command.ExternalId),
+                Arg.Is(command.CreatedByUserId))
             .Returns(new ExchangeResult(Guid.NewGuid(), 12345M));
 
         var actual = await sut.GetAsync(command);
@@ -87,7 +87,7 @@ public class ExchangeWalletTests
 
         var command = new ExchangeWalletCommand(
             Guid.NewGuid(),
-            TransactionType.Adjust,
+            TransactionType.CompanyAdjust,
             100M,
             null,
             null,
