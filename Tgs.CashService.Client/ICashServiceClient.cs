@@ -94,6 +94,13 @@ public interface ICashServiceClient
         string? externalId,
         Guid createdByUserId);
 
+    ValueTask<TransactionResponse> TransferAdjustAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid createdByUserId);
+
     //ValueTask<TransactionResponse> PlaceBetAsync(
     //    Guid walletId,
     //    decimal amount,

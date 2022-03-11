@@ -85,4 +85,30 @@ public class AdjustTests
                     && request.ExternalId == command.ExternalId
                     && request.CreatedUser == command.CreatedByUserId));
     }
+
+    [Test]
+    public async Task Can_Create_Transfer_Adjust_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new TransferAdjustCommandService(fakeWalletExchangeService);
+
+        var command = new TransferAdjustCommand(
+            Guid.NewGuid(),
+            100M,
+            "新增系統轉帳",
+            Guid.NewGuid().ToString("N"),
+            Guid.NewGuid());
+
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.TransferAdjust.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId
+                    && request.CreatedUser == command.CreatedByUserId));
+    }
 }

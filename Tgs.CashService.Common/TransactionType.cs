@@ -60,6 +60,7 @@ public enum TransactionType
     //Adjust = 5000,
     AgentAdjust = 5100,
     SystemAdjust = 5200,
+    TransferAdjust = 5300,
 
     /// <summary>
     ///     已結算單再調整
