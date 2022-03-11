@@ -31,7 +31,7 @@ public class WalletController : ControllerBase
     ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/companyAdjust/{walletId}", Name = "CompanyAdjust")]
+    [HttpPut("adjust/company/{walletId}", Name = "CompanyAdjust")]
     public async ValueTask<TransactionResultViewModel> CompanyAdjustAsync(
         [FromServices] IGetService<CompanyAdjustCommand, ExchangeResult> service,
         Guid walletId,
@@ -612,7 +612,7 @@ public class WalletController : ControllerBase
     ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/agentAdjust/{walletId}", Name = "AgentAdjust")]
+    [HttpPut("adjust/agent/{walletId}", Name = "AgentAdjust")]
     public async ValueTask<TransactionResultViewModel> AgentAdjustAsync(
         [FromServices] IGetService<AgentAdjustCommand, ExchangeResult> service,
         Guid walletId,
@@ -646,7 +646,7 @@ public class WalletController : ControllerBase
     ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/systemAdjust/{walletId}", Name = "SystemAdjust")]
+    [HttpPut("adjust/system/{walletId}", Name = "SystemAdjust")]
     public async ValueTask<TransactionResultViewModel> SystemAdjustAsync(
         [FromServices] IGetService<SystemAdjustCommand, ExchangeResult> service,
         Guid walletId,
@@ -663,6 +663,41 @@ public class WalletController : ControllerBase
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
     }
+
+    /// <summary>
+    ///     Transfer adjust the account asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="walletId">The wallet identifier.</param>
+    /// <param name="viewModel">The view model.</param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     <b>Example</b><br />
+    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    ///     {
+    ///     "amount": 10,
+    ///     "description": "測試系統轉帳",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     }
+    /// </remarks>
+    [HttpPut("adjust/transfer/{walletId}", Name = "TransferAdjust")]
+    public async ValueTask<TransactionResultViewModel> TransferAdjustAsync(
+        [FromServices] IGetService<TransferAdjustCommand, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] TransferAdjustViewModel viewModel)
+    {
+        var result = await service
+            .GetAsync(new TransferAdjustCommand(
+                walletId,
+                viewModel.Amount,
+                viewModel.Description,
+                viewModel.ExternalId,
+                viewModel.CreatedByUserId), CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+    }
+
 
     private CancellationToken CreateCancellationToken()
     {

@@ -41,7 +41,7 @@ internal class CashServiceClient : ICashServiceClient
 
         var response = await _httpClient
             .PutAsync(
-                $"/wallet/adjust/companyAdjust/{walletId}",
+                $"/wallet/adjust/company/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 
@@ -532,7 +532,7 @@ internal class CashServiceClient : ICashServiceClient
 
         var response = await _httpClient
             .PutAsync(
-                $"/wallet/adjust/agentAdjust/{walletId}",
+                $"/wallet/adjust/agent/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 
@@ -559,7 +559,34 @@ internal class CashServiceClient : ICashServiceClient
 
         var response = await _httpClient
             .PutAsync(
-                $"/wallet/adjust/systemAdjust/{walletId}",
+                $"/wallet/adjust/system/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
+
+    public async ValueTask<TransactionResponse> TransferAdjustAsync(Guid walletId, decimal amount, string? description,
+        string? externalId, Guid createdByUserId)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/adjust/transfer/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 
