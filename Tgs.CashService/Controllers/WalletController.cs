@@ -31,7 +31,7 @@ public class WalletController : ControllerBase
     ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/companyAdjust/{walletId}", Name = "CompanyAdjust")]
+    [HttpPut("adjust/company/{walletId}", Name = "CompanyAdjust")]
     public async ValueTask<TransactionResultViewModel> CompanyAdjustAsync(
         [FromServices] IGetService<CompanyAdjustCommand, ExchangeResult> service,
         Guid walletId,
@@ -612,7 +612,7 @@ public class WalletController : ControllerBase
     ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/agentAdjust/{walletId}", Name = "AgentAdjust")]
+    [HttpPut("adjust/agent/{walletId}", Name = "AgentAdjust")]
     public async ValueTask<TransactionResultViewModel> AgentAdjustAsync(
         [FromServices] IGetService<AgentAdjustCommand, ExchangeResult> service,
         Guid walletId,
@@ -646,7 +646,7 @@ public class WalletController : ControllerBase
     ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/systemAdjust/{walletId}", Name = "SystemAdjust")]
+    [HttpPut("adjust/system/{walletId}", Name = "SystemAdjust")]
     public async ValueTask<TransactionResultViewModel> SystemAdjustAsync(
         [FromServices] IGetService<SystemAdjustCommand, ExchangeResult> service,
         Guid walletId,
@@ -680,7 +680,7 @@ public class WalletController : ControllerBase
     ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/transferAdjust/{walletId}", Name = "TransferAdjust")]
+    [HttpPut("adjust/transfer/{walletId}", Name = "TransferAdjust")]
     public async ValueTask<TransactionResultViewModel> TransferAdjustAsync(
         [FromServices] IGetService<TransferAdjustCommand, ExchangeResult> service,
         Guid walletId,

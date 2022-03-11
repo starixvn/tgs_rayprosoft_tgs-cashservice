@@ -254,7 +254,7 @@ public class AdjustTests
     }
 
     [TestMethod]
-    public async Task System_Transfer_To_Wallet()
+    public async Task Transfer_Adjust_To_Wallet()
     {
         var walletId = Guid.NewGuid();
         var transferAdjustAmount = 1000M;
@@ -322,7 +322,7 @@ public class AdjustTests
 
         var sut = new CashServiceClient(httpClient);
 
-        var actual = await sut.SystemAdjustAsync(
+        var actual = await sut.TransferAdjustAsync(
             walletId,
             1000M,
             null,

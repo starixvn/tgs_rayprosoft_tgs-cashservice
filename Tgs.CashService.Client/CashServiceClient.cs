@@ -41,7 +41,7 @@ internal class CashServiceClient : ICashServiceClient
 
         var response = await _httpClient
             .PutAsync(
-                $"/wallet/adjust/companyAdjust/{walletId}",
+                $"/wallet/adjust/company/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 
@@ -532,7 +532,7 @@ internal class CashServiceClient : ICashServiceClient
 
         var response = await _httpClient
             .PutAsync(
-                $"/wallet/adjust/agentAdjust/{walletId}",
+                $"/wallet/adjust/agent/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 
@@ -559,7 +559,7 @@ internal class CashServiceClient : ICashServiceClient
 
         var response = await _httpClient
             .PutAsync(
-                $"/wallet/adjust/systemAdjust/{walletId}",
+                $"/wallet/adjust/system/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 
@@ -586,7 +586,7 @@ internal class CashServiceClient : ICashServiceClient
 
         var response = await _httpClient
             .PutAsync(
-                $"/wallet/adjust/transferAdjust/{walletId}",
+                $"/wallet/adjust/transfer/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 
