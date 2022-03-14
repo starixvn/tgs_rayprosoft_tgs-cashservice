@@ -9,6 +9,7 @@ public enum TransactionType
     ///     Adjust = 公司調帳
     /// </summary>
     CompanyAdjust = 2,
+
     Bonus = 3,
     Rebate = 4,
     Dividend = 5,
@@ -59,6 +60,7 @@ public enum TransactionType
     /// </summary>
     //Adjust = 5000,
     AgentAdjust = 5100,
+
     SystemAdjust = 5200,
     TransferAdjust = 5300,
 
@@ -71,13 +73,14 @@ public enum TransactionType
     ///     遊戲 10000~10999
     /// </summary>
     Game = 10000,
+
     PlaceBet = 10100,
     WinBet = 10200,
-    LoseBet = 10200,
-    FreeBet = 10300,
-    TieBet = 10400,
-    CancelTransaction = 10500,
-    LockAmount = 10600,
-    UnlockAmount = 10700,
-    WinJackpot = 10800
+    LoseBet = 10300,
+    FreeBet = 10400,
+    TieBet = 10500,
+    CancelTransaction = 10600,
+    LockAmount = 10700,
+    UnlockAmount = 10800,
+    WinJackpot = 10900
 }

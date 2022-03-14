@@ -438,6 +438,31 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
+    public async ValueTask<TransactionResponse> GameProviderPlaceBetAsync(Guid walletId, decimal amount, string? description, string externalId)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/gp/bet/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
+
     public async ValueTask<TransactionResponse> DividendAllAgentRebateAsync(Guid walletId, decimal amount,
         string? description, string? externalId)
     {

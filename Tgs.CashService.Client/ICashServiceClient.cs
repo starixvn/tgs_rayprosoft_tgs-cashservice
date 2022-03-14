@@ -101,11 +101,11 @@ public interface ICashServiceClient
         string? externalId,
         Guid createdByUserId);
 
-    //ValueTask<TransactionResponse> PlaceBetAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameProviderPlaceBetAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string externalId);
 
     //ValueTask<TransactionResponse> WinBetAsync(
     //    Guid walletId,
