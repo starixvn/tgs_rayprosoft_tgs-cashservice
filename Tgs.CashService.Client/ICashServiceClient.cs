@@ -149,9 +149,9 @@ public interface ICashServiceClient
         string? description,
         string externalId);
 
-    //ValueTask<TransactionResponse> UnlockAmountAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameProviderUnlockAmountAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string externalId);
 }

@@ -295,4 +295,28 @@ public class GameProviderTests
                            && request.Description == command.Description
                            && request.ExternalId == command.ExternalId));
     }
+
+    [Test]
+    public async Task Can_Create_GameProviderUnlockAmount_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new GameProviderUnlockAmountCommandService(fakeWalletExchangeService);
+
+        var command = new GameProviderUnlockAmountCommand(
+            Guid.NewGuid(),
+            100M,
+            "測試遊戲解鎖金額",
+            Guid.NewGuid().ToString("N"));
+
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                           && request.TransactionType == TransactionType.UnlockAmount.ToString()
+                           && request.Amount == command.Amount
+                           && request.Description == command.Description
+                           && request.ExternalId == command.ExternalId));
+    }
 }
