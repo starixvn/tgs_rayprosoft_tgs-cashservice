@@ -131,11 +131,11 @@ public interface ICashServiceClient
         string? description,
         string externalId);
 
-    //ValueTask<TransactionResponse> CancelTransactionAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameProviderCancelPlaceBetAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string externalId);
 
     //ValueTask<TransactionResponse> LockAmountAsync(
     //    Guid walletId,
