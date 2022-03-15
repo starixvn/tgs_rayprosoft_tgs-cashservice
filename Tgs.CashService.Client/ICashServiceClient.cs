@@ -125,11 +125,11 @@ public interface ICashServiceClient
     //    string? description,
     //    string? externalId);
 
-    //ValueTask<TransactionResponse> TieBetAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameProviderSettleTieAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string externalId);
 
     //ValueTask<TransactionResponse> CancelTransactionAsync(
     //    Guid walletId,

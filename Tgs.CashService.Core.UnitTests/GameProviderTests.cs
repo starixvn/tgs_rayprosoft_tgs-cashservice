@@ -175,4 +175,28 @@ public class GameProviderTests
                            && request.Description == command.Description
                            && request.ExternalId == command.ExternalId));
     }
+
+    [Test]
+    public async Task Can_Create_GameProviderSettleTie_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new GameProviderSettleTieCommandService(fakeWalletExchangeService);
+
+        var command = new GameProviderSettleTieCommand(
+            Guid.NewGuid(),
+            100M,
+            "測試遊戲結算和",
+            Guid.NewGuid().ToString("N"));
+
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                           && request.TransactionType == TransactionType.TieBet.ToString()
+                           && request.Amount == command.Amount
+                           && request.Description == command.Description
+                           && request.ExternalId == command.ExternalId));
+    }
 }

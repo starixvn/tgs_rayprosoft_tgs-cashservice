@@ -391,6 +391,39 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
+    ///     Games the provider settle tie bet exchange asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="walletId"></param>
+    /// <param name="request">The view model.</param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     <b>Example</b><br />
+    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    ///     {
+    ///     "amount": 10,
+    ///     "description": "測試遊戲結算和",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     }
+    /// </remarks>
+    [HttpPut("gp/settle-tie/{walletId}", Name = "GameProviderSettleTie")]
+    public async ValueTask<TransactionResultViewModel> GameProviderSettleTieAsync(
+        [FromServices] IGetService<GameProviderSettleTieCommand, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] GameProviderSettleTieViewModel request)
+    {
+        var result = await service
+            .GetAsync(new GameProviderSettleTieCommand(
+                walletId,
+                request.Amount,
+                request.Description,
+                request.ExternalId), CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+    }
+
+    /// <summary>
     ///     Unsettleds the bet manual asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
