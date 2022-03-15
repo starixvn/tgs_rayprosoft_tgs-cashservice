@@ -19,7 +19,9 @@ internal class CashServiceClient : ICashServiceClient
     private readonly HttpClient _httpClient;
 
     public CashServiceClient(HttpClient httpClient)
-        => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+    {
+        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+    }
 
     public async ValueTask<TransactionResponse> CompanyAdjustAsync(
         Guid walletId,
@@ -763,6 +765,32 @@ internal class CashServiceClient : ICashServiceClient
         var response = await _httpClient
             .PutAsync(
                 $"/wallet/gp/cancel-settle/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
+
+    public async ValueTask<TransactionResponse> GameProviderLockAmountAsync(Guid walletId, decimal amount,
+        string? description, string externalId)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/gp/lock/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 

@@ -325,6 +325,39 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
+    ///     Games the provider lock amount exchange asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="walletId"></param>
+    /// <param name="request">The view model.</param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     <b>Example</b><br />
+    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    ///     {
+    ///     "amount": 10,
+    ///     "description": "測試遊戲鎖定金額",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     }
+    /// </remarks>
+    [HttpPut("gp/lock/{walletId}", Name = "GameProviderLockAmount")]
+    public async ValueTask<TransactionResultViewModel> GameProviderLockAmountAsync(
+        [FromServices] IGetService<GameProviderLockAmountCommand, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] GameProviderLockAmountViewModel request)
+    {
+        var result = await service
+            .GetAsync(new GameProviderLockAmountCommand(
+                walletId,
+                request.Amount,
+                request.Description,
+                request.ExternalId), CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+    }
+
+    /// <summary>
     ///     Games the provider settle win bet exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
