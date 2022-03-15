@@ -113,11 +113,11 @@ public interface ICashServiceClient
         string? description,
         string externalId);
 
-    //ValueTask<TransactionResponse> LoseBetAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameProviderSettleLoseAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string externalId);
 
     //ValueTask<TransactionResponse> FreeBetAsync(
     //    Guid walletId,

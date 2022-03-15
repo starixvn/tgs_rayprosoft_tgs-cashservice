@@ -405,7 +405,7 @@ public class GameProviderTests
     public async Task Game_Settle_Win_To_Wallet()
     {
         var walletId = Guid.NewGuid();
-        var betAmount = 1000m;
+        var settleAmount = 1000m;
         var transactionId = Guid.NewGuid();
         var postBalance = 12345m;
 
@@ -430,7 +430,7 @@ public class GameProviderTests
                         Arg.Is(walletId),
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.PlaceBet),
-                        Arg.Is(-betAmount),
+                        Arg.Is(-settleAmount),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
@@ -471,7 +471,86 @@ public class GameProviderTests
 
         var actual = await sut.GameProviderPlaceBetAsync(
             walletId,
-            betAmount,
+            settleAmount,
+            null,
+            Guid.NewGuid().ToString("N"));
+
+        Assert.IsNotNull(actual);
+        Assert.AreEqual(postBalance, actual.Balance);
+        Assert.AreEqual(transactionId, actual.TransactionId);
+    }
+
+    [TestMethod]
+    public async Task Game_Settle_Lose_To_Wallet()
+    {
+        var walletId = Guid.NewGuid();
+        var settleAmount = 0m;
+        var transactionId = Guid.NewGuid();
+        var postBalance = 12345m;
+
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services =>
+            {
+                services.AddSingleton<WalletExchanger>();
+
+                var fakeWalletRepository = Substitute.For<IWalletRepository>();
+
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                    .Returns(new Wallet
+                    {
+                        Id = walletId,
+                        BrandId = Guid.NewGuid(),
+                        PlayerCode = "Player1"
+                    });
+
+                _ = fakeWalletRepository
+                    .ExchangeAsync(
+                        Arg.Any<Guid>(),
+                        Arg.Is(walletId),
+                        Arg.Any<string>(),
+                        Arg.Is(TransactionType.PlaceBet),
+                        Arg.Is(-settleAmount),
+                        Arg.Any<string>(),
+                        Arg.Any<string>(),
+                        Arg.Any<Guid?>())
+                    .Returns(new ExchangeResult(transactionId, postBalance));
+
+                _ = services.AddSingleton(fakeWalletRepository);
+
+                var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+                _ = services.AddSingleton(sp =>
+                {
+                    var exchanger = sp.GetRequiredService<WalletExchanger>();
+
+                    _ = fakeWalletExchangeService
+                        .SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
+                        .Returns(callInfo =>
+                        {
+                            var req = callInfo.Arg<WalletExchangeRequest>();
+
+                            return exchanger.RequestAsync(new ExchangeRequest(
+                                req.WalletId,
+                                Enum.Parse<TransactionType>(req.TransactionType),
+                                req.Amount,
+                                req.Description,
+                                req.ExternalId,
+                                req.CreatedUser)).Result;
+                        });
+
+                    return fakeWalletExchangeService;
+                });
+
+                _ = services.AddFakeNatsMessageQueue();
+            }));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var actual = await sut.GameProviderPlaceBetAsync(
+            walletId,
+            settleAmount,
             null,
             Guid.NewGuid().ToString("N"));
 
