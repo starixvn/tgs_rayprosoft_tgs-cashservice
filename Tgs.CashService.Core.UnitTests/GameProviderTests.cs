@@ -127,4 +127,28 @@ public class GameProviderTests
                            && request.Description == command.Description
                            && request.ExternalId == command.ExternalId));
     }
+
+    [Test]
+    public async Task Can_Create_GameProviderSettleWin_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new GameProviderSettleWinCommandService(fakeWalletExchangeService);
+
+        var command = new GameProviderSettleWinCommand(
+            Guid.NewGuid(),
+            100M,
+            "測試遊戲結算贏",
+            Guid.NewGuid().ToString("N"));
+
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                           && request.TransactionType == TransactionType.WinBet.ToString()
+                           && request.Amount == command.Amount
+                           && request.Description == command.Description
+                           && request.ExternalId == command.ExternalId));
+    }
 }
