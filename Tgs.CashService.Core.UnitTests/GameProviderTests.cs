@@ -199,4 +199,28 @@ public class GameProviderTests
                            && request.Description == command.Description
                            && request.ExternalId == command.ExternalId));
     }
+
+    [Test]
+    public async Task Can_Create_GameProviderSettleFree_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new GameProviderSettleFreeCommandService(fakeWalletExchangeService);
+
+        var command = new GameProviderSettleFreeCommand(
+            Guid.NewGuid(),
+            100M,
+            "測試遊戲結算免費投注",
+            Guid.NewGuid().ToString("N"));
+
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                           && request.TransactionType == TransactionType.FreeBet.ToString()
+                           && request.Amount == command.Amount
+                           && request.Description == command.Description
+                           && request.ExternalId == command.ExternalId));
+    }
 }
