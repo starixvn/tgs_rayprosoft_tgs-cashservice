@@ -72,22 +72,24 @@ public enum TransactionType
     /// <summary>
     ///     遊戲 10000~10999
     /// </summary>
-    Game = 10000,
 
     PlaceBet = 11000,
 
-    SettleBet = 12000,
+    // 結算 12000~12999
+
     WinBet = 12100,
     LoseBet = 12200,
     FreeBet = 12300,
     TieBet = 12400,
     //WinJackpot = 12500
 
-    CancelTransaction = 13000,
+    // 取消 13000~13999
+
     CancelPlaceBet = 13100,
     CancelSettlement = 13200,
 
-    LockRelated = 14000,
+    // 鎖定相關 14000~14999
+
     LockAmount = 14100,
     UnlockAmount = 14200,
 }
