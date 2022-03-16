@@ -19,7 +19,7 @@ internal class GameProviderSettleFreeCommandService : IGetService<GameProviderSe
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
-            TransactionType = TransactionType.FreeBet.ToString(),
+            TransactionType = TransactionType.GameFreeBet.ToString(),
             Amount = command.Amount,
             Description = string.Empty,
             ExternalId = command.ExternalId

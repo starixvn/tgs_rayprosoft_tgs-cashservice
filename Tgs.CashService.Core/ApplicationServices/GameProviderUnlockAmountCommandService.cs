@@ -17,7 +17,7 @@ internal class GameProviderUnlockAmountCommandService : IGetService<GameProvider
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
-            TransactionType = TransactionType.UnlockAmount.ToString(),
+            TransactionType = TransactionType.GameUnlockAmount.ToString(),
             Amount = command.Amount,
             Description = string.Empty,
             ExternalId = command.ExternalId

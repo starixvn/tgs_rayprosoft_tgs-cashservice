@@ -19,7 +19,7 @@ internal class GameProviderSettleTieCommandService : IGetService<GameProviderSet
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
-            TransactionType = TransactionType.TieBet.ToString(),
+            TransactionType = TransactionType.GameTieBet.ToString(),
             Amount = command.Amount,
             Description = string.Empty,
             ExternalId = command.ExternalId

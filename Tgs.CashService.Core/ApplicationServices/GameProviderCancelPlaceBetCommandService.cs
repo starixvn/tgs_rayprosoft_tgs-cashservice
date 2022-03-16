@@ -17,7 +17,7 @@ internal class GameProviderCancelPlaceBetCommandService : IGetService<GameProvid
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
-            TransactionType = TransactionType.CancelPlaceBet.ToString(),
+            TransactionType = TransactionType.GameCancelTransaction.ToString(),
             Amount = command.Amount,
             Description = string.Empty,
             ExternalId = command.ExternalId
