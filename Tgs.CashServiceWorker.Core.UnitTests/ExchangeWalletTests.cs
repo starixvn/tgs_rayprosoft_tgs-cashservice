@@ -25,7 +25,7 @@ public class ExchangeWalletTests
 
         var command = new ExchangeWalletCommand(
             Guid.NewGuid(),
-            TransactionType.CompanyAdjust,
+            TransactionType.AdjustCompany,
             100M,
             null,
             null,
@@ -87,7 +87,7 @@ public class ExchangeWalletTests
 
         var command = new ExchangeWalletCommand(
             Guid.NewGuid(),
-            TransactionType.CompanyAdjust,
+            TransactionType.AdjustCompany,
             100M,
             null,
             null,
