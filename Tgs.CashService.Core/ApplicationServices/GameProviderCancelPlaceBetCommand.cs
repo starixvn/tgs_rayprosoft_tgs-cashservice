@@ -3,5 +3,4 @@
 public record GameProviderCancelPlaceBetCommand(
     Guid WalletId,
     decimal Amount,
-    string? Description,
     string ExternalId);

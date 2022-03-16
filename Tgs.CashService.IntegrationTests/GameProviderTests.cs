@@ -393,7 +393,6 @@ public class GameProviderTests
         var actual = await sut.GameProviderPlaceBetAsync(
             walletId,
             betAmount,
-            null,
             Guid.NewGuid().ToString("N"));
 
         Assert.IsNotNull(actual);
@@ -472,7 +471,6 @@ public class GameProviderTests
         var actual = await sut.GameProviderSettleWinAsync(
             walletId,
             settleAmount,
-            null,
             Guid.NewGuid().ToString("N"));
 
         Assert.IsNotNull(actual);
@@ -551,7 +549,6 @@ public class GameProviderTests
         var actual = await sut.GameProviderSettleLoseAsync(
             walletId,
             settleAmount,
-            null,
             Guid.NewGuid().ToString("N"));
 
         Assert.IsNotNull(actual);
@@ -630,7 +627,6 @@ public class GameProviderTests
         var actual = await sut.GameProviderSettleTieAsync(
             walletId,
             settleAmount,
-            null,
             Guid.NewGuid().ToString("N"));
 
         Assert.IsNotNull(actual);
@@ -709,7 +705,6 @@ public class GameProviderTests
         var actual = await sut.GameProviderSettleFreeAsync(
             walletId,
             settleAmount,
-            null,
             Guid.NewGuid().ToString("N"));
 
         Assert.IsNotNull(actual);
@@ -788,7 +783,6 @@ public class GameProviderTests
         var actual = await sut.GameProviderCancelPlaceBetAsync(
             walletId,
             cancelAmount,
-            null,
             Guid.NewGuid().ToString("N"));
 
         Assert.IsNotNull(actual);
@@ -867,7 +861,6 @@ public class GameProviderTests
         var actual = await sut.GameProviderCancelSettlementAsync(
             walletId,
             cancelAmount,
-            null,
             Guid.NewGuid().ToString("N"));
 
         Assert.IsNotNull(actual);
@@ -946,7 +939,6 @@ public class GameProviderTests
         var actual = await sut.GameProviderLockAmountAsync(
             walletId,
             lockAmount,
-            null,
             Guid.NewGuid().ToString("N"));
 
         Assert.IsNotNull(actual);
@@ -1025,7 +1017,6 @@ public class GameProviderTests
         var actual = await sut.GameProviderUnlockAmountAsync(
             walletId,
             unlockAmount,
-            null,
             Guid.NewGuid().ToString("N"));
 
         Assert.IsNotNull(actual);

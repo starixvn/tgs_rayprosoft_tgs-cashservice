@@ -440,12 +440,11 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderPlaceBetAsync(Guid walletId, decimal amount, string? description, string externalId)
+    public async ValueTask<TransactionResponse> GameProviderPlaceBetAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
         {
             Amount = amount,
-            Description = description,
             ExternalId = externalId
         };
 
@@ -465,12 +464,11 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderSettleWinAsync(Guid walletId, decimal amount, string? description, string externalId)
+    public async ValueTask<TransactionResponse> GameProviderSettleWinAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
         {
             Amount = amount,
-            Description = description,
             ExternalId = externalId
         };
 
@@ -649,13 +647,11 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderSettleLoseAsync(Guid walletId, decimal amount,
-        string? description, string externalId)
+    public async ValueTask<TransactionResponse> GameProviderSettleLoseAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
         {
             Amount = amount,
-            Description = description,
             ExternalId = externalId
         };
 
@@ -675,12 +671,11 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderSettleTieAsync(Guid walletId, decimal amount, string? description, string externalId)
+    public async ValueTask<TransactionResponse> GameProviderSettleTieAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
         {
             Amount = amount,
-            Description = description,
             ExternalId = externalId
         };
 
@@ -700,12 +695,11 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderSettleFreeAsync(Guid walletId, decimal amount, string? description, string externalId)
+    public async ValueTask<TransactionResponse> GameProviderSettleFreeAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
         {
             Amount = amount,
-            Description = description,
             ExternalId = externalId
         };
 
@@ -725,12 +719,11 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderCancelPlaceBetAsync(Guid walletId, decimal amount, string? description, string externalId)
+    public async ValueTask<TransactionResponse> GameProviderCancelPlaceBetAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
         {
             Amount = amount,
-            Description = description,
             ExternalId = externalId
         };
 
@@ -750,12 +743,11 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderCancelSettlementAsync(Guid walletId, decimal amount, string? description, string externalId)
+    public async ValueTask<TransactionResponse> GameProviderCancelSettlementAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
         {
             Amount = amount,
-            Description = description,
             ExternalId = externalId
         };
 
@@ -775,13 +767,11 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderLockAmountAsync(Guid walletId, decimal amount,
-        string? description, string externalId)
+    public async ValueTask<TransactionResponse> GameProviderLockAmountAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
         {
             Amount = amount,
-            Description = description,
             ExternalId = externalId
         };
 
@@ -801,13 +791,11 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderUnlockAmountAsync(Guid walletId, decimal amount,
-        string? description, string externalId)
+    public async ValueTask<TransactionResponse> GameProviderUnlockAmountAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
         {
             Amount = amount,
-            Description = description,
             ExternalId = externalId
         };
 

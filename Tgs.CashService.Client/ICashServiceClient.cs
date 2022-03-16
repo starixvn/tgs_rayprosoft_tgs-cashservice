@@ -104,54 +104,45 @@ public interface ICashServiceClient
     ValueTask<TransactionResponse> GameProviderPlaceBetAsync(
         Guid walletId,
         decimal amount,
-        string? description,
         string externalId);
 
     ValueTask<TransactionResponse> GameProviderSettleWinAsync(
         Guid walletId,
         decimal amount,
-        string? description,
         string externalId);
 
     ValueTask<TransactionResponse> GameProviderSettleLoseAsync(
         Guid walletId,
         decimal amount,
-        string? description,
         string externalId);
 
     ValueTask<TransactionResponse> GameProviderSettleFreeAsync(
         Guid walletId,
         decimal amount,
-        string? description,
         string externalId);
 
     ValueTask<TransactionResponse> GameProviderSettleTieAsync(
         Guid walletId,
         decimal amount,
-        string? description,
         string externalId);
 
     ValueTask<TransactionResponse> GameProviderCancelPlaceBetAsync(
         Guid walletId,
         decimal amount,
-        string? description,
         string externalId);
 
     ValueTask<TransactionResponse> GameProviderCancelSettlementAsync(
         Guid walletId,
         decimal amount,
-        string? description,
         string externalId);
 
     ValueTask<TransactionResponse> GameProviderLockAmountAsync(
         Guid walletId,
         decimal amount,
-        string? description,
         string externalId);
 
     ValueTask<TransactionResponse> GameProviderUnlockAmountAsync(
         Guid walletId,
         decimal amount,
-        string? description,
         string externalId);
 }

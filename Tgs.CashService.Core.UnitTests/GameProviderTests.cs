@@ -114,7 +114,6 @@ public class GameProviderTests
         var command = new GameProviderPlaceBetCommand(
             Guid.NewGuid(),
             100M,
-            "測試遊戲下注",
             Guid.NewGuid().ToString("N"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -124,7 +123,7 @@ public class GameProviderTests
                 request => request.WalletId == command.WalletId
                            && request.TransactionType == TransactionType.PlaceBet.ToString()
                            && request.Amount == -command.Amount
-                           && request.Description == command.Description
+                           && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
     }
 
@@ -138,7 +137,6 @@ public class GameProviderTests
         var command = new GameProviderSettleWinCommand(
             Guid.NewGuid(),
             100M,
-            "測試遊戲結算贏",
             Guid.NewGuid().ToString("N"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -148,7 +146,7 @@ public class GameProviderTests
                 request => request.WalletId == command.WalletId
                            && request.TransactionType == TransactionType.WinBet.ToString()
                            && request.Amount == command.Amount
-                           && request.Description == command.Description
+                           && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
     }
 
@@ -162,7 +160,6 @@ public class GameProviderTests
         var command = new GameProviderSettleLoseCommand(
             Guid.NewGuid(),
             100M,
-            "測試遊戲結算輸",
             Guid.NewGuid().ToString("N"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -172,7 +169,7 @@ public class GameProviderTests
                 request => request.WalletId == command.WalletId
                            && request.TransactionType == TransactionType.LoseBet.ToString()
                            && request.Amount == -command.Amount
-                           && request.Description == command.Description
+                           && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
     }
 
@@ -186,7 +183,6 @@ public class GameProviderTests
         var command = new GameProviderSettleTieCommand(
             Guid.NewGuid(),
             100M,
-            "測試遊戲結算和",
             Guid.NewGuid().ToString("N"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -196,7 +192,7 @@ public class GameProviderTests
                 request => request.WalletId == command.WalletId
                            && request.TransactionType == TransactionType.TieBet.ToString()
                            && request.Amount == command.Amount
-                           && request.Description == command.Description
+                           && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
     }
 
@@ -210,7 +206,6 @@ public class GameProviderTests
         var command = new GameProviderSettleFreeCommand(
             Guid.NewGuid(),
             100M,
-            "測試遊戲結算免費投注",
             Guid.NewGuid().ToString("N"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -220,7 +215,7 @@ public class GameProviderTests
                 request => request.WalletId == command.WalletId
                            && request.TransactionType == TransactionType.FreeBet.ToString()
                            && request.Amount == command.Amount
-                           && request.Description == command.Description
+                           && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
     }
 
@@ -234,7 +229,6 @@ public class GameProviderTests
         var command = new GameProviderCancelPlaceBetCommand(
             Guid.NewGuid(),
             100M,
-            "測試遊戲取消投注",
             Guid.NewGuid().ToString("N"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -244,7 +238,7 @@ public class GameProviderTests
                 request => request.WalletId == command.WalletId
                            && request.TransactionType == TransactionType.CancelTransaction.ToString()
                            && request.Amount == command.Amount
-                           && request.Description == command.Description
+                           && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
     }
 
@@ -258,7 +252,6 @@ public class GameProviderTests
         var command = new GameProviderCancelSettlementCommand(
             Guid.NewGuid(),
             100M,
-            "測試遊戲取消結算",
             Guid.NewGuid().ToString("N"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -268,7 +261,7 @@ public class GameProviderTests
                 request => request.WalletId == command.WalletId
                            && request.TransactionType == TransactionType.CancelTransaction.ToString()
                            && request.Amount == -command.Amount
-                           && request.Description == command.Description
+                           && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
     }
 
@@ -282,7 +275,6 @@ public class GameProviderTests
         var command = new GameProviderLockAmountCommand(
             Guid.NewGuid(),
             100M,
-            "測試遊戲鎖定金額",
             Guid.NewGuid().ToString("N"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -292,7 +284,7 @@ public class GameProviderTests
                 request => request.WalletId == command.WalletId
                            && request.TransactionType == TransactionType.LockAmount.ToString()
                            && request.Amount == -command.Amount
-                           && request.Description == command.Description
+                           && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
     }
 
@@ -306,7 +298,6 @@ public class GameProviderTests
         var command = new GameProviderUnlockAmountCommand(
             Guid.NewGuid(),
             100M,
-            "測試遊戲解鎖金額",
             Guid.NewGuid().ToString("N"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -316,7 +307,7 @@ public class GameProviderTests
                 request => request.WalletId == command.WalletId
                            && request.TransactionType == TransactionType.UnlockAmount.ToString()
                            && request.Amount == command.Amount
-                           && request.Description == command.Description
+                           && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
     }
 }

@@ -19,7 +19,7 @@ internal class GameProviderUnlockAmountCommandService : IGetService<GameProvider
             WalletId = command.WalletId,
             TransactionType = TransactionType.UnlockAmount.ToString(),
             Amount = command.Amount,
-            Description = command.Description ?? string.Empty,
+            Description = string.Empty,
             ExternalId = command.ExternalId
         };
 

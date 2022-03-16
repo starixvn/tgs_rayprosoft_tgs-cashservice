@@ -21,7 +21,7 @@ internal class GameProviderSettleLoseCommandService : IGetService<GameProviderSe
             WalletId = command.WalletId,
             TransactionType = TransactionType.LoseBet.ToString(),
             Amount = -command.Amount,
-            Description = command.Description ?? string.Empty,
+            Description = string.Empty,
             ExternalId = command.ExternalId
         };
 

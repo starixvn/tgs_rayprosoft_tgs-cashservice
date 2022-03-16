@@ -19,7 +19,7 @@ internal class GameProviderCancelPlaceBetCommandService : IGetService<GameProvid
             WalletId = command.WalletId,
             TransactionType = TransactionType.CancelTransaction.ToString(),
             Amount = command.Amount,
-            Description = command.Description ?? string.Empty,
+            Description = string.Empty,
             ExternalId = command.ExternalId
         };
 

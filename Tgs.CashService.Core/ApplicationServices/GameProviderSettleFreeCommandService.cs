@@ -21,7 +21,7 @@ internal class GameProviderSettleFreeCommandService : IGetService<GameProviderSe
             WalletId = command.WalletId,
             TransactionType = TransactionType.FreeBet.ToString(),
             Amount = command.Amount,
-            Description = command.Description ?? string.Empty,
+            Description = string.Empty,
             ExternalId = command.ExternalId
         };
 

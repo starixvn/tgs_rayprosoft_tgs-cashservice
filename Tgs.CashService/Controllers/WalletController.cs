@@ -302,9 +302,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///     "amount": 10,
-    ///     "description": "測試遊戲下注",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "amount": 10,
+    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("gp/bet/{walletId}", Name = "GameProviderPlaceBet")]
@@ -317,7 +316,6 @@ public class WalletController : ControllerBase
             .GetAsync(new GameProviderPlaceBetCommand(
                 walletId,
                 request.Amount,
-                request.Description,
                 request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
@@ -335,9 +333,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///     "amount": 10,
-    ///     "description": "測試遊戲鎖定金額",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "amount": 10,
+    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("gp/lock/{walletId}", Name = "GameProviderLockAmount")]
@@ -350,7 +347,6 @@ public class WalletController : ControllerBase
             .GetAsync(new GameProviderLockAmountCommand(
                 walletId,
                 request.Amount,
-                request.Description,
                 request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
@@ -368,9 +364,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///     "amount": 10,
-    ///     "description": "測試遊戲解鎖金額",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "amount": 10,
+    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("gp/unlock/{walletId}", Name = "GameProviderUnlockAmount")]
@@ -383,7 +378,6 @@ public class WalletController : ControllerBase
             .GetAsync(new GameProviderUnlockAmountCommand(
                 walletId,
                 request.Amount,
-                request.Description,
                 request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
@@ -401,9 +395,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///     "amount": 10,
-    ///     "description": "測試遊戲結算贏",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "amount": 10,
+    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("gp/settle-win/{walletId}", Name = "GameProviderSettleWin")]
@@ -416,7 +409,6 @@ public class WalletController : ControllerBase
             .GetAsync(new GameProviderSettleWinCommand(
                 walletId,
                 request.Amount,
-                request.Description,
                 request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
@@ -434,9 +426,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///     "amount": 10,
-    ///     "description": "測試遊戲結算輸",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "amount": 10,
+    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("gp/settle-lose/{walletId}", Name = "GameProviderSettleLose")]
@@ -449,7 +440,6 @@ public class WalletController : ControllerBase
             .GetAsync(new GameProviderSettleLoseCommand(
                 walletId,
                 request.Amount,
-                request.Description,
                 request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
@@ -467,9 +457,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///     "amount": 10,
-    ///     "description": "測試遊戲結算和",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "amount": 10,
+    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("gp/settle-tie/{walletId}", Name = "GameProviderSettleTie")]
@@ -482,7 +471,6 @@ public class WalletController : ControllerBase
             .GetAsync(new GameProviderSettleTieCommand(
                 walletId,
                 request.Amount,
-                request.Description,
                 request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
@@ -500,9 +488,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///     "amount": 10,
-    ///     "description": "測試遊戲結算免費投注",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "amount": 10,
+    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("gp/settle-free/{walletId}", Name = "GameProviderSettleFree")]
@@ -515,7 +502,6 @@ public class WalletController : ControllerBase
             .GetAsync(new GameProviderSettleFreeCommand(
                 walletId,
                 request.Amount,
-                request.Description,
                 request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
@@ -533,9 +519,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///     "amount": 10,
-    ///     "description": "測試遊戲取消下注",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "amount": 10,
+    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("gp/cancel-bet/{walletId}", Name = "GameProviderCancelPlaceBet")]
@@ -548,7 +533,6 @@ public class WalletController : ControllerBase
             .GetAsync(new GameProviderCancelPlaceBetCommand(
                 walletId,
                 request.Amount,
-                request.Description,
                 request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
@@ -566,9 +550,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///     "amount": 10,
-    ///     "description": "測試遊戲取消結算",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "amount": 10,
+    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("gp/cancel-settle/{walletId}", Name = "GameProviderCancelSettlement")]
@@ -581,7 +564,6 @@ public class WalletController : ControllerBase
             .GetAsync(new GameProviderCancelSettlementCommand(
                 walletId,
                 request.Amount,
-                request.Description,
                 request.ExternalId), CreateCancellationToken())
             .ConfigureAwait(false);
 
