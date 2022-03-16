@@ -13,9 +13,9 @@ public class AdjustTests
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new CompanyAdjustCommandService(fakeWalletExchangeService);
+        var sut = new AdjustCompanyCommandService(fakeWalletExchangeService);
 
-        var command = new CompanyAdjustCommand(
+        var command = new AdjustCompanyCommand(
             Guid.NewGuid(),
             100M,
             "新增公司調帳",
@@ -27,7 +27,7 @@ public class AdjustTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.CompanyAdjust.ToString()
+                    && request.TransactionType == TransactionType.AdjustCompany.ToString()
                     && request.Amount == command.Amount
                     && request.Description == command.Description
                     && request.ExternalId == command.ExternalId
@@ -39,9 +39,9 @@ public class AdjustTests
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new AgentAdjustCommandService(fakeWalletExchangeService);
+        var sut = new AdjustAgentCommandService(fakeWalletExchangeService);
 
-        var command = new AgentAdjustCommand(
+        var command = new AdjustAgentCommand(
             Guid.NewGuid(),
             100M,
             "新增代理調帳",
@@ -53,7 +53,7 @@ public class AdjustTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.AgentAdjust.ToString()
+                    && request.TransactionType == TransactionType.AdjustAgent.ToString()
                     && request.Amount == command.Amount
                     && request.Description == command.Description
                     && request.ExternalId == command.ExternalId
@@ -65,9 +65,9 @@ public class AdjustTests
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new SystemAdjustCommandService(fakeWalletExchangeService);
+        var sut = new AdjustSystemCommandService(fakeWalletExchangeService);
 
-        var command = new SystemAdjustCommand(
+        var command = new AdjustSystemCommand(
             Guid.NewGuid(),
             100M,
             "新增系統調帳",
@@ -79,7 +79,7 @@ public class AdjustTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.SystemAdjust.ToString()
+                    && request.TransactionType == TransactionType.AdjustSystem.ToString()
                     && request.Amount == command.Amount
                     && request.Description == command.Description
                     && request.ExternalId == command.ExternalId
@@ -91,9 +91,9 @@ public class AdjustTests
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new TransferAdjustCommandService(fakeWalletExchangeService);
+        var sut = new AdjustTransferCommandService(fakeWalletExchangeService);
 
-        var command = new TransferAdjustCommand(
+        var command = new AdjustTransferCommand(
             Guid.NewGuid(),
             100M,
             "新增系統轉帳",
@@ -105,7 +105,7 @@ public class AdjustTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.TransferAdjust.ToString()
+                    && request.TransactionType == TransactionType.AdjustTransfer.ToString()
                     && request.Amount == command.Amount
                     && request.Description == command.Description
                     && request.ExternalId == command.ExternalId

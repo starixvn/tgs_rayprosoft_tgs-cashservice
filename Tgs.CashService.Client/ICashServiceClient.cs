@@ -2,7 +2,7 @@
 
 public interface ICashServiceClient
 {
-    ValueTask<TransactionResponse> CompanyAdjustAsync(
+    ValueTask<TransactionResponse> AdjustCompanyAsync(
         Guid walletId,
         decimal amount,
         string? description,
@@ -80,21 +80,21 @@ public interface ICashServiceClient
         string? description,
         string? externalId);
 
-    ValueTask<TransactionResponse> AgentAdjustAsync(
+    ValueTask<TransactionResponse> AdjustAgentAsync(
         Guid walletId,
         decimal amount,
         string? description,
         string? externalId,
         Guid createdByUserId);
 
-    ValueTask<TransactionResponse> SystemAdjustAsync(
+    ValueTask<TransactionResponse> AdjustSystemAsync(
         Guid walletId,
         decimal amount,
         string? description,
         string? externalId,
         Guid createdByUserId);
 
-    ValueTask<TransactionResponse> TransferAdjustAsync(
+    ValueTask<TransactionResponse> AdjustTransferAsync(
         Guid walletId,
         decimal amount,
         string? description,

@@ -21,7 +21,7 @@ internal class CashServiceClient : ICashServiceClient
     public CashServiceClient(HttpClient httpClient)
         => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
-    public async ValueTask<TransactionResponse> CompanyAdjustAsync(
+    public async ValueTask<TransactionResponse> AdjustCompanyAsync(
         Guid walletId,
         decimal amount,
         string? description,
@@ -516,7 +516,7 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> AgentAdjustAsync(Guid walletId, decimal amount, string? description,
+    public async ValueTask<TransactionResponse> AdjustAgentAsync(Guid walletId, decimal amount, string? description,
         string? externalId, Guid createdByUserId)
     {
         var request = new
@@ -543,7 +543,7 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> SystemAdjustAsync(Guid walletId, decimal amount, string? description,
+    public async ValueTask<TransactionResponse> AdjustSystemAsync(Guid walletId, decimal amount, string? description,
         string? externalId, Guid createdByUserId)
     {
         var request = new
@@ -570,7 +570,7 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> TransferAdjustAsync(Guid walletId, decimal amount, string? description,
+    public async ValueTask<TransactionResponse> AdjustTransferAsync(Guid walletId, decimal amount, string? description,
         string? externalId, Guid createdByUserId)
     {
         var request = new

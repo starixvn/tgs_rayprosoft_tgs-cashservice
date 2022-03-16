@@ -31,14 +31,14 @@ public class WalletController : ControllerBase
     ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/company/{walletId}", Name = "CompanyAdjust")]
-    public async ValueTask<TransactionResultViewModel> CompanyAdjustAsync(
-        [FromServices] IGetService<CompanyAdjustCommand, ExchangeResult> service,
+    [HttpPut("adjust/company/{walletId}", Name = "AdjustCompany")]
+    public async ValueTask<TransactionResultViewModel> AdjustCompanyAsync(
+        [FromServices] IGetService<AdjustCompanyCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] CompanyAdjustViewModel request)
+        [FromBody] AdjustCompanyViewModel request)
     {
         var result = await service
-            .GetAsync(new CompanyAdjustCommand(
+            .GetAsync(new AdjustCompanyCommand(
                 walletId,
                 request.Amount,
                 request.Description,
@@ -612,14 +612,14 @@ public class WalletController : ControllerBase
     ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/agent/{walletId}", Name = "AgentAdjust")]
-    public async ValueTask<TransactionResultViewModel> AgentAdjustAsync(
-        [FromServices] IGetService<AgentAdjustCommand, ExchangeResult> service,
+    [HttpPut("adjust/agent/{walletId}", Name = "AdjustAgent")]
+    public async ValueTask<TransactionResultViewModel> AdjustAgentAsync(
+        [FromServices] IGetService<AdjustAgentCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] AgentAdjustViewModel viewModel)
+        [FromBody] AdjustAgentViewModel viewModel)
     {
         var result = await service
-            .GetAsync(new AgentAdjustCommand(
+            .GetAsync(new AdjustAgentCommand(
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
@@ -646,14 +646,14 @@ public class WalletController : ControllerBase
     ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/system/{walletId}", Name = "SystemAdjust")]
-    public async ValueTask<TransactionResultViewModel> SystemAdjustAsync(
-        [FromServices] IGetService<SystemAdjustCommand, ExchangeResult> service,
+    [HttpPut("adjust/system/{walletId}", Name = "AdjustSystem")]
+    public async ValueTask<TransactionResultViewModel> AdjustSystemAsync(
+        [FromServices] IGetService<AdjustSystemCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] SystemAdjustViewModel viewModel)
+        [FromBody] AdjustSystemViewModel viewModel)
     {
         var result = await service
-            .GetAsync(new SystemAdjustCommand(
+            .GetAsync(new AdjustSystemCommand(
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
@@ -680,14 +680,14 @@ public class WalletController : ControllerBase
     ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("adjust/transfer/{walletId}", Name = "TransferAdjust")]
-    public async ValueTask<TransactionResultViewModel> TransferAdjustAsync(
-        [FromServices] IGetService<TransferAdjustCommand, ExchangeResult> service,
+    [HttpPut("adjust/transfer/{walletId}", Name = "AdjustTransfer")]
+    public async ValueTask<TransactionResultViewModel> AdjustTransferAsync(
+        [FromServices] IGetService<AdjustTransferCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] TransferAdjustViewModel viewModel)
+        [FromBody] AdjustTransferViewModel viewModel)
     {
         var result = await service
-            .GetAsync(new TransferAdjustCommand(
+            .GetAsync(new AdjustTransferCommand(
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,

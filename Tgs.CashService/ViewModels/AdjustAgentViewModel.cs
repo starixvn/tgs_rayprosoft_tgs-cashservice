@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashService.ViewModels;
 
-public record SystemAdjustViewModel
+public record AdjustAgentViewModel
 {
     public decimal Amount { get; set; }
 
