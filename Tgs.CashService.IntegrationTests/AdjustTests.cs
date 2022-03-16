@@ -39,7 +39,7 @@ public class AdjustTests
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
                         Arg.Any<string>(),
-                        Arg.Is(TransactionType.CompanyAdjust),
+                        Arg.Is(TransactionType.AdjustCompany),
                         Arg.Is(companyAdjustAmount),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
@@ -79,7 +79,7 @@ public class AdjustTests
 
         var sut = new CashServiceClient(httpClient);
 
-        var actual = await sut.CompanyAdjustAsync(
+        var actual = await sut.AdjustCompanyAsync(
             walletId,
             1000M,
             null,
@@ -120,7 +120,7 @@ public class AdjustTests
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
                         Arg.Any<string>(),
-                        Arg.Is(TransactionType.AgentAdjust),
+                        Arg.Is(TransactionType.AdjustAgent),
                         Arg.Is(AgentAdjustAmount),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
@@ -160,7 +160,7 @@ public class AdjustTests
 
         var sut = new CashServiceClient(httpClient);
 
-        var actual = await sut.AgentAdjustAsync(
+        var actual = await sut.AdjustAgentAsync(
             walletId,
             1000M,
             null,
@@ -201,7 +201,7 @@ public class AdjustTests
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
                         Arg.Any<string>(),
-                        Arg.Is(TransactionType.SystemAdjust),
+                        Arg.Is(TransactionType.AdjustSystem),
                         Arg.Is(systemAdjustAmount),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
@@ -241,7 +241,7 @@ public class AdjustTests
 
         var sut = new CashServiceClient(httpClient);
 
-        var actual = await sut.SystemAdjustAsync(
+        var actual = await sut.AdjustSystemAsync(
             walletId,
             1000M,
             null,
@@ -282,7 +282,7 @@ public class AdjustTests
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
                         Arg.Any<string>(),
-                        Arg.Is(TransactionType.TransferAdjust),
+                        Arg.Is(TransactionType.AdjustTransfer),
                         Arg.Is(transferAdjustAmount),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
@@ -322,7 +322,7 @@ public class AdjustTests
 
         var sut = new CashServiceClient(httpClient);
 
-        var actual = await sut.TransferAdjustAsync(
+        var actual = await sut.AdjustTransferAsync(
             walletId,
             1000M,
             null,

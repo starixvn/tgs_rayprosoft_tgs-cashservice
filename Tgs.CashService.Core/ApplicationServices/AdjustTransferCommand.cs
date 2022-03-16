@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashService.ApplicationServices;
 
-public record SystemAdjustCommand(
+public record AdjustTransferCommand(
     Guid WalletId,
     decimal Amount,
     string? Description,

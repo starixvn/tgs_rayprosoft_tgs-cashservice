@@ -38,7 +38,7 @@ public class ManagementTests
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
                         Arg.Any<string>(),
-                        Arg.Is(TransactionType.CompanyAdjust),
+                        Arg.Is(TransactionType.AdjustCompany),
                         Arg.Is(adjustAmount),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
@@ -78,7 +78,7 @@ public class ManagementTests
 
         var sut = new CashServiceClient(httpClient);
 
-        var actual = await sut.CompanyAdjustAsync(
+        var actual = await sut.AdjustCompanyAsync(
             walletId,
             adjustAmount,
             null,

@@ -8,7 +8,7 @@ public enum TransactionType
     /// <summary>
     ///     Adjust = 公司調帳
     /// </summary>
-    CompanyAdjust = 2,
+    AdjustCompany = 2,
     Bonus = 3,
     Rebate = 4,
     Dividend = 5,
@@ -58,9 +58,9 @@ public enum TransactionType
     ///     調帳 5000~5999
     /// </summary>
     //Adjust = 5000,
-    AgentAdjust = 5100,
-    SystemAdjust = 5200,
-    TransferAdjust = 5300,
+    AdjustAgent = 5100,
+    AdjustSystem = 5200,
+    AdjustTransfer = 5300,
 
     /// <summary>
     ///     已結算單再調整
