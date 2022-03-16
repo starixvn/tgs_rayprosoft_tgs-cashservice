@@ -17,7 +17,7 @@ internal class GameProviderCancelSettlementCommandService : IGetService<GameProv
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
-            TransactionType = TransactionType.CancelTransaction.ToString(),
+            TransactionType = TransactionType.CancelSettlement.ToString(),
             Amount = -command.Amount,
             Description = string.Empty,
             ExternalId = command.ExternalId

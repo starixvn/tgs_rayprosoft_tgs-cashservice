@@ -236,7 +236,7 @@ public class GameProviderTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                           && request.TransactionType == TransactionType.CancelTransaction.ToString()
+                           && request.TransactionType == TransactionType.CancelPlaceBet.ToString()
                            && request.Amount == command.Amount
                            && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
@@ -259,7 +259,7 @@ public class GameProviderTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                           && request.TransactionType == TransactionType.CancelTransaction.ToString()
+                           && request.TransactionType == TransactionType.CancelSettlement.ToString()
                            && request.Amount == -command.Amount
                            && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));

@@ -74,13 +74,20 @@ public enum TransactionType
     /// </summary>
     Game = 10000,
 
-    PlaceBet = 10100,
-    WinBet = 10200,
-    LoseBet = 10300,
-    FreeBet = 10400,
-    TieBet = 10500,
-    CancelTransaction = 10600,
-    LockAmount = 10700,
-    UnlockAmount = 10800,
-    WinJackpot = 10900
+    PlaceBet = 11000,
+
+    SettleBet = 12000,
+    WinBet = 12100,
+    LoseBet = 12200,
+    FreeBet = 12300,
+    TieBet = 12400,
+    //WinJackpot = 12500
+
+    CancelTransaction = 13000,
+    CancelPlaceBet = 13100,
+    CancelSettlement = 13200,
+
+    LockRelated = 14000,
+    LockAmount = 14100,
+    UnlockAmount = 14200,
 }
