@@ -38,7 +38,7 @@ public class ManagementTests
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
                         Arg.Any<string>(),
-                        Arg.Is(TransactionType.Adjust),
+                        Arg.Is(TransactionType.AdjustCompany),
                         Arg.Is(adjustAmount),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
@@ -53,7 +53,8 @@ public class ManagementTests
                 {
                     var exchanger = sp.GetRequiredService<WalletExchanger>();
 
-                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
+                    _ = fakeWalletExchangeService
+                        .SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
                         .Returns(callInfo =>
                         {
                             var req = callInfo.Arg<WalletExchangeRequest>();
@@ -77,7 +78,7 @@ public class ManagementTests
 
         var sut = new CashServiceClient(httpClient);
 
-        var actual = await sut.AdjustAsync(
+        var actual = await sut.AdjustCompanyAsync(
             walletId,
             adjustAmount,
             null,
@@ -132,7 +133,8 @@ public class ManagementTests
                 {
                     var exchanger = sp.GetRequiredService<WalletExchanger>();
 
-                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
+                    _ = fakeWalletExchangeService
+                        .SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
                         .Returns(callInfo =>
                         {
                             var req = callInfo.Arg<WalletExchangeRequest>();
@@ -206,7 +208,8 @@ public class ManagementTests
                 {
                     var exchanger = sp.GetRequiredService<WalletExchanger>();
 
-                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
+                    _ = fakeWalletExchangeService
+                        .SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
                         .Returns(callInfo =>
                         {
                             var req = callInfo.Arg<WalletExchangeRequest>();
@@ -285,7 +288,8 @@ public class ManagementTests
                 {
                     var exchanger = sp.GetRequiredService<WalletExchanger>();
 
-                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
+                    _ = fakeWalletExchangeService
+                        .SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
                         .Returns(callInfo =>
                         {
                             var req = callInfo.Arg<WalletExchangeRequest>();
@@ -363,7 +367,8 @@ public class ManagementTests
                 {
                     var exchanger = sp.GetRequiredService<WalletExchanger>();
 
-                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
+                    _ = fakeWalletExchangeService
+                        .SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
                         .Returns(callInfo =>
                         {
                             var req = callInfo.Arg<WalletExchangeRequest>();

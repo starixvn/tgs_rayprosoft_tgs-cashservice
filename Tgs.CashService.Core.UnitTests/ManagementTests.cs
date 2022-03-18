@@ -13,9 +13,9 @@ public class ManagementTests
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new AdjustCommandService(fakeWalletExchangeService);
+        var sut = new AdjustCompanyCommandService(fakeWalletExchangeService);
 
-        var command = new AdjustCommand(
+        var command = new AdjustCompanyCommand(
             Guid.NewGuid(),
             100M,
             Guid.NewGuid().ToString("N"),
@@ -27,7 +27,7 @@ public class ManagementTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Adjust.ToString()
+                    && request.TransactionType == TransactionType.AdjustCompany.ToString()
                     && request.Amount == command.Amount
                     && request.Description == command.Description
                     && request.ExternalId == command.ExternalId

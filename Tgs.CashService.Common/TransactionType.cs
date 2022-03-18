@@ -4,7 +4,11 @@ public enum TransactionType
 {
     Deposit = 0,
     Withdrawal = 1,
-    Adjust = 2,
+
+    /// <summary>
+    ///     Adjust = 公司調帳
+    /// </summary>
+    AdjustCompany = 2,
     Bonus = 3,
     Rebate = 4,
     Dividend = 5,
@@ -32,12 +36,12 @@ public enum TransactionType
     //Promotion = 3000,
 
     /// <summary>
-    /// The promotion vip level upgrade
+    ///     The promotion vip level upgrade
     /// </summary>
     PromotionVipLevelUpgrade = 3800,
 
     /// <summary>
-    /// The promotion vip level season
+    ///     The promotion vip level season
     /// </summary>
     PromotionVipLevelSeason = 3850,
 
@@ -46,22 +50,34 @@ public enum TransactionType
     /// </summary>
     //Dividend = 4000,
     /// <summary>
-    /// The dividend all agent rebate
+    ///     The dividend all agent rebate
     /// </summary>
     DividendAllAgentRebate = 4100,
 
     /// <summary>
-    /// 調帳 5000~5999
+    ///     調帳 5000~5999
     /// </summary>
     //Adjust = 5000,
+    AdjustAgent = 5100,
+    AdjustSystem = 5200,
+    AdjustTransfer = 5300,
 
     /// <summary>
-    /// 已結算單再調整
+    ///     已結算單再調整
     /// </summary>
     AdjustResettledBetManual = 5010,
 
     /// <summary>
-    /// 遊戲 10000~10999
+    ///     遊戲 10000~10999
     /// </summary>
-    Game = 10000
+    Game = 10000,
+    PlaceBet = 10100,
+    WinBet = 10200,
+    LoseBet = 10200,
+    FreeBet = 10300,
+    TieBet = 10400,
+    CancelTransaction = 10500,
+    LockAmount = 10600,
+    UnlockAmount = 10700,
+    WinJackpot = 10800
 }

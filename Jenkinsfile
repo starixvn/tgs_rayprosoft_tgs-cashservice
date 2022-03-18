@@ -20,20 +20,14 @@ pipeline {
                         case ['origin/main','main']:
                             env.kube_ns = "prod";
                             env.k8s_config = 'stag-k8s-config';
-                            env.node_selector = '{ "dedicated": "prod" }';
-                            env.dedicated = '{"effect":"NoSchedule","key": "dedicated", "operator": "Equal", "value": "prod"}';
                             break;
                         case ['origin/release','release']:
                             env.kube_ns = "staging";
                             env.k8s_config = 'stag-k8s-config';
-                            env.node_selector = '{ "dedicated": "nonprod" }';
-                            env.dedicated = '{"effect":"NoSchedule","key": "dedicated", "operator": "Equal", "value": "nonprod"}';
                             break;
                         default:
                             env.kube_ns = "dev";
                             env.k8s_config = 'k8s-kube-config';
-                            env.node_selector = '{}';
-                            env.dedicated = '';
                             break;
                     }
                 }
@@ -85,8 +79,8 @@ pipeline {
 
 		stage('Push Docker Image') {
 			steps {
-				sh 'sudo docker push $ServiceImageName:$TAG'
-				sh 'sudo docker push $WorkerImageName:$TAG'
+				sh 'docker push $ServiceImageName:$TAG'
+				sh 'docker push $WorkerImageName:$TAG'
 			}
 		}
 
@@ -111,6 +105,8 @@ pipeline {
 				withKubeConfig([credentialsId: env.k8s_config]) {
                     script {
                         env.resources = getResources(env.k8s_config, env.kube_ns, "cashservice-api")
+                        env.dedicated = getTgsSettings(env.k8s_config, env.kube_ns, "dedicated")
+                        env.node_selector = getTgsSettings(env.k8s_config, env.kube_ns, "node-selector")
                     }
 
                     sh '''
@@ -144,6 +140,8 @@ pipeline {
 				withKubeConfig([credentialsId: env.k8s_config]) {
                     script{
                         env.resources = getResources(env.k8s_config, env.kube_ns, "cashservice-worker")
+                        env.dedicated = getTgsSettings(env.k8s_config, env.kube_ns, "dedicated")
+                        env.node_selector = getTgsSettings(env.k8s_config, env.kube_ns, "node-selector")
                     }
                     
                     sh '''

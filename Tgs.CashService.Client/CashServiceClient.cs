@@ -11,9 +11,9 @@ internal class CashServiceClient : ICashServiceClient
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters =
-            {
-                new JsonStringEnumConverter()
-            }
+        {
+            new JsonStringEnumConverter()
+        }
     };
 
     private readonly HttpClient _httpClient;
@@ -21,7 +21,7 @@ internal class CashServiceClient : ICashServiceClient
     public CashServiceClient(HttpClient httpClient)
         => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
-    public async ValueTask<TransactionResponse> AdjustAsync(
+    public async ValueTask<TransactionResponse> AdjustCompanyAsync(
         Guid walletId,
         decimal amount,
         string? description,
@@ -41,7 +41,7 @@ internal class CashServiceClient : ICashServiceClient
 
         var response = await _httpClient
             .PutAsync(
-                $"/wallet/adjust/{walletId}",
+                $"/wallet/adjust/company/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 
@@ -464,7 +464,8 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> PromotionVipLevelUpgradeAsync(Guid walletId, decimal amount, string? description, string? externalId)
+    public async ValueTask<TransactionResponse> PromotionVipLevelUpgradeAsync(Guid walletId, decimal amount,
+        string? description, string? externalId)
     {
         var request = new
         {
@@ -489,7 +490,8 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> PromotionVipLevelSeasonAsync(Guid walletId, decimal amount, string? description, string? externalId)
+    public async ValueTask<TransactionResponse> PromotionVipLevelSeasonAsync(Guid walletId, decimal amount,
+        string? description, string? externalId)
     {
         var request = new
         {
@@ -504,6 +506,87 @@ internal class CashServiceClient : ICashServiceClient
         var response = await _httpClient
             .PutAsync(
                 $"/wallet/promotion/vip/season/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
+
+    public async ValueTask<TransactionResponse> AdjustAgentAsync(Guid walletId, decimal amount, string? description,
+        string? externalId, Guid createdByUserId)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/adjust/agent/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
+
+    public async ValueTask<TransactionResponse> AdjustSystemAsync(Guid walletId, decimal amount, string? description,
+        string? externalId, Guid createdByUserId)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/adjust/system/{walletId}",
+                requestContent)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
+
+    public async ValueTask<TransactionResponse> AdjustTransferAsync(Guid walletId, decimal amount, string? description,
+        string? externalId, Guid createdByUserId)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PutAsync(
+                $"/wallet/adjust/transfer/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 
