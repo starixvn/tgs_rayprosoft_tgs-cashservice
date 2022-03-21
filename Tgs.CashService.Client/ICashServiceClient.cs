@@ -101,47 +101,47 @@ public interface ICashServiceClient
         string? externalId,
         Guid createdByUserId);
 
-    ValueTask<TransactionResponse> GameProviderPlaceBetAsync(
+    ValueTask<TransactionResponse> GamePlaceBetAsync(
         Guid walletId,
         decimal amount,
         string externalId);
 
-    ValueTask<TransactionResponse> GameProviderSettleWinAsync(
+    ValueTask<TransactionResponse> GameSettleWinAsync(
         Guid walletId,
         decimal amount,
         string externalId);
 
-    ValueTask<TransactionResponse> GameProviderSettleLoseAsync(
+    ValueTask<TransactionResponse> GameSettleLoseAsync(
         Guid walletId,
         decimal amount,
         string externalId);
 
-    ValueTask<TransactionResponse> GameProviderSettleFreeAsync(
+    ValueTask<TransactionResponse> GameSettleFreeAsync(
         Guid walletId,
         decimal amount,
         string externalId);
 
-    ValueTask<TransactionResponse> GameProviderSettleTieAsync(
+    ValueTask<TransactionResponse> GameSettleTieAsync(
         Guid walletId,
         decimal amount,
         string externalId);
 
-    ValueTask<TransactionResponse> GameProviderCancelPlaceBetAsync(
+    ValueTask<TransactionResponse> GameCancelPlaceBetAsync(
         Guid walletId,
         decimal amount,
         string externalId);
 
-    ValueTask<TransactionResponse> GameProviderCancelSettlementAsync(
+    ValueTask<TransactionResponse> GameCancelSettlementAsync(
         Guid walletId,
         decimal amount,
         string externalId);
 
-    ValueTask<TransactionResponse> GameProviderLockAmountAsync(
+    ValueTask<TransactionResponse> GameLockAmountAsync(
         Guid walletId,
         decimal amount,
         string externalId);
 
-    ValueTask<TransactionResponse> GameProviderUnlockAmountAsync(
+    ValueTask<TransactionResponse> GameUnlockAmountAsync(
         Guid walletId,
         decimal amount,
         string externalId);

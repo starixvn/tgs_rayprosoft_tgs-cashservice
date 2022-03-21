@@ -2,7 +2,7 @@
 
 namespace Tgs.CashService.ViewModels;
 
-public record GameProviderCancelSettlementViewModel
+public record GameSettleTieViewModel
 {
     [Range(typeof(decimal), "0", "79228162514264337593543950335")]
     public decimal Amount { get; init; }

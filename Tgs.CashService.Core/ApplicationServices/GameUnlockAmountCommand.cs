@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashService.ApplicationServices;
 
-public record GameProviderCancelPlaceBetCommand(
+public record GameUnlockAmountCommand(
     Guid WalletId,
     decimal Amount,
     string ExternalId);

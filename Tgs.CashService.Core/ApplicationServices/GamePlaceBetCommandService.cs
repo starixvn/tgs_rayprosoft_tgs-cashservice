@@ -3,16 +3,16 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class GameProviderPlaceBetCommandService : IGetService<GameProviderPlaceBetCommand, ExchangeResult>
+internal class GamePlaceBetCommandService : IGetService<GamePlaceBetCommand, ExchangeResult>
 {
     private readonly IWalletExchangeService _walletExchangeService;
 
-    public GameProviderPlaceBetCommandService(IWalletExchangeService walletExchangeService)
+    public GamePlaceBetCommandService(IWalletExchangeService walletExchangeService)
     {
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(GameProviderPlaceBetCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<ExchangeResult> GetAsync(GamePlaceBetCommand command, CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
         {

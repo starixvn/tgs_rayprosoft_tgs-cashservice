@@ -292,7 +292,7 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
-    ///     Games the provider place bet exchange asynchronous.
+    ///     Game place bet exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -306,14 +306,14 @@ public class WalletController : ControllerBase
     ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("gp/bet/{walletId}", Name = "GameProviderPlaceBet")]
-    public async ValueTask<TransactionResultViewModel> GameProviderPlaceBetAsync(
-        [FromServices] IGetService<GameProviderPlaceBetCommand, ExchangeResult> service,
+    [HttpPut("game/bet/{walletId}", Name = "GamePlaceBet")]
+    public async ValueTask<TransactionResultViewModel> GamePlaceBetAsync(
+        [FromServices] IGetService<GamePlaceBetCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] GameProviderPlaceBetViewModel request)
+        [FromBody] GamePlaceBetViewModel request)
     {
         var result = await service
-            .GetAsync(new GameProviderPlaceBetCommand(
+            .GetAsync(new GamePlaceBetCommand(
                 walletId,
                 request.Amount,
                 request.ExternalId), CreateCancellationToken())
@@ -323,7 +323,7 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
-    ///     Games the provider lock amount exchange asynchronous.
+    ///     Game lock amount exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -337,14 +337,14 @@ public class WalletController : ControllerBase
     ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("gp/lock/{walletId}", Name = "GameProviderLockAmount")]
-    public async ValueTask<TransactionResultViewModel> GameProviderLockAmountAsync(
-        [FromServices] IGetService<GameProviderLockAmountCommand, ExchangeResult> service,
+    [HttpPut("game/lock/{walletId}", Name = "GameLockAmount")]
+    public async ValueTask<TransactionResultViewModel> GameLockAmountAsync(
+        [FromServices] IGetService<GameLockAmountCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] GameProviderLockAmountViewModel request)
+        [FromBody] GameLockAmountViewModel request)
     {
         var result = await service
-            .GetAsync(new GameProviderLockAmountCommand(
+            .GetAsync(new GameLockAmountCommand(
                 walletId,
                 request.Amount,
                 request.ExternalId), CreateCancellationToken())
@@ -354,7 +354,7 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
-    ///     Games the provider unlock amount exchange asynchronous.
+    ///     Game unlock amount exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -368,14 +368,14 @@ public class WalletController : ControllerBase
     ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("gp/unlock/{walletId}", Name = "GameProviderUnlockAmount")]
-    public async ValueTask<TransactionResultViewModel> GameProviderUnlockAmountAsync(
-        [FromServices] IGetService<GameProviderUnlockAmountCommand, ExchangeResult> service,
+    [HttpPut("game/unlock/{walletId}", Name = "GameUnlockAmount")]
+    public async ValueTask<TransactionResultViewModel> GameUnlockAmountAsync(
+        [FromServices] IGetService<GameUnlockAmountCommand, ExchangeResult> service,
         Guid walletId,
         [FromBody] GameProviderUnlockAmountViewModel request)
     {
         var result = await service
-            .GetAsync(new GameProviderUnlockAmountCommand(
+            .GetAsync(new GameUnlockAmountCommand(
                 walletId,
                 request.Amount,
                 request.ExternalId), CreateCancellationToken())
@@ -385,7 +385,7 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
-    ///     Games the provider settle win bet exchange asynchronous.
+    ///     Game settle win bet exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -399,14 +399,14 @@ public class WalletController : ControllerBase
     ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("gp/settle-win/{walletId}", Name = "GameProviderSettleWin")]
-    public async ValueTask<TransactionResultViewModel> GameProviderSettleWinAsync(
-        [FromServices] IGetService<GameProviderSettleWinCommand, ExchangeResult> service,
+    [HttpPut("game/settle-win/{walletId}", Name = "GameSettleWin")]
+    public async ValueTask<TransactionResultViewModel> GameSettleWinAsync(
+        [FromServices] IGetService<GameSettleWinCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] GameProviderSettleWinViewModel request)
+        [FromBody] GameSettleWinViewModel request)
     {
         var result = await service
-            .GetAsync(new GameProviderSettleWinCommand(
+            .GetAsync(new GameSettleWinCommand(
                 walletId,
                 request.Amount,
                 request.ExternalId), CreateCancellationToken())
@@ -416,7 +416,7 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
-    ///     Games the provider settle lose bet exchange asynchronous.
+    ///     Game settle lose bet exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -430,14 +430,14 @@ public class WalletController : ControllerBase
     ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("gp/settle-lose/{walletId}", Name = "GameProviderSettleLose")]
-    public async ValueTask<TransactionResultViewModel> GameProviderSettleLoseAsync(
-        [FromServices] IGetService<GameProviderSettleLoseCommand, ExchangeResult> service,
+    [HttpPut("game/settle-lose/{walletId}", Name = "GamerSettleLose")]
+    public async ValueTask<TransactionResultViewModel> GameSettleLoseAsync(
+        [FromServices] IGetService<GameSettleLoseCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] GameProviderSettleLoseViewModel request)
+        [FromBody] GameSettleLoseViewModel request)
     {
         var result = await service
-            .GetAsync(new GameProviderSettleLoseCommand(
+            .GetAsync(new GameSettleLoseCommand(
                 walletId,
                 request.Amount,
                 request.ExternalId), CreateCancellationToken())
@@ -447,7 +447,7 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
-    ///     Games the provider settle tie bet exchange asynchronous.
+    ///     Game settle tie bet exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -461,14 +461,14 @@ public class WalletController : ControllerBase
     ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("gp/settle-tie/{walletId}", Name = "GameProviderSettleTie")]
-    public async ValueTask<TransactionResultViewModel> GameProviderSettleTieAsync(
-        [FromServices] IGetService<GameProviderSettleTieCommand, ExchangeResult> service,
+    [HttpPut("game/settle-tie/{walletId}", Name = "GameSettleTie")]
+    public async ValueTask<TransactionResultViewModel> GameSettleTieAsync(
+        [FromServices] IGetService<GameSettleTieCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] GameProviderSettleTieViewModel request)
+        [FromBody] GameSettleTieViewModel request)
     {
         var result = await service
-            .GetAsync(new GameProviderSettleTieCommand(
+            .GetAsync(new GameSettleTieCommand(
                 walletId,
                 request.Amount,
                 request.ExternalId), CreateCancellationToken())
@@ -478,7 +478,7 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
-    ///     Games the provider settle free bet exchange asynchronous.
+    ///     Game settle free bet exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -492,14 +492,14 @@ public class WalletController : ControllerBase
     ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("gp/settle-free/{walletId}", Name = "GameProviderSettleFree")]
-    public async ValueTask<TransactionResultViewModel> GameProviderSettleFreeAsync(
-        [FromServices] IGetService<GameProviderSettleFreeCommand, ExchangeResult> service,
+    [HttpPut("game/settle-free/{walletId}", Name = "GameSettleFree")]
+    public async ValueTask<TransactionResultViewModel> GameSettleFreeAsync(
+        [FromServices] IGetService<GameSettleFreeCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] GameProviderSettleFreeViewModel request)
+        [FromBody] GameSettleFreeViewModel request)
     {
         var result = await service
-            .GetAsync(new GameProviderSettleFreeCommand(
+            .GetAsync(new GameSettleFreeCommand(
                 walletId,
                 request.Amount,
                 request.ExternalId), CreateCancellationToken())
@@ -509,7 +509,7 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
-    ///     Games the provider cancel place bet exchange asynchronous.
+    ///     Game cancel place bet exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -523,14 +523,14 @@ public class WalletController : ControllerBase
     ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("gp/cancel-bet/{walletId}", Name = "GameProviderCancelPlaceBet")]
-    public async ValueTask<TransactionResultViewModel> GameProviderCancelPlaceBetAsync(
-        [FromServices] IGetService<GameProviderCancelPlaceBetCommand, ExchangeResult> service,
+    [HttpPut("game/cancel-bet/{walletId}", Name = "GameCancelPlaceBet")]
+    public async ValueTask<TransactionResultViewModel> GameCancelPlaceBetAsync(
+        [FromServices] IGetService<GameCancelPlaceBetCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] GameProviderCancelPlaceBetViewModel request)
+        [FromBody] GameCancelPlaceBetViewModel request)
     {
         var result = await service
-            .GetAsync(new GameProviderCancelPlaceBetCommand(
+            .GetAsync(new GameCancelPlaceBetCommand(
                 walletId,
                 request.Amount,
                 request.ExternalId), CreateCancellationToken())
@@ -540,7 +540,7 @@ public class WalletController : ControllerBase
     }
 
     /// <summary>
-    ///     Games the provider cancel place bet exchange asynchronous.
+    ///     Game cancel settlement exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -554,14 +554,14 @@ public class WalletController : ControllerBase
     ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
-    [HttpPut("gp/cancel-settle/{walletId}", Name = "GameProviderCancelSettlement")]
-    public async ValueTask<TransactionResultViewModel> GameProviderCancelSettlementAsync(
-        [FromServices] IGetService<GameProviderCancelSettlementCommand, ExchangeResult> service,
+    [HttpPut("game/cancel-settle/{walletId}", Name = "GameCancelSettlement")]
+    public async ValueTask<TransactionResultViewModel> GameCancelSettlementAsync(
+        [FromServices] IGetService<GameCancelSettlementCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] GameProviderCancelSettlementViewModel request)
+        [FromBody] GameCancelSettlementViewModel request)
     {
         var result = await service
-            .GetAsync(new GameProviderCancelSettlementCommand(
+            .GetAsync(new GameCancelSettlementCommand(
                 walletId,
                 request.Amount,
                 request.ExternalId), CreateCancellationToken())

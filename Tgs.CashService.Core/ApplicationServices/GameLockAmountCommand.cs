@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashService.ApplicationServices;
 
-public record GameProviderSettleLoseCommand(
+public record GameLockAmountCommand(
     Guid WalletId,
     decimal Amount,
     string ExternalId);

@@ -3,21 +3,23 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class GameProviderLockAmountCommandService : IGetService<GameProviderLockAmountCommand, ExchangeResult>
+internal class GameSettleLoseCommandService : IGetService<GameSettleLoseCommand, ExchangeResult>
 {
     private readonly IWalletExchangeService _walletExchangeService;
 
-    public GameProviderLockAmountCommandService(IWalletExchangeService walletExchangeService)
+    public GameSettleLoseCommandService(IWalletExchangeService walletExchangeService)
     {
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(GameProviderLockAmountCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<ExchangeResult> GetAsync(
+        GameSettleLoseCommand command,
+        CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
-            TransactionType = TransactionType.GameLockAmount.ToString(),
+            TransactionType = TransactionType.GameLoseBet.ToString(),
             Amount = -command.Amount,
             Description = string.Empty,
             ExternalId = command.ExternalId
