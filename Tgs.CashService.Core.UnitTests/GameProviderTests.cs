@@ -26,10 +26,10 @@ public class GameProviderTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.GameProviderDeposit.ToString()
-                    && request.Amount == -command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+                           && request.TransactionType == TransactionType.GameProviderDeposit.ToString()
+                           && request.Amount == -command.Amount
+                           && request.Description == command.Description
+                           && request.ExternalId == command.ExternalId));
     }
 
     [Test]
@@ -50,10 +50,10 @@ public class GameProviderTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.GameProviderFundIn.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+                           && request.TransactionType == TransactionType.GameProviderFundIn.ToString()
+                           && request.Amount == command.Amount
+                           && request.Description == command.Description
+                           && request.ExternalId == command.ExternalId));
     }
 
     [Test]
@@ -74,10 +74,10 @@ public class GameProviderTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.GameProviderFundOut.ToString()
-                    && request.Amount == -command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+                           && request.TransactionType == TransactionType.GameProviderFundOut.ToString()
+                           && request.Amount == -command.Amount
+                           && request.Description == command.Description
+                           && request.ExternalId == command.ExternalId));
     }
 
     [Test]
@@ -98,9 +98,9 @@ public class GameProviderTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.GameProviderWithdrawal.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+                           && request.TransactionType == TransactionType.GameProviderWithdrawal.ToString()
+                           && request.Amount == command.Amount
+                           && request.Description == command.Description
+                           && request.ExternalId == command.ExternalId));
     }
 }
