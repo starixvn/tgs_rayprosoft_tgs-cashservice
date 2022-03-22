@@ -145,4 +145,9 @@ public interface ICashServiceClient
         Guid walletId,
         decimal amount,
         string externalId);
+
+    ValueTask<TransactionResponse> GameWinJackpotAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
 }
