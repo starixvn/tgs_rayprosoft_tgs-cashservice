@@ -126,7 +126,7 @@ public interface ICashServiceClient
         decimal amount,
         string externalId);
 
-    ValueTask<TransactionResponse> GameCancelPlaceBetAsync(
+    ValueTask<TransactionResponse> GameCancelTransactionAsync(
         Guid walletId,
         decimal amount,
         string externalId);
@@ -142,6 +142,11 @@ public interface ICashServiceClient
         string externalId);
 
     ValueTask<TransactionResponse> GameUnlockAmountAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
+
+    ValueTask<TransactionResponse> GameWinJackpotAsync(
         Guid walletId,
         decimal amount,
         string externalId);
