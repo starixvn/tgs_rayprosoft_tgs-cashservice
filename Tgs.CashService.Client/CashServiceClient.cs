@@ -743,30 +743,6 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameCancelSettlementAsync(Guid walletId, decimal amount, string externalId)
-    {
-        var request = new
-        {
-            Amount = amount,
-            ExternalId = externalId
-        };
-
-        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-
-        var response = await _httpClient
-            .PutAsync(
-                $"/wallet/game/cancel-settle/{walletId}",
-                requestContent)
-            .ConfigureAwait(false);
-
-        _ = response.EnsureSuccessStatusCode();
-
-        var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-    }
-
     public async ValueTask<TransactionResponse> GameLockAmountAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
