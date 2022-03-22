@@ -124,13 +124,13 @@ public class GameTests
     }
 
     [Test]
-    public async Task Can_Create_GameCancelPlaceBet_Exchange()
+    public async Task Can_Create_GameCancelTransaction_Exchange()
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new GameCancelPlaceBetCommandService(fakeWalletExchangeService);
+        var sut = new GameCancelTransactionCommandService(fakeWalletExchangeService);
 
-        var command = new GameCancelPlaceBetCommand(
+        var command = new GameCancelTransactionCommand(
             Guid.NewGuid(),
             100M,
             Guid.NewGuid().ToString("N"));
@@ -142,29 +142,6 @@ public class GameTests
                 request => request.WalletId == command.WalletId
                            && request.TransactionType == TransactionType.GameCancelTransaction.ToString()
                            && request.Amount == command.Amount
-                           && request.Description == string.Empty
-                           && request.ExternalId == command.ExternalId));
-    }
-
-    [Test]
-    public async Task Can_Create_GameCancelSettlement_Exchange()
-    {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
-
-        var sut = new GameCancelSettlementCommandService(fakeWalletExchangeService);
-
-        var command = new GameCancelSettlementCommand(
-            Guid.NewGuid(),
-            100M,
-            Guid.NewGuid().ToString("N"));
-
-        _ = await sut.GetAsync(command).ConfigureAwait(false);
-
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                           && request.TransactionType == TransactionType.GameCancelTransaction.ToString()
-                           && request.Amount == -command.Amount
                            && request.Description == string.Empty
                            && request.ExternalId == command.ExternalId));
     }

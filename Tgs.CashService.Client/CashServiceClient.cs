@@ -719,7 +719,7 @@ internal class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameCancelPlaceBetAsync(Guid walletId, decimal amount, string externalId)
+    public async ValueTask<TransactionResponse> GameCancelTransactionAsync(Guid walletId, decimal amount, string externalId)
     {
         var request = new
         {
@@ -732,7 +732,7 @@ internal class CashServiceClient : ICashServiceClient
 
         var response = await _httpClient
             .PutAsync(
-                $"/wallet/game/cancel-bet/{walletId}",
+                $"/wallet/game/cancel/{walletId}",
                 requestContent)
             .ConfigureAwait(false);
 
