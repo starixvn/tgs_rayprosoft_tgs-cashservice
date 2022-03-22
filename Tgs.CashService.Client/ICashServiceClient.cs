@@ -131,11 +131,6 @@ public interface ICashServiceClient
         decimal amount,
         string externalId);
 
-    ValueTask<TransactionResponse> GameCancelSettlementAsync(
-        Guid walletId,
-        decimal amount,
-        string externalId);
-
     ValueTask<TransactionResponse> GameLockAmountAsync(
         Guid walletId,
         decimal amount,
