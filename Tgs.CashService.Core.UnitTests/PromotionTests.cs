@@ -80,4 +80,28 @@ public class PromotionTests
                     && request.Description == command.Description
                     && request.ExternalId == command.ExternalId));
     }
+
+    [Test]
+    public async Task Can_Create_Promotion_VipLevel_Birthday_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new PromotionVipLevelBirthdayCommandService(fakeWalletExchangeService);
+
+        var command = new PromotionVipLevelBirthdayCommand(
+            Guid.NewGuid(),
+            100M,
+            "測試VIP生日福利",
+            Guid.NewGuid().ToString("N"));
+
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.PromotionVipLevelBirthday.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
+    }
 }

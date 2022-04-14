@@ -80,6 +80,12 @@ public interface ICashServiceClient
         string? description,
         string? externalId);
 
+    ValueTask<TransactionResponse> PromotionVipLevelBirthdayAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId);
+
     ValueTask<TransactionResponse> AdjustAgentAsync(
         Guid walletId,
         decimal amount,
