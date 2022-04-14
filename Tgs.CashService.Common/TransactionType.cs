@@ -44,6 +44,7 @@ public enum TransactionType
     ///     The promotion vip level season
     /// </summary>
     PromotionVipLevelSeason = 3850,
+    PromotionVipLevelBirthday = 3860,
 
     /// <summary>
     /// 分紅 4000~4999
@@ -71,7 +72,6 @@ public enum TransactionType
     ///     遊戲 10000~10999
     /// </summary>
     //Game = 10000
-
     GamePlaceBet = 11000,
 
     // 結算 12000~12999
@@ -89,5 +89,5 @@ public enum TransactionType
     // 鎖定相關 14000~14999
 
     GameLockAmount = 14100,
-    GameUnlockAmount = 14200,
+    GameUnlockAmount = 14200
 }

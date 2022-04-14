@@ -302,8 +302,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///         "amount": 10,
-    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     "amount": 10,
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("game/bet/{walletId}", Name = "GamePlaceBet")]
@@ -333,8 +333,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///         "amount": 10,
-    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     "amount": 10,
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("game/lock/{walletId}", Name = "GameLockAmount")]
@@ -364,8 +364,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///         "amount": 10,
-    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     "amount": 10,
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("game/unlock/{walletId}", Name = "GameUnlockAmount")]
@@ -395,8 +395,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///         "amount": 10,
-    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     "amount": 10,
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("game/settle-win/{walletId}", Name = "GameSettleWin")]
@@ -426,8 +426,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///         "amount": 10,
-    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     "amount": 10,
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("game/settle-lose/{walletId}", Name = "GamerSettleLose")]
@@ -457,8 +457,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///         "amount": 10,
-    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     "amount": 10,
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("game/settle-tie/{walletId}", Name = "GameSettleTie")]
@@ -488,8 +488,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///         "amount": 10,
-    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     "amount": 10,
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("game/settle-free/{walletId}", Name = "GameSettleFree")]
@@ -519,8 +519,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///         "amount": 10,
-    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     "amount": 10,
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("game/cancel/{walletId}", Name = "GameCancelTransaction")]
@@ -550,8 +550,8 @@ public class WalletController : ControllerBase
     ///     <b>Example</b><br />
     ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
     ///     {
-    ///         "amount": 10,
-    ///         "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     "amount": 10,
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     [HttpPut("game/win-jackpot/{walletId}", Name = "GameWinJackpot")]
@@ -767,6 +767,39 @@ public class WalletController : ControllerBase
     {
         var result = await service
             .GetAsync(new PromotionVipLevelUpgradeCommand(
+                walletId,
+                request.Amount,
+                request.Description,
+                request.ExternalId), CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+    }
+
+    /// <summary>
+    ///     Promotions the vip level season asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="walletId">The wallet identifier.</param>
+    /// <param name="request">The request.</param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     <b>Example</b><br />
+    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    ///     {
+    ///     "amount": 10,
+    ///     "description": "測試VIPLevel生日福利",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     }
+    /// </remarks>
+    [HttpPut("promotion/vip/birthday/{walletId}", Name = "PromotionVipLevelBirthday")]
+    public async ValueTask<TransactionResultViewModel> PromotionVipLevelBirthdayAsync(
+        [FromServices] IGetService<PromotionVipLevelBirthdayCommand, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] PromotionVipLevelSeasonViewModel request)
+    {
+        var result = await service
+            .GetAsync(new PromotionVipLevelBirthdayCommand(
                 walletId,
                 request.Amount,
                 request.Description,
