@@ -7,8 +7,6 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Tgs.CashServiceWorker.MessageQueue;
 
-ThreadPool.SetMinThreads(Environment.ProcessorCount * 20, Environment.ProcessorCount);
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
@@ -95,6 +93,7 @@ builder.Services
             return !httpContext.Request.Path.HasValue
                 || !httpContext.Request.Path.StartsWithSegments("/swagger")
                 && !httpContext.Request.Path.StartsWithSegments("/healthz")
+                && !httpContext.Request.Path.StartsWithSegments("/metrics")
                 && !httpContext.Request.Path.StartsWithSegments("/profiler/")
                 && !new[] { "html", "ico", "png", "jpg" }.Any(
                     ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
