@@ -80,6 +80,12 @@ public interface ICashServiceClient
         string? description,
         string? externalId);
 
+    ValueTask<TransactionResponse> PromotionVipLevelBirthdayAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId);
+
     ValueTask<TransactionResponse> AdjustAgentAsync(
         Guid walletId,
         decimal amount,
@@ -101,51 +107,48 @@ public interface ICashServiceClient
         string? externalId,
         Guid createdByUserId);
 
-    //ValueTask<TransactionResponse> PlaceBetAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GamePlaceBetAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
 
-    //ValueTask<TransactionResponse> WinBetAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameSettleWinAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
 
-    //ValueTask<TransactionResponse> LoseBetAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameSettleLoseAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
 
-    //ValueTask<TransactionResponse> FreeBetAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameSettleFreeAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
 
-    //ValueTask<TransactionResponse> TieBetAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameSettleTieAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
 
-    //ValueTask<TransactionResponse> CancelTransactionAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameCancelTransactionAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
 
-    //ValueTask<TransactionResponse> LockAmountAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameLockAmountAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
 
-    //ValueTask<TransactionResponse> UnlockAmountAsync(
-    //    Guid walletId,
-    //    decimal amount,
-    //    string? description,
-    //    string? externalId);
+    ValueTask<TransactionResponse> GameUnlockAmountAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
+
+    ValueTask<TransactionResponse> GameWinJackpotAsync(
+        Guid walletId,
+        decimal amount,
+        string externalId);
 }
