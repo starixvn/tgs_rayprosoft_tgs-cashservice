@@ -40,6 +40,28 @@ internal class WalletRepository : IWalletRepository
         var connection = _context.Database.GetDbConnection();
         var transaction = _context.Database.CurrentTransaction?.GetDbTransaction();
 
+        await connection.QueryAsync(
+            @"
+                UPDATE dbo.wallets as C
+                SET
+                    balance = C.balance + :amount,
+                    updated_on = :updateOn
+                FROM
+                    dbo.wallets AS O
+                WHERE
+                    C.id = O.id
+                    AND
+                    C.id = :walletId
+                RETURNING 
+                    O.balance AS OriginBalance, 
+                    C.balance AS Balance",
+            new
+            {
+                walletId,
+                amount,
+                updatedOn
+            }).ConfigureAwait(false);
+
         var postBalance = await connection.QueryFirstOrDefaultAsync<decimal>(
             sql,
             new Dictionary<string, object>

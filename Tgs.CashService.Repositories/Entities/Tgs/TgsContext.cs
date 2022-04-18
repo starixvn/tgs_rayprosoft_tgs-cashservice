@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore;
 using System;
 using TGS.GameProviders.Repositories.Entities.Configurations;
+#nullable enable
 
 #nullable disable
 
