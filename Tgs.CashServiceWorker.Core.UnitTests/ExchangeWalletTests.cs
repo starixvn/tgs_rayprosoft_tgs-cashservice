@@ -16,7 +16,7 @@ public class ExchangeWalletTests
         var services = new ServiceCollection();
 
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
-        services
+        _ = services
             .AddSingleton<ILogger<WalletReception>>(NullLogger<WalletReception>.Instance)
             .AddSingleton(fakeWalletRepository);
 
@@ -32,7 +32,7 @@ public class ExchangeWalletTests
             null,
             null);
 
-        fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId))
+        _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId), Arg.Any<CancellationToken>())
             .Returns(new Wallet
             {
                 Id = command.WalletId,
@@ -40,7 +40,7 @@ public class ExchangeWalletTests
                 PlayerCode = "Player1"
             });
 
-        fakeWalletRepository.ExchangeAsync(
+        _ = fakeWalletRepository.ExchangeAsync(
                 Arg.Any<Guid>(),
                 Arg.Is(command.WalletId),
                 Arg.Any<string>(),
@@ -49,7 +49,8 @@ public class ExchangeWalletTests
                 Arg.Is(0M),
                 Arg.Is(command.Description),
                 Arg.Is(command.ExternalId),
-                Arg.Is(command.CreatedByUserId))
+                Arg.Is(command.CreatedByUserId),
+                Arg.Any<CancellationToken>())
             .Returns(new ExchangeResult(Guid.NewGuid(), 12345M, 0M));
 
         var actual = await sut.GetAsync(command);
@@ -66,7 +67,7 @@ public class ExchangeWalletTests
 
         var query = new GetBalanceQuery(Guid.NewGuid());
 
-        fakeWalletRepository.GetBalanceAsync(Arg.Is(query.WalletId))
+        _ = fakeWalletRepository.GetBalanceAsync(Arg.Is(query.WalletId))
             .Returns(1000M);
 
         var actual = await sut.GetAsync(query);
@@ -80,7 +81,7 @@ public class ExchangeWalletTests
         var services = new ServiceCollection();
 
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
-        services
+        _ = services
             .AddSingleton<ILogger<WalletReception>>(NullLogger<WalletReception>.Instance)
             .AddSingleton(fakeWalletRepository);
 

@@ -87,10 +87,10 @@ internal class WalletRepository : IWalletRepository
                 RecordedOn = updatedOn,
                 ExternalTransactionId = externalId,
                 CreatedByUserId = createdByUserId
-            })
+            }, cancellationToken)
             .ConfigureAwait(false);
 
-        _ = await _context.SaveChangesAsync().ConfigureAwait(false);
+        _ = await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         scope.Complete();
 
@@ -104,7 +104,7 @@ internal class WalletRepository : IWalletRepository
     {
         var playerWallet = await _context.WalletItems
             .Where(x => x.Id == walletId)
-            .FirstOrDefaultAsync()
+            .FirstOrDefaultAsync(cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         return playerWallet?.Balance;
@@ -120,7 +120,7 @@ internal class WalletRepository : IWalletRepository
                                 Id = w.Id,
                                 PlayerCode = w.PlayerCode,
                                 BrandId = p.BrandId
-                            }).FirstOrDefaultAsync().ConfigureAwait(false);
+                            }).FirstOrDefaultAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return wallet;
     }

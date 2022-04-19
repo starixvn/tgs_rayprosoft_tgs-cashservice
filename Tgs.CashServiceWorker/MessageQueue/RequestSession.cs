@@ -11,19 +11,16 @@ namespace Tgs.CashServiceWorker.MessageQueue;
 internal class RequestSession : IMessageSession
 {
     private readonly IGetService<ExchangeWalletCommand, ExchangeResult> _exchangeService;
-    private readonly ILogger<RequestSession> _logger;
     private readonly IDatabase _redisDatabase;
 
     public RequestSession(
         IGetService<ExchangeWalletCommand, ExchangeResult> exchangeService,
-        RedisConnectionManager redisConnectionManager,
-        ILogger<RequestSession> logger)
+        RedisConnectionManager redisConnectionManager)
     {
         if (redisConnectionManager is null)
             throw new ArgumentNullException(nameof(redisConnectionManager));
 
         _exchangeService = exchangeService ?? throw new ArgumentNullException(nameof(exchangeService));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _redisDatabase = redisConnectionManager.Database;
     }
 
@@ -61,7 +58,7 @@ internal class RequestSession : IMessageSession
         _ = await question
             .AskAsync(response.ToByteArray(), cancellationToken)
             .AsTask()
-            .WaitAsync(TimeSpan.FromSeconds(5))
+            .WaitAsync(TimeSpan.FromSeconds(5), cancellationToken)
             .ConfigureAwait(false);
     }
 }
