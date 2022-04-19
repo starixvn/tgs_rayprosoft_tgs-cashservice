@@ -18,7 +18,7 @@ public class GeneralTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 

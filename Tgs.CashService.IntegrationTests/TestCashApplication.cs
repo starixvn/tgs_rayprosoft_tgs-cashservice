@@ -20,7 +20,7 @@ internal class TestCashApplication : WebApplicationFactory<Program>
     {
         _webHostConfigure?.Invoke(builder);
 
-        builder
+        _ = builder
             .ConfigureLogging(logging => logging.ClearProviders().AddConsole())
             .ConfigureServices(services =>
             {

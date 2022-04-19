@@ -109,8 +109,8 @@ internal class WalletReception : IDisposable
             var repository = scope.ServiceProvider.GetRequiredService<IWalletRepository>();
 
             var wallet = await repository
-            .GetWalletAsync(exchangeTask.Request.WalletId)
-            .ConfigureAwait(false);
+                .GetWalletAsync(exchangeTask.Request.WalletId, cancellationToken)
+                .ConfigureAwait(false);
 
             if (wallet == null)
                 throw new InvalidOperationException("Can't found wallet.");
@@ -124,7 +124,8 @@ internal class WalletReception : IDisposable
                 exchangeTask.Request.LockAmount,
                 exchangeTask.Request.Description,
                 exchangeTask.Request.ExternalId,
-                exchangeTask.Request.CreatedByUserId).ConfigureAwait(false);
+                exchangeTask.Request.CreatedByUserId,
+                cancellationToken).ConfigureAwait(false);
 
             exchangeTask.Promise.SetResult(result);
         }

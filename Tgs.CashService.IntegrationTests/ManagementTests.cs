@@ -21,11 +21,11 @@ public class ManagementTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -43,7 +43,8 @@ public class ManagementTests
                         Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
                     .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
@@ -103,11 +104,11 @@ public class ManagementTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -125,7 +126,8 @@ public class ManagementTests
                         Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
                     .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
@@ -180,11 +182,11 @@ public class ManagementTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -202,7 +204,8 @@ public class ManagementTests
                         Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
                     .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
@@ -262,11 +265,11 @@ public class ManagementTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -284,7 +287,8 @@ public class ManagementTests
                         Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
                     .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
@@ -343,11 +347,11 @@ public class ManagementTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -365,7 +369,8 @@ public class ManagementTests
                         Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
                     .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
