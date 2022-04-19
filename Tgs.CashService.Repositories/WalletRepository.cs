@@ -44,14 +44,14 @@ internal class WalletRepository : IWalletRepository
             @"
                 UPDATE dbo.wallets as C
                 SET
-                    balance = C.balance + :amount,
-                    updated_on = :updateOn
+                    balance = C.balance + @amount,
+                    updated_on = @updateOn
                 FROM
                     dbo.wallets AS O
                 WHERE
                     C.id = O.id
                     AND
-                    C.id = :walletId
+                    C.id = @walletId
                 RETURNING
                     O.balance AS OriginBalance,
                     C.balance AS PostBalance",
