@@ -28,9 +28,9 @@ internal class WalletRepository : IWalletRepository
         decimal amount,
         string? description,
         string? externalId,
-        Guid? createdByUserId)
+        Guid? createdByUserId,
+        CancellationToken cancellationToken = default)
     {
-        const string sql = "dbo.wallet_update_wallet_balance";
         var updatedOn = DateTime.UtcNow;
         var transactionId = await _serialNumberGenerator
             .GenerateAsync()
@@ -40,17 +40,31 @@ internal class WalletRepository : IWalletRepository
         var connection = _context.Database.GetDbConnection();
         var transaction = _context.Database.CurrentTransaction?.GetDbTransaction();
 
-        var postBalance = await connection.QueryFirstOrDefaultAsync<decimal>(
-            sql,
-            new Dictionary<string, object>
+        var updateResult = await connection.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
+            @"
+                UPDATE dbo.wallets as C
+                SET
+                    balance = C.balance + :amount,
+                    updated_on = :updateOn
+                FROM
+                    dbo.wallets AS O
+                WHERE
+                    C.id = O.id
+                    AND
+                    C.id = :walletId
+                RETURNING
+                    O.balance AS OriginBalance,
+                    C.balance AS PostBalance",
+            new
             {
-                    {":player_code", playerCode},
-                    {":wallet_id", walletId},
-                    {":amount", amount},
-                    {":updated_on", updatedOn}
+                walletId,
+                amount,
+                updatedOn
             },
-            commandType: CommandType.StoredProcedure,
-            transaction: transaction).ConfigureAwait(false);
+            transaction).ConfigureAwait(false);
+
+        if (updateResult is null)
+            throw new WalletExchangeFailException();
 
         _ = await _context.Transactions
             .AddAsync(new()
@@ -60,7 +74,7 @@ internal class WalletRepository : IWalletRepository
                 WalletId = walletId,
                 BrandId = brandId,
                 Amount = amount,
-                Balance = postBalance,
+                Balance = updateResult.PostBalance,
                 Type = (short)transactionType,
                 Description = description,
                 RecordedOn = updatedOn,
@@ -73,10 +87,10 @@ internal class WalletRepository : IWalletRepository
 
         scope.Complete();
 
-        return new ExchangeResult(transactionId, postBalance);
+        return new ExchangeResult(transactionId, updateResult.PostBalance);
     }
 
-    public async ValueTask<decimal?> GetBalanceAsync(Guid walletId)
+    public async ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
         var playerWallet = await _context.WalletItems
             .Where(x => x.Id == walletId)
@@ -86,7 +100,7 @@ internal class WalletRepository : IWalletRepository
         return playerWallet?.Balance;
     }
 
-    public async ValueTask<Wallet?> GetWalletAsync(Guid walletId)
+    public async ValueTask<Wallet?> GetWalletAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
         var wallet = await (from w in _context.WalletItems.AsQueryable()
                             join p in _context.Players on w.PlayerCode equals p.PlayerCode

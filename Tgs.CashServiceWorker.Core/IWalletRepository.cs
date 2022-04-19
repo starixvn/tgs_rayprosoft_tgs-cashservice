@@ -12,9 +12,10 @@ public interface IWalletRepository
       decimal amount,
       string? description,
       string? externalId,
-      Guid? createdByUserId = null);
+      Guid? createdByUserId = null,
+      CancellationToken cancellationToken = default);
 
-    ValueTask<decimal?> GetBalanceAsync(Guid walletId);
+    ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default);
 
-    ValueTask<Wallet?> GetWalletAsync(Guid walletId);
+    ValueTask<Wallet?> GetWalletAsync(Guid walletId, CancellationToken cancellationToken = default);
 }

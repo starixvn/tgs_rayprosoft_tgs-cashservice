@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
 
@@ -17,17 +18,19 @@ internal class TestCashApplication : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services =>
-        {
-            _ = services.AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
-                sp => new ConfigureNamedOptions<OtlpExporterOptions>(
-                    Options.DefaultName,
-                    exporterOptions =>
-                    {
-                        exporterOptions.Endpoint = null;
-                    }));
-        });
-
         _webHostConfigure?.Invoke(builder);
+
+        builder
+            .ConfigureLogging(logging => logging.ClearProviders().AddConsole())
+            .ConfigureServices(services =>
+            {
+                _ = services.AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
+                    sp => new ConfigureNamedOptions<OtlpExporterOptions>(
+                        Options.DefaultName,
+                        exporterOptions =>
+                        {
+                            exporterOptions.TimeoutMilliseconds = 0;
+                        }));
+            });
     }
 }

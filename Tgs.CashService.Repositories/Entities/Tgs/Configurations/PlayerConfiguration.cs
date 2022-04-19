@@ -49,6 +49,10 @@ namespace TGS.GameProviders.Repositories.Entities.Configurations
 
             entity.Property(e => e.BetLimitId).HasColumnName("bet_limit_id");
 
+            entity.Property(e => e.Birthday)
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("birthday");
+
             entity.Property(e => e.BrandId).HasColumnName("brand_id");
 
             entity.Property(e => e.DefaultWalletCurrencyCode)
@@ -101,6 +105,8 @@ namespace TGS.GameProviders.Repositories.Entities.Configurations
             entity.Property(e => e.RegisteredOn)
                 .HasColumnType("timestamp with time zone")
                 .HasColumnName("registered_on");
+
+            entity.Property(e => e.Remark).HasColumnName("remark");
 
             entity.Property(e => e.Salt)
                 .IsRequired()
