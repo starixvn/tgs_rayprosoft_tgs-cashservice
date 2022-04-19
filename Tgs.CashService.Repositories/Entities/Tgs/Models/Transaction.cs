@@ -20,5 +20,6 @@ namespace TGS.GameProviders.Repositories.Entities
         public DateTime? SentOn { get; set; }
         public Guid? CreatedByUserId { get; set; }
         public decimal LockedBalance { get; set; }
+        public decimal LockAmount { get; set; }
     }
 }

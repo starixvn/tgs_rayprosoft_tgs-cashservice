@@ -41,6 +41,10 @@ namespace TGS.GameProviders.Repositories.Entities.Configurations
 
             entity.Property(e => e.ExternalTransactionId).HasColumnName("external_transaction_id");
 
+            entity.Property(e => e.LockAmount)
+                .HasPrecision(18, 6)
+                .HasColumnName("lock_amount");
+
             entity.Property(e => e.LockedBalance)
                 .HasPrecision(18, 6)
                 .HasColumnName("locked_balance");
