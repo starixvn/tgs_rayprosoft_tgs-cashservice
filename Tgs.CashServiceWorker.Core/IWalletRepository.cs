@@ -10,6 +10,7 @@ public interface IWalletRepository
       string playerCode,
       TransactionType transactionType,
       decimal amount,
+      decimal lockAmount,
       string? description,
       string? externalId,
       Guid? createdByUserId = null,
