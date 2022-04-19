@@ -42,10 +42,10 @@ internal class WalletRepository : IWalletRepository
 
         var updateResult = await connection.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
             @"
-                UPDATE dbo.wallets as C
+                UPDATE dbo.wallets AS C
                 SET
                     balance = C.balance + @amount,
-                    updated_on = @updateOn
+                    updated_on = @updatedOn
                 FROM
                     dbo.wallets AS O
                 WHERE
