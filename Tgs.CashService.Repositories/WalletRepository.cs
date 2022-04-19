@@ -79,7 +79,7 @@ internal class WalletRepository : IWalletRepository
                 WalletId = walletId,
                 BrandId = brandId,
                 Amount = amount,
-                LockAmount = 0M,
+                LockAmount = lockAmount,
                 Balance = updateResult.PostBalance,
                 LockedBalance = updateResult.PostLockedBalance,
                 Type = (short)transactionType,
