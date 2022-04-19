@@ -41,7 +41,7 @@ public class WalletController : ControllerBase
                 request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public class WalletController : ControllerBase
                 request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -126,7 +126,7 @@ public class WalletController : ControllerBase
                 request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -162,7 +162,7 @@ public class WalletController : ControllerBase
                 request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -197,7 +197,7 @@ public class WalletController : ControllerBase
                 request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -231,7 +231,7 @@ public class WalletController : ControllerBase
                 request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -264,7 +264,7 @@ public class WalletController : ControllerBase
                 request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -297,7 +297,7 @@ public class WalletController : ControllerBase
                 request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -330,7 +330,7 @@ public class WalletController : ControllerBase
                 request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -363,7 +363,7 @@ public class WalletController : ControllerBase
                 viewModel.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -396,7 +396,7 @@ public class WalletController : ControllerBase
                 viewModel.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -430,7 +430,7 @@ public class WalletController : ControllerBase
                 viewModel.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -464,7 +464,7 @@ public class WalletController : ControllerBase
                 viewModel.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -498,6 +498,6 @@ public class WalletController : ControllerBase
                 viewModel.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 }

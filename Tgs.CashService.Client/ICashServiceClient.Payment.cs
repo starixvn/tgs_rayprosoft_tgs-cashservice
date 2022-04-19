@@ -18,6 +18,14 @@ public partial interface ICashServiceClient
         Guid? createdByUserId,
         CancellationToken cancellationToken = default);
 
+    ValueTask<TransactionResponse> DepositedAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid? createdByUserId,
+        CancellationToken cancellationToken = default);
+
     ValueTask<TransactionResponse> WithdrawalAsync(
         Guid walletId,
         decimal amount,

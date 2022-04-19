@@ -41,7 +41,7 @@ public class PaymentWalletController : ControllerBase
                 request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public class PaymentWalletController : ControllerBase
                 request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -78,12 +78,12 @@ public class PaymentWalletController : ControllerBase
     /// <returns></returns>
     [HttpPut("deposited/{walletId}", Name = "Deposited")]
     public async ValueTask<TransactionResultViewModel> DepositedAsync(
-        [FromServices] IGetService<DepositCommand, ExchangeResult> service,
+        [FromServices] IGetService<DepositedCommand, ExchangeResult> service,
         Guid walletId,
         [FromBody] DepositViewModel request)
     {
         var result = await service
-            .GetAsync(new DepositCommand(
+            .GetAsync(new DepositedCommand(
                 walletId,
                 request.Amount,
                 request.Description,
@@ -91,7 +91,7 @@ public class PaymentWalletController : ControllerBase
                 request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -124,6 +124,6 @@ public class PaymentWalletController : ControllerBase
                 request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 }
