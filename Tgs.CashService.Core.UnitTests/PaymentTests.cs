@@ -35,6 +35,32 @@ public class PaymentTests
     }
 
     [Test]
+    public async Task Can_Create_Deposited_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new DepositedCommandService(fakeWalletExchangeService);
+
+        var command = new DepositedCommand(
+            Guid.NewGuid(),
+            100M,
+            Guid.NewGuid().ToString("N"),
+            "測試存款",
+            Guid.NewGuid());
+
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.Deposited.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId
+                    && request.CreatedUser == command.CreatedByUserId));
+    }
+
+    [Test]
     public async Task Can_Create_Withdrawal_Exchange()
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();

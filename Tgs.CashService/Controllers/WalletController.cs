@@ -38,7 +38,7 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), CreateCancellationToken())
+                request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -88,67 +88,7 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), CreateCancellationToken())
-            .ConfigureAwait(false);
-
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
-    }
-
-    /// <summary>
-    ///     Cancels the withdrawal exchange asynchronous.
-    /// </summary>
-    /// <param name="service">The service.</param>
-    /// <param name="walletId"></param>
-    /// <param name="request">The view model.</param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     <b>Example</b><br />
-    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
-    ///     {
-    ///     "amount": 10,
-    ///     "description": "測試取消提款",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-    ///     }
-    /// </remarks>
-    [HttpDelete("withdrawal/{walletId}", Name = "CancelWithdrawal")]
-    public async ValueTask<TransactionResultViewModel> CancelWithdrawalAsync(
-        [FromServices] IGetService<CancelWithdrawalCommand, ExchangeResult> service,
-        Guid walletId,
-        [FromBody] CancelWithdrawalViewModel request)
-    {
-        var result = await service
-            .GetAsync(new CancelWithdrawalCommand(
-                walletId,
-                request.Amount,
-                request.Description,
-                request.ExternalId,
-                request.CreatedByUserId), CreateCancellationToken())
-            .ConfigureAwait(false);
-
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
-    }
-
-    /// <summary>
-    ///     Deposits the exchange asynchronous.
-    /// </summary>
-    /// <param name="service">The service.</param>
-    /// <param name="walletId"></param>
-    /// <param name="request">The view model.</param>
-    /// <returns></returns>
-    [HttpPut("deposit/{walletId}", Name = "Deposit")]
-    public async ValueTask<TransactionResultViewModel> DepositAsync(
-        [FromServices] IGetService<DepositCommand, ExchangeResult> service,
-        Guid walletId,
-        [FromBody] DepositViewModel request)
-    {
-        var result = await service
-            .GetAsync(new DepositCommand(
-                walletId,
-                request.Amount,
-                request.Description,
-                request.ExternalId,
-                request.CreatedByUserId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -183,7 +123,7 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), CreateCancellationToken())
+                request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -219,7 +159,7 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), CreateCancellationToken())
+                request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -254,7 +194,7 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), CreateCancellationToken())
+                request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -288,7 +228,7 @@ public class WalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), CreateCancellationToken())
+                request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -321,7 +261,7 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -354,7 +294,7 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -387,7 +327,7 @@ public class WalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -420,40 +360,7 @@ public class WalletController : ControllerBase
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
-                viewModel.ExternalId), CreateCancellationToken())
-            .ConfigureAwait(false);
-
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
-    }
-
-    /// <summary>
-    ///     Withdrawals the exchange asynchronous.
-    /// </summary>
-    /// <param name="service">The service.</param>
-    /// <param name="walletId"></param>
-    /// <param name="request">The view model.</param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     <b>Example</b><br />
-    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
-    ///     {
-    ///     "amount": 10,
-    ///     "description": "測試提款",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///     }
-    /// </remarks>
-    [HttpPut("withdrawal/{walletId}", Name = "Withdrawal")]
-    public async ValueTask<TransactionResultViewModel> WithdrawalAsync(
-        [FromServices] IGetService<WithdrawalCommand, ExchangeResult> service,
-        Guid walletId,
-        [FromBody] WithdrawalViewModel request)
-    {
-        var result = await service
-            .GetAsync(new WithdrawalCommand(
-                walletId,
-                request.Amount,
-                request.Description,
-                request.ExternalId), CreateCancellationToken())
+                viewModel.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -486,7 +393,7 @@ public class WalletController : ControllerBase
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
-                viewModel.ExternalId), CreateCancellationToken())
+                viewModel.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -520,7 +427,7 @@ public class WalletController : ControllerBase
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,
-                viewModel.CreatedByUserId), CreateCancellationToken())
+                viewModel.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -554,7 +461,7 @@ public class WalletController : ControllerBase
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,
-                viewModel.CreatedByUserId), CreateCancellationToken())
+                viewModel.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
@@ -588,17 +495,9 @@ public class WalletController : ControllerBase
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,
-                viewModel.CreatedByUserId), CreateCancellationToken())
+                viewModel.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance);
-    }
-
-    private CancellationToken CreateCancellationToken()
-    {
-        var cts = CancellationTokenSource.CreateLinkedTokenSource(HttpContext.RequestAborted);
-        cts.CancelAfter(TimeSpan.FromSeconds(10));
-
-        return cts.Token;
     }
 }
