@@ -3,9 +3,6 @@ kind: ConfigMap
 metadata:
   name: configmap-{{ include "cashservice-worker.fullname" . }}
 data:
-  appsettings.json: |
-    {
-    }
   monitor.settings.json: |
     {
       "Logging":{
