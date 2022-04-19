@@ -21,6 +21,7 @@ internal class GameWinJackpotCommandService : IGetService<GameWinJackpotCommand,
             WalletId = command.WalletId,
             TransactionType = TransactionType.GameWinJackpot.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = string.Empty,
             ExternalId = command.ExternalId
         };

@@ -19,6 +19,7 @@ internal class GamePlaceBetCommandService : IGetService<GamePlaceBetCommand, Exc
             WalletId = command.WalletId,
             TransactionType = TransactionType.GamePlaceBet.ToString(),
             Amount = -command.Amount,
+            LockAmount = 0M,
             Description = string.Empty,
             ExternalId = command.ExternalId
         };

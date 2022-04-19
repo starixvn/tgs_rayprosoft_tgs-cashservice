@@ -18,6 +18,7 @@ internal class ExchangeWalletCommandService : IGetService<ExchangeWalletCommand,
             command.WalletId,
             command.TransactionType,
             command.Amount,
+            command.LockAmount,
             command.Description,
             command.ExternalId,
             command.CreatedByUserId);

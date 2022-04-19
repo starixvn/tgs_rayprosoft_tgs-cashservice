@@ -20,6 +20,7 @@ internal class BonusCommandService : IGetService<BonusCommand, ExchangeResult>
             WalletId = command.WalletId,
             TransactionType = TransactionType.Bonus.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty
         };

@@ -41,10 +41,11 @@ public class AdjustTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.AdjustCompany),
                         Arg.Is(companyAdjustAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Is<Guid?>(userId))
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -64,6 +65,7 @@ public class AdjustTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -122,10 +124,11 @@ public class AdjustTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.AdjustAgent),
                         Arg.Is(AgentAdjustAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Is<Guid?>(userId))
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -145,6 +148,7 @@ public class AdjustTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -203,10 +207,11 @@ public class AdjustTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.AdjustSystem),
                         Arg.Is(systemAdjustAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Is<Guid?>(userId))
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -226,6 +231,7 @@ public class AdjustTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -284,10 +290,11 @@ public class AdjustTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.AdjustTransfer),
                         Arg.Is(transferAdjustAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Is<Guid?>(userId))
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -307,6 +314,7 @@ public class AdjustTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;

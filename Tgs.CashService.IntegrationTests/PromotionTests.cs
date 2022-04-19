@@ -40,10 +40,11 @@ public class PromotionTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.Promotion),
                         Arg.Is(promotionAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -62,6 +63,7 @@ public class PromotionTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -119,10 +121,11 @@ public class PromotionTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.PromotionVipLevelUpgrade),
                         Arg.Is(promotionAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -141,6 +144,7 @@ public class PromotionTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -197,10 +201,11 @@ public class PromotionTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.PromotionVipLevelSeason),
                         Arg.Is(promotionAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -219,6 +224,7 @@ public class PromotionTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -275,10 +281,11 @@ public class PromotionTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.PromotionVipLevelBirthday),
                         Arg.Is(promotionAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -298,6 +305,7 @@ public class PromotionTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;

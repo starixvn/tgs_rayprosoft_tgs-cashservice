@@ -40,10 +40,11 @@ public class GameProviderTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameProviderDeposit),
                         Arg.Is(-depositAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -62,6 +63,7 @@ public class GameProviderTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -118,10 +120,11 @@ public class GameProviderTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameProviderFundIn),
                         Arg.Is(fundInAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -140,6 +143,7 @@ public class GameProviderTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -196,10 +200,11 @@ public class GameProviderTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameProviderFundOut),
                         Arg.Is(-fundOutAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -218,6 +223,7 @@ public class GameProviderTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -274,10 +280,11 @@ public class GameProviderTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameProviderWithdrawal),
                         Arg.Is(withdrawAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -296,6 +303,7 @@ public class GameProviderTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;

@@ -26,6 +26,7 @@ internal class WalletRepository : IWalletRepository
         string playerCode,
         TransactionType transactionType,
         decimal amount,
+        decimal lockAmount,
         string? description,
         string? externalId,
         Guid? createdByUserId,
@@ -45,6 +46,7 @@ internal class WalletRepository : IWalletRepository
                 UPDATE dbo.wallets AS C
                 SET
                     balance = C.balance + @amount,
+                    locked_balance = C.locked_balance + @lockAmount,
                     updated_on = @updatedOn
                 FROM
                     dbo.wallets AS O
@@ -54,11 +56,14 @@ internal class WalletRepository : IWalletRepository
                     C.id = @walletId
                 RETURNING
                     O.balance AS OriginBalance,
-                    C.balance AS PostBalance",
+                    O.locked_balance AS OriginLockedBalance,
+                    C.balance AS PostBalance,
+                    C.locked_balance AS PostLockedBalance",
             new
             {
                 walletId,
                 amount,
+                lockAmount,
                 updatedOn
             },
             transaction).ConfigureAwait(false);
@@ -74,7 +79,9 @@ internal class WalletRepository : IWalletRepository
                 WalletId = walletId,
                 BrandId = brandId,
                 Amount = amount,
+                LockAmount = 0M,
                 Balance = updateResult.PostBalance,
+                LockedBalance = updateResult.PostLockedBalance,
                 Type = (short)transactionType,
                 Description = description,
                 RecordedOn = updatedOn,
@@ -87,7 +94,10 @@ internal class WalletRepository : IWalletRepository
 
         scope.Complete();
 
-        return new ExchangeResult(transactionId, updateResult.PostBalance);
+        return new ExchangeResult(
+            transactionId,
+            updateResult.PostBalance,
+            updateResult.PostLockedBalance);
     }
 
     public async ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
