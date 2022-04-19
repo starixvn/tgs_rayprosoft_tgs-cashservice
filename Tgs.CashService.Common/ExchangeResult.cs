@@ -2,4 +2,5 @@
 
 public record ExchangeResult(
     Guid TransactionId,
-    decimal Balance);
+    decimal Balance,
+    decimal LockedBalance);

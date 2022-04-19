@@ -94,7 +94,10 @@ internal class WalletRepository : IWalletRepository
 
         scope.Complete();
 
-        return new ExchangeResult(transactionId, updateResult.PostBalance);
+        return new ExchangeResult(
+            transactionId,
+            updateResult.PostBalance,
+            updateResult.PostLockedBalance);
     }
 
     public async ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)

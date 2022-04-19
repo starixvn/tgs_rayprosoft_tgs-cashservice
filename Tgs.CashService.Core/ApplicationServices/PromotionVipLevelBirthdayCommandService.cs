@@ -17,6 +17,7 @@ internal class PromotionVipLevelBirthdayCommandService : IGetService<PromotionVi
             WalletId = command.WalletId,
             TransactionType = TransactionType.PromotionVipLevelBirthday.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty
         };

@@ -28,16 +28,18 @@ public class WalletRepositoryUnitTest
             playerCode,
             transactionType,
             amount,
+            0M,
             description,
             externalId,
             createdByUserId)
-            .Returns(ValueTask.FromResult(new ExchangeResult(transactionId, postBalance)));
-        (Guid TransactionId, decimal PostBalance) = await fakeRoundRepository.ExchangeAsync(
+            .Returns(ValueTask.FromResult(new ExchangeResult(transactionId, postBalance, 0M)));
+        (Guid TransactionId, decimal PostBalance, decimal PostLockedBalance) = await fakeRoundRepository.ExchangeAsync(
            brandId,
            walletId,
            playerCode,
            transactionType,
            amount,
+           0M,
            description,
            externalId,
            createdByUserId).ConfigureAwait(false);

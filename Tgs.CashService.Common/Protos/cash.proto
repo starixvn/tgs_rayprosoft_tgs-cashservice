@@ -18,14 +18,16 @@ message WalletExchangeRequest {
 	phoenix.protobuf.GuidValue wallet_id = 1;
 	string TransactionType = 2;
 	phoenix.protobuf.DecimalValue amount = 3;
-	optional string description = 4;
-	optional string external_id = 5;
-	optional phoenix.protobuf.GuidValue created_user = 6;
+	phoenix.protobuf.DecimalValue lock_amount = 4;
+	optional string description = 5;
+	optional string external_id = 6;
+	optional phoenix.protobuf.GuidValue created_user = 7;
 }
 
 message WalletExchangeResponse {
 	phoenix.protobuf.GuidValue transaction_id = 1;
 	phoenix.protobuf.DecimalValue balance = 2;
+	phoenix.protobuf.DecimalValue locked_balance = 3;
 }
 
 message BalanceRequest {

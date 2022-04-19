@@ -121,6 +121,7 @@ internal class WalletReception : IDisposable
                 wallet.PlayerCode,
                 exchangeTask.Request.TransactionType,
                 exchangeTask.Request.Amount,
+                exchangeTask.Request.LockAmount,
                 exchangeTask.Request.Description,
                 exchangeTask.Request.ExternalId,
                 exchangeTask.Request.CreatedByUserId).ConfigureAwait(false);

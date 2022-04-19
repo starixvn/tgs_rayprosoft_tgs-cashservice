@@ -19,6 +19,7 @@ internal class GameCancelTransactionCommandService : IGetService<GameCancelTrans
             WalletId = command.WalletId,
             TransactionType = TransactionType.GameCancelTransaction.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = string.Empty,
             ExternalId = command.ExternalId
         };

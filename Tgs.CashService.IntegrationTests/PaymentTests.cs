@@ -39,10 +39,11 @@ public class PaymentTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.Deposit),
                         Arg.Any<decimal>(),
+                        Arg.Any<decimal>(),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -61,6 +62,7 @@ public class PaymentTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -116,10 +118,11 @@ public class PaymentTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.Withdrawal),
                         Arg.Any<decimal>(),
+                        Arg.Any<decimal>(),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -138,6 +141,7 @@ public class PaymentTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -193,10 +197,11 @@ public class PaymentTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.CancelWithdrawal),
                         Arg.Is(cancelAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
                         Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -215,6 +220,7 @@ public class PaymentTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;

@@ -46,6 +46,7 @@ internal class RequestSession : IMessageSession
                 request.WalletId,
                 Enum.Parse<TransactionType>(request.TransactionType, true),
                 request.Amount,
+                request.LockAmount,
                 request.Description,
                 request.ExternalId,
                 request.CreatedUser),

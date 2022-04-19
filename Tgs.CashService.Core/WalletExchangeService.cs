@@ -33,7 +33,7 @@ internal class WalletExchangeService : IWalletExchangeService
             .CompleteAsync(Array.Empty<byte>(), cancellationToken)
             .ConfigureAwait(false);
 
-        return new ExchangeResult(response.TransactionId, response.Balance);
+        return new ExchangeResult(response.TransactionId, response.Balance, response.LockedBalance);
     }
 
     public async ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)

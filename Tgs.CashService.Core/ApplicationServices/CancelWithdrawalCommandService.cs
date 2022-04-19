@@ -19,6 +19,7 @@ internal class CancelWithdrawalCommandService : IGetService<CancelWithdrawalComm
             WalletId = command.WalletId,
             TransactionType = TransactionType.CancelWithdrawal.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty,
             CreatedUser = command.CreatedByUserId

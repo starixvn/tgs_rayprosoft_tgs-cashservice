@@ -20,6 +20,7 @@ internal class AdjustCompanyCommandService : IGetService<AdjustCompanyCommand, E
             WalletId = command.WalletId,
             TransactionType = TransactionType.AdjustCompany.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty,
             CreatedUser = command.CreatedByUserId
