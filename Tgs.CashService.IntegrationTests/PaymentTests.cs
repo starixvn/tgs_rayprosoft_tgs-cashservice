@@ -91,6 +91,86 @@ public class PaymentTests
     }
 
     [TestMethod]
+    public async Task Deposited_Amount_To_Wallet()
+    {
+        var walletId = Guid.NewGuid();
+        var transactionId = Guid.NewGuid();
+        var postBalance = 12345M;
+
+        await using var web = new TestCashApplication(
+            builder => builder.ConfigureServices(services =>
+            {
+                _ = services.AddSingleton<WalletExchanger>();
+
+                var fakeWalletRepository = Substitute.For<IWalletRepository>();
+
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                    .Returns(new Wallet
+                    {
+                        Id = walletId,
+                        BrandId = Guid.NewGuid(),
+                        PlayerCode = "Player1"
+                    });
+
+                _ = fakeWalletRepository
+                    .ExchangeAsync(
+                        Arg.Any<Guid>(),
+                        Arg.Is(walletId),
+                        Arg.Any<string>(),
+                        Arg.Is(TransactionType.Deposited),
+                        Arg.Any<decimal>(),
+                        Arg.Any<decimal>(),
+                        Arg.Any<string>(),
+                        Arg.Any<string>(),
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
+
+                _ = services.AddSingleton(fakeWalletRepository);
+
+                var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+                _ = services.AddSingleton(sp =>
+                {
+                    var exchanger = sp.GetRequiredService<WalletExchanger>();
+
+                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
+                        .Returns(callInfo =>
+                        {
+                            var req = callInfo.Arg<WalletExchangeRequest>();
+
+                            return exchanger.RequestAsync(new ExchangeRequest(
+                                req.WalletId,
+                                Enum.Parse<TransactionType>(req.TransactionType),
+                                req.Amount,
+                                req.LockAmount,
+                                req.Description,
+                                req.ExternalId,
+                                req.CreatedUser)).Result;
+                        });
+
+                    return fakeWalletExchangeService;
+                });
+
+                _ = services.AddFakeNatsMessageQueue();
+            }));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var actual = await sut.DepositedAsync(
+            walletId,
+            1000M,
+            null,
+            null,
+            null);
+
+        Assert.AreEqual(postBalance, actual.Balance);
+        Assert.AreEqual(transactionId, actual.TransactionId);
+    }
+
+    [TestMethod]
     public async Task Withdraw_Amount_From_Wallet()
     {
         var walletId = Guid.NewGuid();
@@ -247,6 +327,252 @@ public class PaymentTests
             Guid.NewGuid());
 
         Assert.AreEqual(postBalance, actual.Balance);
+        Assert.AreEqual(transactionId, actual.TransactionId);
+    }
+
+    [TestMethod]
+    public async Task LockWithdraw_Amount_From_Wallet()
+    {
+        var walletId = Guid.NewGuid();
+        var transactionId = Guid.NewGuid();
+        var postBalance = 12345M;
+
+        await using var web = new TestCashApplication(
+            builder => builder.ConfigureServices(services =>
+            {
+                _ = services.AddSingleton<WalletExchanger>();
+
+                var fakeWalletRepository = Substitute.For<IWalletRepository>();
+
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                    .Returns(new Wallet
+                    {
+                        Id = walletId,
+                        BrandId = Guid.NewGuid(),
+                        PlayerCode = "Player1"
+                    });
+
+                _ = fakeWalletRepository
+                    .ExchangeAsync(
+                        Arg.Any<Guid>(),
+                        Arg.Is(walletId),
+                        Arg.Any<string>(),
+                        Arg.Is(TransactionType.WithdrawLock),
+                        Arg.Any<decimal>(),
+                        Arg.Any<decimal>(),
+                        Arg.Any<string>(),
+                        Arg.Any<string>(),
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance - 1000M, 1000M));
+
+                _ = services.AddSingleton(fakeWalletRepository);
+
+                var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+                _ = services.AddSingleton(sp =>
+                {
+                    var exchanger = sp.GetRequiredService<WalletExchanger>();
+
+                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
+                        .Returns(callInfo =>
+                        {
+                            var req = callInfo.Arg<WalletExchangeRequest>();
+
+                            return exchanger.RequestAsync(new ExchangeRequest(
+                                req.WalletId,
+                                Enum.Parse<TransactionType>(req.TransactionType),
+                                req.Amount,
+                                req.LockAmount,
+                                req.Description,
+                                req.ExternalId,
+                                req.CreatedUser)).Result;
+                        });
+
+                    return fakeWalletExchangeService;
+                });
+
+                _ = services.AddFakeNatsMessageQueue();
+            }));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var actual = await sut.LockWithdrawAsync(
+            walletId,
+            1000M,
+            null,
+            null);
+
+        Assert.AreEqual(postBalance - 1000M, actual.Balance);
+        Assert.AreEqual(1000M, actual.LockedBalance);
+        Assert.AreEqual(transactionId, actual.TransactionId);
+    }
+
+    [TestMethod]
+    public async Task RollbackWithdraw_Amount_From_Wallet()
+    {
+        var walletId = Guid.NewGuid();
+        var transactionId = Guid.NewGuid();
+        var postBalance = 12345M;
+        var amount = 1000M;
+
+        await using var web = new TestCashApplication(
+            builder => builder.ConfigureServices(services =>
+            {
+                _ = services.AddSingleton<WalletExchanger>();
+
+                var fakeWalletRepository = Substitute.For<IWalletRepository>();
+
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                    .Returns(new Wallet
+                    {
+                        Id = walletId,
+                        BrandId = Guid.NewGuid(),
+                        PlayerCode = "Player1"
+                    });
+
+                _ = fakeWalletRepository
+                    .ExchangeAsync(
+                        Arg.Any<Guid>(),
+                        Arg.Is(walletId),
+                        Arg.Any<string>(),
+                        Arg.Is(TransactionType.WithdrawRollback),
+                        Arg.Is(amount),
+                        Arg.Is(-amount),
+                        Arg.Any<string>(),
+                        Arg.Any<string>(),
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
+
+                _ = services.AddSingleton(fakeWalletRepository);
+
+                var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+                _ = services.AddSingleton(sp =>
+                {
+                    var exchanger = sp.GetRequiredService<WalletExchanger>();
+
+                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
+                        .Returns(callInfo =>
+                        {
+                            var req = callInfo.Arg<WalletExchangeRequest>();
+
+                            return exchanger.RequestAsync(new ExchangeRequest(
+                                req.WalletId,
+                                Enum.Parse<TransactionType>(req.TransactionType),
+                                req.Amount,
+                                req.LockAmount,
+                                req.Description,
+                                req.ExternalId,
+                                req.CreatedUser)).Result;
+                        });
+
+                    return fakeWalletExchangeService;
+                });
+
+                _ = services.AddFakeNatsMessageQueue();
+            }));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var actual = await sut.RollbackWithdrawAsync(
+            walletId,
+            amount,
+            null,
+            null,
+            Guid.NewGuid());
+
+        Assert.AreEqual(postBalance, actual.Balance);
+        Assert.AreEqual(0M, actual.LockedBalance);
+        Assert.AreEqual(transactionId, actual.TransactionId);
+    }
+
+    [TestMethod]
+    public async Task CommitWithdraw_Amount_From_Wallet()
+    {
+        var walletId = Guid.NewGuid();
+        var transactionId = Guid.NewGuid();
+        var postBalance = 12345M;
+        var amount = 1000M;
+        var actualAmount = 900M;
+
+        await using var web = new TestCashApplication(
+            builder => builder.ConfigureServices(services =>
+            {
+                _ = services.AddSingleton<WalletExchanger>();
+
+                var fakeWalletRepository = Substitute.For<IWalletRepository>();
+
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                    .Returns(new Wallet
+                    {
+                        Id = walletId,
+                        BrandId = Guid.NewGuid(),
+                        PlayerCode = "Player1"
+                    });
+
+                _ = fakeWalletRepository
+                    .ExchangeAsync(
+                        Arg.Any<Guid>(),
+                        Arg.Is(walletId),
+                        Arg.Any<string>(),
+                        Arg.Is(TransactionType.WithdrawCommit),
+                        Arg.Is(0M),
+                        Arg.Is(-amount),
+                        Arg.Any<string>(),
+                        Arg.Any<string>(),
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
+
+                _ = services.AddSingleton(fakeWalletRepository);
+
+                var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+                _ = services.AddSingleton(sp =>
+                {
+                    var exchanger = sp.GetRequiredService<WalletExchanger>();
+
+                    _ = fakeWalletExchangeService.SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>())
+                        .Returns(callInfo =>
+                        {
+                            var req = callInfo.Arg<WalletExchangeRequest>();
+
+                            return exchanger.RequestAsync(new ExchangeRequest(
+                                req.WalletId,
+                                Enum.Parse<TransactionType>(req.TransactionType),
+                                req.Amount,
+                                req.LockAmount,
+                                req.Description,
+                                req.ExternalId,
+                                req.CreatedUser)).Result;
+                        });
+
+                    return fakeWalletExchangeService;
+                });
+
+                _ = services.AddFakeNatsMessageQueue();
+            }));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var actual = await sut.CommitWithdrawAsync(
+            walletId,
+            amount,
+            actualAmount,
+            null,
+            null,
+            Guid.NewGuid());
+
+        Assert.AreEqual(postBalance, actual.Balance);
+        Assert.AreEqual(0M, actual.LockedBalance);
         Assert.AreEqual(transactionId, actual.TransactionId);
     }
 }

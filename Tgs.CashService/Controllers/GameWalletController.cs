@@ -36,10 +36,10 @@ public class GameWalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -69,10 +69,10 @@ public class GameWalletController : ControllerBase
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
-                viewModel.ExternalId), CreateCancellationToken())
+                viewModel.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -102,10 +102,10 @@ public class GameWalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -135,10 +135,10 @@ public class GameWalletController : ControllerBase
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -166,10 +166,10 @@ public class GameWalletController : ControllerBase
             .GetAsync(new GamePlaceBetCommand(
                 walletId,
                 request.Amount,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -197,10 +197,10 @@ public class GameWalletController : ControllerBase
             .GetAsync(new GameLockAmountCommand(
                 walletId,
                 request.Amount,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -228,10 +228,10 @@ public class GameWalletController : ControllerBase
             .GetAsync(new GameUnlockAmountCommand(
                 walletId,
                 request.Amount,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -259,10 +259,10 @@ public class GameWalletController : ControllerBase
             .GetAsync(new GameSettleWinCommand(
                 walletId,
                 request.Amount,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -290,10 +290,10 @@ public class GameWalletController : ControllerBase
             .GetAsync(new GameSettleLoseCommand(
                 walletId,
                 request.Amount,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -321,10 +321,10 @@ public class GameWalletController : ControllerBase
             .GetAsync(new GameSettleTieCommand(
                 walletId,
                 request.Amount,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -352,10 +352,10 @@ public class GameWalletController : ControllerBase
             .GetAsync(new GameSettleFreeCommand(
                 walletId,
                 request.Amount,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -383,10 +383,10 @@ public class GameWalletController : ControllerBase
             .GetAsync(new GameCancelTransactionCommand(
                 walletId,
                 request.Amount,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -414,17 +414,9 @@ public class GameWalletController : ControllerBase
             .GetAsync(new GameWinJackpotCommand(
                 walletId,
                 request.Amount,
-                request.ExternalId), CreateCancellationToken())
+                request.ExternalId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
-        return new TransactionResultViewModel(result.TransactionId, result.Balance);
-    }
-
-    private CancellationToken CreateCancellationToken()
-    {
-        var cts = CancellationTokenSource.CreateLinkedTokenSource(HttpContext.RequestAborted);
-        cts.CancelAfter(TimeSpan.FromSeconds(10));
-
-        return cts.Token;
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 }
