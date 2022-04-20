@@ -12,11 +12,13 @@ namespace Tgs.CashService.Repositories;
 internal class WalletRepository : IWalletRepository
 {
     private readonly TgsContext _context;
+    private readonly IDbScriptExecutor _dbScriptExecutor;
     private readonly ISerialNumberGenerator _serialNumberGenerator;
 
-    public WalletRepository(TgsContext context, ISerialNumberGenerator serialNumberGenerator)
+    public WalletRepository(TgsContext context, IDbScriptExecutor dbScriptExecutor, ISerialNumberGenerator serialNumberGenerator)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _dbScriptExecutor = dbScriptExecutor;
         _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
     }
 
@@ -38,10 +40,8 @@ internal class WalletRepository : IWalletRepository
             .ConfigureAwait(false);
 
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-        var connection = _context.Database.GetDbConnection();
-        var transaction = _context.Database.CurrentTransaction?.GetDbTransaction();
 
-        var updateResult = await connection.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
+        var updateResult = await _dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
             @"
                 UPDATE dbo.wallets AS C
                 SET
@@ -65,8 +65,7 @@ internal class WalletRepository : IWalletRepository
                 amount,
                 lockAmount,
                 updatedOn
-            },
-            transaction).ConfigureAwait(false);
+            }).ConfigureAwait(false);
 
         if (updateResult is null)
             throw new WalletExchangeFailException();

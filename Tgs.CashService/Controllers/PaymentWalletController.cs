@@ -44,8 +44,26 @@ public class PaymentWalletController : ControllerBase
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
+    [HttpDelete("withdraw/{walletId}", Name = "RollbackWithdraw")]
+    public async ValueTask<TransactionResultViewModel> RollbackWithdrawAsync(
+        [FromServices] IGetService<RollbackWithdrawCommand, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] CancelWithdrawalViewModel request)
+    {
+        var result = await service
+            .GetAsync(new RollbackWithdrawCommand(
+                walletId,
+                request.Amount,
+                request.Description,
+                request.ExternalId,
+                request.CreatedByUserId), this.CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
     /// <summary>
-    ///     Deposits the exchange asynchronous.
+    /// Deposits the exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="walletId"></param>
@@ -122,6 +140,56 @@ public class PaymentWalletController : ControllerBase
                 request.Amount,
                 request.Description,
                 request.ExternalId), this.CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
+    /// <summary>
+    /// Withdraws the lock asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="walletId">The wallet identifier.</param>
+    /// <param name="request">The request.</param>
+    /// <returns></returns>
+    [HttpPost("withdraw-lock/{walletId}", Name = "WithdrawLock")]
+    public async ValueTask<TransactionResultViewModel> WithdrawLockAsync(
+        [FromServices] IGetService<WithdrawLockCommand, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] WithdrawalViewModel request)
+    {
+        var result = await service
+            .GetAsync(new WithdrawLockCommand(
+                walletId,
+                request.Amount,
+                request.Description,
+                request.ExternalId), this.CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
+    /// <summary>
+    /// Commits the withdraw asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="walletId">The wallet identifier.</param>
+    /// <param name="request">The request.</param>
+    /// <returns></returns>
+    [HttpPut("withdraw/{walletId}", Name = "CommitWithdraw")]
+    public async ValueTask<TransactionResultViewModel> CommitWithdrawAsync(
+        [FromServices] IGetService<CommitWithdrawCommand, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] WithdrawCommitViewModel request)
+    {
+        var result = await service
+            .GetAsync(new CommitWithdrawCommand(
+                walletId,
+                request.Amount,
+                request.ActualAmount,
+                request.Description,
+                request.ExternalId,
+                request.CreatedByUserId), this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);

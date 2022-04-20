@@ -32,4 +32,28 @@ public partial interface ICashServiceClient
         string? description,
         string? externalId,
         CancellationToken cancellationToken = default);
+
+    ValueTask<TransactionResponse> LockWithdrawAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        CancellationToken cancellationToken = default);
+
+    ValueTask<TransactionResponse> CommitWithdrawAsync(
+        Guid walletId,
+        decimal amount,
+        decimal actualAmount,
+        string? description,
+        string? externalId,
+        Guid? createdByUserId,
+        CancellationToken cancellationToken = default);
+
+    ValueTask<TransactionResponse> RollbackWithdrawAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid? createdByUserId,
+        CancellationToken cancellationToken = default);
 }

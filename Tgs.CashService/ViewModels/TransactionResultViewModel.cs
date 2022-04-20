@@ -1,3 +1,3 @@
 ﻿namespace Tgs.CashService.ViewModels;
 
-public record TransactionResultViewModel(Guid TransactionId, decimal Balance, decimal LocakedBalance);
+public record TransactionResultViewModel(Guid TransactionId, decimal Balance, decimal LockedBalance);

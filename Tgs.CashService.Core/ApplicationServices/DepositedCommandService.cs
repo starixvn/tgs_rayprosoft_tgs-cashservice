@@ -12,7 +12,7 @@ internal class DepositedCommandService : IGetService<DepositedCommand, ExchangeR
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(DepositedCommand command, CancellationToken cancellationToken = default)
+    public ValueTask<ExchangeResult> GetAsync(DepositedCommand command, CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
         {
@@ -25,8 +25,7 @@ internal class DepositedCommandService : IGetService<DepositedCommand, ExchangeR
             CreatedUser = command.CreatedByUserId
         };
 
-        return await _walletExchangeService
-            .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+        return _walletExchangeService
+            .SendRequestAsync(request, cancellationToken);
     }
 }
