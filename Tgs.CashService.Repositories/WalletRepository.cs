@@ -18,7 +18,7 @@ internal class WalletRepository : IWalletRepository
     public WalletRepository(TgsContext context, IDbScriptExecutor dbScriptExecutor, ISerialNumberGenerator serialNumberGenerator)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _dbScriptExecutor = dbScriptExecutor;
+        _dbScriptExecutor = dbScriptExecutor ?? throw new ArgumentNullException(nameof(dbScriptExecutor));
         _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
     }
 
