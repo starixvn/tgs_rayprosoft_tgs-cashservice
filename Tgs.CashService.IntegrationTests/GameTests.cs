@@ -21,11 +21,11 @@ public class GameTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -40,10 +40,12 @@ public class GameTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GamePlaceBet),
                         Arg.Is(-betAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -63,6 +65,7 @@ public class GameTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -99,11 +102,11 @@ public class GameTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -118,10 +121,12 @@ public class GameTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameWinBet),
                         Arg.Is(settleAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -141,6 +146,7 @@ public class GameTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -177,11 +183,11 @@ public class GameTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -196,10 +202,12 @@ public class GameTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameLoseBet),
                         Arg.Is(-settleAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -219,6 +227,7 @@ public class GameTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -255,11 +264,11 @@ public class GameTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -274,10 +283,12 @@ public class GameTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameTieBet),
                         Arg.Is(settleAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -297,6 +308,7 @@ public class GameTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -333,11 +345,11 @@ public class GameTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -352,10 +364,12 @@ public class GameTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameFreeBet),
                         Arg.Is(settleAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -375,6 +389,7 @@ public class GameTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -411,11 +426,11 @@ public class GameTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -430,10 +445,12 @@ public class GameTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameCancelTransaction),
                         Arg.Is(cancelAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -453,6 +470,7 @@ public class GameTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -489,11 +507,11 @@ public class GameTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -508,10 +526,12 @@ public class GameTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameLockAmount),
                         Arg.Is(-lockAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -531,6 +551,7 @@ public class GameTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -567,11 +588,11 @@ public class GameTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -586,10 +607,12 @@ public class GameTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameUnlockAmount),
                         Arg.Is(unlockAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -609,6 +632,7 @@ public class GameTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;
@@ -645,11 +669,11 @@ public class GameTests
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<WalletExchanger>();
+                _ = services.AddSingleton<WalletExchanger>();
 
                 var fakeWalletRepository = Substitute.For<IWalletRepository>();
 
-                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>())
+                _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                     .Returns(new Wallet
                     {
                         Id = walletId,
@@ -664,10 +688,12 @@ public class GameTests
                         Arg.Any<string>(),
                         Arg.Is(TransactionType.GameWinJackpot),
                         Arg.Is(winAmount),
+                        Arg.Is(0M),
                         Arg.Any<string>(),
                         Arg.Any<string>(),
-                        Arg.Any<Guid?>())
-                    .Returns(new ExchangeResult(transactionId, postBalance));
+                        Arg.Any<Guid?>(),
+                        Arg.Any<CancellationToken>())
+                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -687,6 +713,7 @@ public class GameTests
                                 req.WalletId,
                                 Enum.Parse<TransactionType>(req.TransactionType),
                                 req.Amount,
+                                req.LockAmount,
                                 req.Description,
                                 req.ExternalId,
                                 req.CreatedUser)).Result;

@@ -33,7 +33,7 @@ internal class WalletExchangeService : IWalletExchangeService
             .CompleteAsync(Array.Empty<byte>(), cancellationToken)
             .ConfigureAwait(false);
 
-        return new ExchangeResult(response.TransactionId, response.Balance);
+        return new ExchangeResult(response.TransactionId, response.Balance, response.LockedBalance);
     }
 
     public async ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
@@ -60,7 +60,7 @@ internal class WalletExchangeService : IWalletExchangeService
     {
         var processorKey = $"Tgs:Cash:{walletId:D}";
 
-        await _redisDatabase
+        _ = await _redisDatabase
             .KeyDeleteAsync(processorKey)
             .ConfigureAwait(false);
     }
@@ -68,7 +68,7 @@ internal class WalletExchangeService : IWalletExchangeService
     private async ValueTask<string> GetProcessorSubjectAsync(Guid walletId, CancellationToken cancellationToken)
     {
         var processorKey = $"Tgs:Cash:{walletId:D}";
-        _logger.LogDebug(processorKey);
+        _logger.LogDebug("{processorKey}", processorKey);
 
         var processorSubjectValue = await _redisDatabase
             .StringGetAsync(processorKey)
@@ -96,7 +96,7 @@ internal class WalletExchangeService : IWalletExchangeService
             var bidResponse = BidResponse.Parser.ParseFrom(bidResponseData.Span);
 
             machineName = bidResponse.Subject;
-            _logger.LogInformation($"Subject is {machineName}");
+            _logger.LogInformation("Subject is {machineName}", machineName);
         }
 
         return machineName;

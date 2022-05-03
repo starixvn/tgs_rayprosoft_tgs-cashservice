@@ -21,6 +21,7 @@ internal class GameSettleWinCommandService : IGetService<GameSettleWinCommand, E
             WalletId = command.WalletId,
             TransactionType = TransactionType.GameWinBet.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = string.Empty,
             ExternalId = command.ExternalId
         };

@@ -19,6 +19,7 @@ internal class GameProviderDepositCommandService : IGetService<GameProviderDepos
             WalletId = command.WalletId,
             TransactionType = TransactionType.GameProviderDeposit.ToString(),
             Amount = -command.Amount,
+            LockAmount = 0M,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty
         };
