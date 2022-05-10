@@ -1,5 +1,5 @@
 {
 	"configProperties": {
-		"System.Threading.ThreadPool.MinThreads": 80
+		"System.Threading.ThreadPool.MinThreads": 320
 	}
 }
