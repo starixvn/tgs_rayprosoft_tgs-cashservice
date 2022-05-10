@@ -1,6 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using NSubstitute;
 using NUnit.Framework;
-using Tgs.CashServiceWorker;
+using Tgs.SerialNumberGenerator;
+using TGS.GameProviders.Repositories.Entities;
 
 namespace Tgs.CashService.Repositories.UnitTests;
 
@@ -8,51 +11,105 @@ namespace Tgs.CashService.Repositories.UnitTests;
 public class WalletRepositoryUnitTest
 {
     [Test]
-    public async Task GetGameAsync()
+    public async Task Exchange()
     {
         var brandId = Guid.NewGuid();
         var walletId = Guid.NewGuid();
-        var playerCode = "4ucmqplxb029";
-        var transactionType = TransactionType.Deposit;
-        var amount = 100m;
-        var description = "´ú¸Õ¦s´Ú";
+        var transactionType = TransactionType.WithdrawCommit;
+        var description = "´ú¸Õ";
         var externalId = Guid.NewGuid().ToString("N");
         var createdByUserId = Guid.NewGuid();
 
-        var transactionId = Guid.NewGuid();
-        var postBalance = 100m;
-        var fakeRoundRepository = Substitute.For<IWalletRepository>();
-        _ = fakeRoundRepository.ExchangeAsync(
-            brandId,
-            walletId,
-            playerCode,
-            transactionType,
-            amount,
-            description,
-            externalId,
-            createdByUserId)
-            .Returns(ValueTask.FromResult(new ExchangeResult(transactionId, postBalance)));
-        (Guid TransactionId, decimal PostBalance) = await fakeRoundRepository.ExchangeAsync(
+        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+        _ = dbContextOptionsBuilder
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(x => x.Ignore(
+                InMemoryEventId.TransactionIgnoredWarning));
+
+        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
+
+        _ = dbContext.WalletItems.Add(new WalletItem
+        {
+            Id = walletId,
+            Balance = 0M,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY",
+            PlayerCode = "tester"
+        });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+
+        var sut = new WalletRepository(dbContext, fakeDbScriptExecutor, fakeSerialNumberGenerator);
+
+        _ = fakeDbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(Arg.Any<string>(), Arg.Any<object>())
+            .Returns(new WalletBalanceReturn
+            {
+                OriginBalance = 100M,
+                OriginLockedBalance = 100M,
+                PostBalance = 200M,
+                PostLockedBalance = 20M
+            });
+
+        _ = fakeSerialNumberGenerator.GenerateAsync()
+            .Returns(Guid.NewGuid());
+
+        var actual = await sut.ExchangeAsync(
            brandId,
            walletId,
-           playerCode,
+           "tester",
            transactionType,
-           amount,
+           100M,
+           -80M,
            description,
            externalId,
            createdByUserId).ConfigureAwait(false);
-        Assert.AreEqual(transactionId, TransactionId);
-        Assert.AreEqual(postBalance, PostBalance);
+
+        var transLog = await dbContext.Transactions.FirstAsync();
+
+        Assert.AreEqual(200M, actual.Balance);
+        Assert.AreEqual(20M, actual.LockedBalance);
+
+        Assert.AreEqual(200M, transLog.Balance);
+        Assert.AreEqual(20M, transLog.LockedBalance);
+        Assert.AreEqual(100M, transLog.Amount);
+        Assert.AreEqual(-80M, transLog.LockAmount);
     }
 
     [Test]
-    public async Task GetGameByExternalGameIdAsync()
+    public async Task GetBalance()
     {
         var walletId = Guid.NewGuid();
-        var balance = 0.0m;
-        var fakeRoundRepository = Substitute.For<IWalletRepository>();
-        _ = fakeRoundRepository.GetBalanceAsync(walletId).Returns(ValueTask.FromResult<decimal?>(balance));
-        var result = await fakeRoundRepository.GetBalanceAsync(walletId).ConfigureAwait(false);
-        Assert.AreEqual(balance, result);
+        var balance = 0M;
+
+        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+        _ = dbContextOptionsBuilder
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(x => x.Ignore(
+                InMemoryEventId.TransactionIgnoredWarning));
+
+        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
+
+        _ = dbContext.WalletItems.Add(new WalletItem
+        {
+            Id = walletId,
+            Balance = balance,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY",
+            PlayerCode = "tester"
+        });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+
+        var sut = new WalletRepository(dbContext, fakeDbScriptExecutor, fakeSerialNumberGenerator);
+
+        var actual = await sut.GetBalanceAsync(walletId);
+
+        Assert.AreEqual(balance, actual);
     }
 }

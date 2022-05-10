@@ -19,6 +19,7 @@ internal class GameProviderFundOutCommandService : IGetService<GameProviderFundO
             WalletId = command.WalletId,
             TransactionType = TransactionType.GameProviderFundOut.ToString(),
             Amount = -command.Amount,
+            LockAmount = 0M,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty
         };

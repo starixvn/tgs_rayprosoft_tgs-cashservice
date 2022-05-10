@@ -44,7 +44,7 @@ internal class BidProcessor : IMessageProcessor
             response.Subject = subject;
         }
 
-        _logger.LogInformation($"Subject: {response.Subject}");
+        _logger.LogInformation("Subject: {response.Subject}", response.Subject);
 
         return response.ToByteArray();
     }

@@ -19,6 +19,7 @@ internal class AdjustResettledBetManualCommandService : IGetService<AdjustResett
             WalletId = command.WalletId,
             TransactionType = TransactionType.AdjustResettledBetManual.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = command.Description ?? String.Empty,
             ExternalId = command.ExternalId ?? String.Empty,
             CreatedUser = command.CreatedByUserId

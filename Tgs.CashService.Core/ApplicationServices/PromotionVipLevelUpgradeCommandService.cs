@@ -19,6 +19,7 @@ internal class PromotionVipLevelupgradeCommandService : IGetService<PromotionVip
             WalletId = command.WalletId,
             TransactionType = TransactionType.PromotionVipLevelUpgrade.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty
         };

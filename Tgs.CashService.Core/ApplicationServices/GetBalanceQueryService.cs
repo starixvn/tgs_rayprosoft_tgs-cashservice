@@ -14,7 +14,7 @@ internal class GetBalanceQueryService : IGetService<GetBalanceQuery, decimal>
     public async ValueTask<decimal> GetAsync(GetBalanceQuery query, CancellationToken cancellationToken = default)
     {
         var balance = await _walletExchangeService
-            .GetBalanceAsync(query.WalletId)
+            .GetBalanceAsync(query.WalletId, cancellationToken)
             .ConfigureAwait(false);
 
         return balance is null ? throw new InvalidOperationException("Can't found wallet.") : balance.Value;

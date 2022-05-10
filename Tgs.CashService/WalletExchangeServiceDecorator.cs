@@ -22,7 +22,7 @@ public class WalletExchangeServiceDecorator : IWalletExchangeService
                 async (ex, count) =>
                 {
                     await _walletExchangeService.DiscardBidAsync(request.WalletId).ConfigureAwait(false);
-                    _logger.LogWarning(ex, $"NoReponders error retry {count}");
+                    _logger.LogWarning(ex, "NoReponders error retry {count}", count);
                 })
             .ExecuteAsync(
                 async ct => await _walletExchangeService

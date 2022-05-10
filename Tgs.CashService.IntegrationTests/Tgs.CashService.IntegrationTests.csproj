@@ -1,35 +1,34 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ThreadPoolMinThreads>100</ThreadPoolMinThreads>
+	</PropertyGroup>
 
-    <IsPackable>false</IsPackable>
+	<ItemGroup>
+		<Compile Remove="TestSiteHelper.cs" />
+	</ItemGroup>
 
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.4" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="2.2.9" />
+		<PackageReference Include="MSTest.TestFramework" Version="2.2.9" />
+		<PackageReference Include="coverlet.collector" Version="3.1.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="NSubstitute" Version="4.3.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="TestSiteHelper.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.4" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.9" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.9" />
-    <PackageReference Include="coverlet.collector" Version="3.1.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="NSubstitute" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Tgs.CashService.Client\Tgs.CashService.Client.csproj" />
-    <ProjectReference Include="..\Tgs.CashServiceWorker.Core\Tgs.CashServiceWorker.Core.csproj" />
-    <ProjectReference Include="..\Tgs.CashService\Tgs.CashService.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Tgs.CashService.Client\Tgs.CashService.Client.csproj" />
+		<ProjectReference Include="..\Tgs.CashServiceWorker.Core\Tgs.CashServiceWorker.Core.csproj" />
+		<ProjectReference Include="..\Tgs.CashService\Tgs.CashService.csproj" />
+	</ItemGroup>
 
 </Project>

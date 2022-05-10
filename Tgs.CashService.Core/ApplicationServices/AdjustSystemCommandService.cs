@@ -18,6 +18,7 @@ internal class AdjustSystemCommandService : IGetService<AdjustSystemCommand, Exc
             WalletId = command.WalletId,
             TransactionType = TransactionType.AdjustSystem.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId ?? string.Empty,
             CreatedUser = command.CreatedByUserId

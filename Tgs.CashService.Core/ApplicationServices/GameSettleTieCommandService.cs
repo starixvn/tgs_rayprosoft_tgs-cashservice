@@ -21,6 +21,7 @@ internal class GameSettleTieCommandService : IGetService<GameSettleTieCommand, E
             WalletId = command.WalletId,
             TransactionType = TransactionType.GameTieBet.ToString(),
             Amount = command.Amount,
+            LockAmount = 0M,
             Description = string.Empty,
             ExternalId = command.ExternalId
         };

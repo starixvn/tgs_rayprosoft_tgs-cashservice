@@ -19,6 +19,7 @@ internal class GameLockAmountCommandService : IGetService<GameLockAmountCommand,
             WalletId = command.WalletId,
             TransactionType = TransactionType.GameLockAmount.ToString(),
             Amount = -command.Amount,
+            LockAmount = 0M,
             Description = string.Empty,
             ExternalId = command.ExternalId
         };
