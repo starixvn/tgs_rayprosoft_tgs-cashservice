@@ -44,11 +44,11 @@ public class WalletController : ControllerBase
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
-    [HttpPut("adjust/bonus/{walletId}", Name = "AdjustCompany")]
+    [HttpPut("adjust/bonus/{walletId}", Name = "AdjustBonus")]
     public async ValueTask<TransactionResultViewModel> AdjustBonusAsync(
         [FromServices] IGetService<AdjustBonusCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] AdjustCompanyViewModel request)
+        [FromBody] AdjustBonusViewModel request)
     {
         var result = await service
             .GetAsync(new AdjustBonusCommand(

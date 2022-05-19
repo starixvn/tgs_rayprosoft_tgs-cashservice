@@ -35,6 +35,32 @@ public class AdjustTests
     }
 
     [Test]
+    public async Task Can_Create_Bonus_Adjust_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new AdjustBonusCommandService(fakeWalletExchangeService);
+
+        var command = new AdjustBonusCommand(
+            Guid.NewGuid(),
+            100M,
+            "新增優惠調帳",
+            Guid.NewGuid().ToString("N"),
+            Guid.NewGuid());
+
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.AdjustBonus.ToString()
+                    && request.Amount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId
+                    && request.CreatedUser == command.CreatedByUserId));
+    }
+
+    [Test]
     public async Task Can_Create_Agent_Adjust_Exchange()
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
