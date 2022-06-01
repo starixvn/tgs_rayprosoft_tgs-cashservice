@@ -66,6 +66,7 @@ public enum TransactionType
     AdjustAgent = 5100,
     AdjustSystem = 5200,
     AdjustTransfer = 5300,
+    AdjustBonus = 5400,
 
     /// <summary>
     ///     已結算單再調整
