@@ -1,8 +1,8 @@
 ﻿using System.Data;
-using System.Transactions;
-using Dapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
+using Npgsql;
+using Polly;
 using Tgs.CashServiceWorker;
 using Tgs.SerialNumberGenerator;
 using TGS.GameProviders.Repositories.Entities;
@@ -14,12 +14,18 @@ internal class WalletRepository : IWalletRepository
     private readonly TgsContext _context;
     private readonly IDbScriptExecutor _dbScriptExecutor;
     private readonly ISerialNumberGenerator _serialNumberGenerator;
+    private readonly ILogger<WalletRepository> _logger;
 
-    public WalletRepository(TgsContext context, IDbScriptExecutor dbScriptExecutor, ISerialNumberGenerator serialNumberGenerator)
+    public WalletRepository(
+        TgsContext context,
+        IDbScriptExecutor dbScriptExecutor,
+        ISerialNumberGenerator serialNumberGenerator,
+        ILogger<WalletRepository> logger)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _dbScriptExecutor = dbScriptExecutor ?? throw new ArgumentNullException(nameof(dbScriptExecutor));
         _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async ValueTask<ExchangeResult> ExchangeAsync(
@@ -39,9 +45,16 @@ internal class WalletRepository : IWalletRepository
             .GenerateAsync()
             .ConfigureAwait(false);
 
-        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        var updateResult = await Policy
+            .Handle<PostgresException>(ex => ex.ErrorCode == 40001)
+            .WaitAndRetryAsync(3, count =>
+            {
+                var wait = Random.Shared.Next(100, 1000);
 
-        var updateResult = await _dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
+                _logger.LogWarning("Exchange retry occur: {count}", count);
+                return TimeSpan.FromMilliseconds(wait);
+            })
+            .ExecuteAsync(() => _dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
             @"
                 UPDATE dbo.wallets AS C
                 SET
@@ -65,7 +78,8 @@ internal class WalletRepository : IWalletRepository
                 amount,
                 lockAmount,
                 updatedOn
-            }).ConfigureAwait(false);
+            }))
+            .ConfigureAwait(false);
 
         if (updateResult is null)
             throw new WalletExchangeFailException();
@@ -90,8 +104,6 @@ internal class WalletRepository : IWalletRepository
             .ConfigureAwait(false);
 
         _ = await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-        scope.Complete();
 
         return new ExchangeResult(
             transactionId,
