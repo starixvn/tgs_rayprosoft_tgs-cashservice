@@ -10,6 +10,14 @@ public partial interface ICashServiceClient
         Guid createdByUserId,
         CancellationToken cancellationToken = default);
 
+    ValueTask<TransactionResponse> AdjustBonusAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid createdByUserId,
+        CancellationToken cancellationToken = default);
+
     ValueTask<decimal> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default);
 
     ValueTask<TransactionResponse> BonusAsync(
