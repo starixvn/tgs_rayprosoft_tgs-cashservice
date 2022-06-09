@@ -60,7 +60,7 @@ public enum TransactionType
     DividendAllAgentRebate = 4100,
 
     /// <summary>
-    ///     調帳 5000~5999
+    /// 調帳 5000~5999
     /// </summary>
     //Adjust = 5000,
     AdjustAgent = 5100,

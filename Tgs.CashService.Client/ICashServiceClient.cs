@@ -133,6 +133,7 @@ public partial interface ICashServiceClient
     ValueTask<TransactionResponse> AdjustSystemAsync(
         Guid walletId,
         decimal amount,
+        decimal? lockAmount,
         string? description,
         string? externalId,
         Guid createdByUserId,

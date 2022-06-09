@@ -96,6 +96,7 @@ public class AdjustTests
         var command = new AdjustSystemCommand(
             Guid.NewGuid(),
             100M,
+            0M,
             "新增系統調帳",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.SerialNumberGenerator;
@@ -42,7 +43,11 @@ public class WalletRepositoryUnitTest
         var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
         var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
 
-        var sut = new WalletRepository(dbContext, fakeDbScriptExecutor, fakeSerialNumberGenerator);
+        var sut = new WalletRepository(
+            dbContext,
+            fakeDbScriptExecutor,
+            fakeSerialNumberGenerator,
+            NullLogger<WalletRepository>.Instance);
 
         _ = fakeDbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(Arg.Any<string>(), Arg.Any<object>())
             .Returns(new WalletBalanceReturn
@@ -106,7 +111,11 @@ public class WalletRepositoryUnitTest
         var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
         var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
 
-        var sut = new WalletRepository(dbContext, fakeDbScriptExecutor, fakeSerialNumberGenerator);
+        var sut = new WalletRepository(
+            dbContext,
+            fakeDbScriptExecutor,
+            fakeSerialNumberGenerator,
+            NullLogger<WalletRepository>.Instance);
 
         var actual = await sut.GetBalanceAsync(walletId);
 
