@@ -84,6 +84,47 @@ internal class WalletRepository : IWalletRepository
         if (updateResult is null)
             throw new WalletExchangeFailException();
 
+        if (updateResult.PostLockedBalance < 0M)
+        {
+            updateResult = await Policy
+                .Handle<PostgresException>(ex => ex.ErrorCode == 40001)
+                .WaitAndRetryAsync(3, count =>
+                {
+                    var wait = Random.Shared.Next(100, 1000);
+
+                    _logger.LogWarning("Exchange retry occur: {count}", count);
+                    return TimeSpan.FromMilliseconds(wait);
+                })
+                .ExecuteAsync(() => _dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
+                    @"
+                        UPDATE dbo.wallets AS C
+                        SET
+                            balance = C.balance + @amount,
+                            locked_balance = C.locked_balance + @lockAmount,
+                            updated_on = @updatedOn
+                        FROM
+                            dbo.wallets AS O
+                        WHERE
+                            C.id = O.id
+                            AND
+                            C.id = @walletId
+                        RETURNING
+                            O.balance AS OriginBalance,
+                            O.locked_balance AS OriginLockedBalance,
+                            C.balance AS PostBalance,
+                            C.locked_balance AS PostLockedBalance",
+                    new
+                    {
+                        walletId,
+                        amount = -amount,
+                        lockAmount = -lockAmount,
+                        updatedOn
+                    }))
+                .ConfigureAwait(false);
+
+            throw new WalletExchangeFailException();
+        }
+
         _ = await _context.Transactions
             .AddAsync(new()
             {
