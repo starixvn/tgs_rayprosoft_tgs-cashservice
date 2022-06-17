@@ -477,6 +477,7 @@ public class WalletController : ControllerBase
             .GetAsync(new AdjustSystemCommand(
                 walletId,
                 viewModel.Amount,
+                viewModel.LockAmount ?? 0M,
                 viewModel.Description,
                 viewModel.ExternalId,
                 viewModel.CreatedByUserId), this.CreateCancellationToken())
