@@ -1,8 +1,10 @@
 ﻿namespace Tgs.CashService.ViewModels;
 
-public record AdjustSystemViewModel
+public class AdjustSystemViewModel
 {
     public decimal Amount { get; set; }
+
+    public decimal? LockAmount { get; set; }
 
     public string? Description { get; set; }
 
