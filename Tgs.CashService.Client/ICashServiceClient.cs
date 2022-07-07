@@ -27,34 +27,6 @@ public partial interface ICashServiceClient
         string? externalId,
         CancellationToken cancellationToken = default);
 
-    ValueTask<TransactionResponse> GameProviderDepositAsync(
-        Guid walletId,
-        decimal amount,
-        string? description,
-        string? externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameProviderFundInAsync(
-        Guid walletId,
-        decimal amount,
-        string? description,
-        string? externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameProviderFundOutAsync(
-        Guid walletId,
-        decimal amount,
-        string? description,
-        string? externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameProviderWithdrawalAsync(
-        Guid walletId,
-        decimal amount,
-        string? description,
-        string? externalId,
-        CancellationToken cancellationToken = default);
-
     ValueTask<TransactionResponse> OtherAsync(
         Guid walletId,
         decimal amount,
@@ -145,59 +117,5 @@ public partial interface ICashServiceClient
         string? description,
         string? externalId,
         Guid createdByUserId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GamePlaceBetAsync(
-        Guid walletId,
-        decimal amount,
-        string externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameSettleWinAsync(
-        Guid walletId,
-        decimal amount,
-        string externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameSettleLoseAsync(
-        Guid walletId,
-        decimal amount,
-        string externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameSettleFreeAsync(
-        Guid walletId,
-        decimal amount,
-        string externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameSettleTieAsync(
-        Guid walletId,
-        decimal amount,
-        string externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameCancelTransactionAsync(
-        Guid walletId,
-        decimal amount,
-        string externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameLockAmountAsync(
-        Guid walletId,
-        decimal amount,
-        string externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameUnlockAmountAsync(
-        Guid walletId,
-        decimal amount,
-        string externalId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<TransactionResponse> GameWinJackpotAsync(
-        Guid walletId,
-        decimal amount,
-        string externalId,
         CancellationToken cancellationToken = default);
 }

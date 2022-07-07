@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashService.ApplicationServices;
 
-public record GameCancelTransactionCommand(
+public record GameBetCommand(
     Guid WalletId,
     decimal Amount,
     string ExternalId);

@@ -75,7 +75,6 @@ public class PaymentTests
                 _ = services.AddFakeNatsMessageQueue();
             }));
 
-
         var httpClient = web.CreateClient();
 
         var sut = new CashServiceClient(httpClient);
