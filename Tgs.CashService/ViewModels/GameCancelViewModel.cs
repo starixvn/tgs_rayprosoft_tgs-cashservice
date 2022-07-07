@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashService.ViewModels;
 
-public record GameCancelTransactionViewModel
+public record GameCancelViewModel
 {
     public decimal Amount { get; init; }
 
