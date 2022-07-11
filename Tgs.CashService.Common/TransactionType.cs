@@ -85,12 +85,13 @@ public enum TransactionType
     //Game = 10000
 
     //Credit上分、Debit下分、Refund退款、Revision修正
-    GameDebit = 10001,
+    GameDebit = 10100,
 
-    GameCredit = 10002,
-    GameRefund = 10003,
-    GameRevision = 10004,
+    GameCredit = 10200,
+    GameRefund = 10300,
+    GameRevision = 10400,
 
+    // 下注11000~11999
     GameBet = 11000,
 
     // 結算 12000~12999
@@ -110,4 +111,10 @@ public enum TransactionType
 
     GameLock = 14100,
     GameUnlock = 14200,
+
+    // 遊戲供應 15000~15999
+    GameProvider = 15000,
+
+    // 遊戲供應資金退款
+    GameProviderFundRefund = 15300,
 }

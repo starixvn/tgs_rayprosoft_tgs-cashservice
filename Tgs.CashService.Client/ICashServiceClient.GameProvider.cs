@@ -23,6 +23,13 @@ public partial interface ICashServiceClient
         string? externalId,
         CancellationToken cancellationToken = default);
 
+    ValueTask<TransactionResponse> GameProviderFundRefundAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        CancellationToken cancellationToken = default);
+
     ValueTask<TransactionResponse> GameProviderWithdrawalAsync(
         Guid walletId,
         decimal amount,
