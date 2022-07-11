@@ -90,6 +90,34 @@ internal partial class CashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
+    public async ValueTask<TransactionResponse> GameProviderFundRefundAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PutAsync($"/wallet/gp/fund-refund/{walletId}", requestContent, cancellationToken)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
+
     public async ValueTask<TransactionResponse> GameProviderWithdrawalAsync(
         Guid walletId,
         decimal amount,

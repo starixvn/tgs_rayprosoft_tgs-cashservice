@@ -109,6 +109,39 @@ public class GameProviderWalletController : ControllerBase
     }
 
     /// <summary>
+    /// Games the provider fund refund asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="walletId">The wallet identifier.</param>
+    /// <param name="request">The request.</param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     <b>Example</b><br />
+    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    ///     {
+    ///     "amount": 10,
+    ///     "description": "測試退款機制",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     }
+    /// </remarks>
+    [HttpPut("gp/fund-refund/{walletId}", Name = "GameProviderFundRefund")]
+    public async ValueTask<TransactionResultViewModel> GameProviderFundRefundAsync(
+        [FromServices] IGetService<GameProviderFundRefundCommand, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] GameProviderFundOutViewModel request)
+    {
+        var result = await service
+            .GetAsync(new GameProviderFundRefundCommand(
+                walletId,
+                request.Amount,
+                request.Description,
+                request.ExternalId), this.CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
+    /// <summary>
     ///     Games the provider withdrawal exchange asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
