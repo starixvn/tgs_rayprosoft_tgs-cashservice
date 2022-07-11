@@ -6,8 +6,8 @@ pipeline {
 	
 	environment {
 		BuildConfiguration="Debug"
-		ServiceImageName="harbor.rpgp.cc/tgs/cashservice-api"
-		WorkerImageName="harbor.rpgp.cc/tgs/cashservice-worker"
+		ServiceImageName="pgtgs/cashservice-api"
+		WorkerImageName="pgtgs/cashservice-worker"
 	}
 
 	stages {

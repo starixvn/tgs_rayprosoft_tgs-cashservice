@@ -42,7 +42,7 @@ internal class WalletRepository : IWalletRepository
     {
         var updatedOn = DateTime.UtcNow;
         var transactionId = await _serialNumberGenerator
-            .GenerateAsync()
+            .GenerateAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var updateResult = await Policy
