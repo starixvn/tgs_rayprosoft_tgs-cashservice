@@ -19,7 +19,7 @@ internal class GameSettleLoseCommandService : IGetService<GameSettleLoseCommand,
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
-            TransactionType = TransactionType.GameLoseBet.ToString(),
+            TransactionType = TransactionType.GameSettleLose.ToString(),
             Amount = -command.Amount,
             LockAmount = 0M,
             Description = string.Empty,
