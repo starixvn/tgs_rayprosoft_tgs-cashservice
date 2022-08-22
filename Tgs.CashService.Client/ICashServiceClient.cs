@@ -111,6 +111,15 @@ public partial interface ICashServiceClient
         Guid createdByUserId,
         CancellationToken cancellationToken = default);
 
+    ValueTask<TransactionResponse> AdjustSystemV2Async(
+        Guid walletId,
+        decimal amount,
+        decimal? lockAmount,
+        string? description,
+        string? externalId,
+        Guid createdByUserId,
+        CancellationToken cancellationToken = default);
+
     ValueTask<TransactionResponse> AdjustTransferAsync(
         Guid walletId,
         decimal amount,

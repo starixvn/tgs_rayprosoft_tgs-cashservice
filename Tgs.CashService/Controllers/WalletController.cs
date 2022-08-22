@@ -5,6 +5,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Controllers;
 
+[ApiVersion("1.0")]
 [Route("[controller]")]
 [ApiController]
 public class WalletController : ControllerBase
@@ -475,6 +476,33 @@ public class WalletController : ControllerBase
     {
         var result = await service
             .GetAsync(new AdjustSystemCommand(
+                walletId,
+                viewModel.Amount,
+                viewModel.LockAmount ?? 0M,
+                viewModel.Description,
+                viewModel.ExternalId,
+                viewModel.CreatedByUserId), this.CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
+    /// <summary>
+    /// Adjusts the system v2 asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="walletId">The wallet identifier.</param>
+    /// <param name="viewModel">The view model.</param>
+    /// <returns></returns>
+    [ApiVersion("2.0")]
+    [HttpPut("adjust/system/{walletId}", Name = "AdjustSystemV2")]
+    public async Task<TransactionResultViewModel> AdjustSystemV2Async(
+        [FromServices] IGetService<AdjustSystemV2Command, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] AdjustSystemViewModel viewModel)
+    {
+        var result = await service
+            .GetAsync(new AdjustSystemV2Command(
                 walletId,
                 viewModel.Amount,
                 viewModel.LockAmount ?? 0M,

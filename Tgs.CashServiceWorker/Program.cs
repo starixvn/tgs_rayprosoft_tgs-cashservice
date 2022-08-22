@@ -27,15 +27,14 @@ builder.Logging
         });
     });
 
-builder.Services.AddDbRepository((sp, dbBuilder) =>
-{
-    var config = sp.GetRequiredService<IConfiguration>();
-
-    _ = dbBuilder
-        .UseNpgsql(config.GetConnectionString("Tgs"));
-});
-
 builder.Services
+    .AddDbRepository((sp, dbBuilder) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
+
+        _ = dbBuilder
+            .UseNpgsql(config.GetConnectionString("Tgs"));
+    })
     .AddCashServiceWorker((options, sp) =>
     {
         var config = sp.GetService<IConfiguration>();
@@ -58,7 +57,8 @@ builder.Services
         .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");
-builder.Services.AddHealthChecks();
+builder.Services
+    .AddHealthChecks();
 
 builder.Services
     .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
