@@ -77,7 +77,7 @@ internal class WalletExchangeService : IWalletExchangeService
         string machineName;
         if (processorSubjectValue.HasValue)
         {
-            machineName = processorSubjectValue;
+            machineName = ((string?)processorSubjectValue)!;
         }
         else
         {
