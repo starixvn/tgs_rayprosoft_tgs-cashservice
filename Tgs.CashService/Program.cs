@@ -1,8 +1,8 @@
+using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Npgsql;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
@@ -27,7 +27,12 @@ builder.Logging
             var nodeIp = builder.Configuration.GetValue<string>("NODE_IP");
             fluentOptions.Host = nodeIp;
             fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
-            fluentOptions.UseMessagePack();
+            fluentOptions.UseMessagePack(LogRecordFormatterResolver.GetResolverInstanceWithExtendInfo(
+                "MachineInfo",
+                () => new
+                {
+                    MachineName = Environment.MachineName
+                }));
         });
     });
 
