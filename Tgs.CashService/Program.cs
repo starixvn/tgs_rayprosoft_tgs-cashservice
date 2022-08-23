@@ -31,7 +31,7 @@ builder.Logging
                 "MachineInfo",
                 () => new
                 {
-                    MachineName = Environment.MachineName
+                    Environment.MachineName
                 }));
         });
     });
