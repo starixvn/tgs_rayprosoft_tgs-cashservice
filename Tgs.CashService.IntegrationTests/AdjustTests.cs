@@ -393,10 +393,9 @@ public class AdjustTests
 
                         var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(desc));
 
-                        if (JsonDocument.TryParseValue(ref reader, out _))
-                            return new ExchangeResult(transactionId, postBalance, 0M);
-                        else
-                            return new ExchangeResult(Guid.Empty, postBalance, 0M);
+                        return JsonDocument.TryParseValue(ref reader, out _)
+                            ? new ExchangeResult(transactionId, postBalance, 0M)
+                            : new ExchangeResult(Guid.Empty, postBalance, 0M);
                     });
 
                 _ = services.AddSingleton(fakeWalletRepository);
