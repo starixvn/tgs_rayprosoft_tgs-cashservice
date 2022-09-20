@@ -117,7 +117,7 @@ deploy-service-dev:
     TgsSettingKey: $TgsServiceSettingKey
     HelmTemplateFolderName: $HelmTemplateServiceFolderName
   environment:
-    name: dev
+    name: service-dev
   stage: deploy-dev
   needs:
     - push-nuget
@@ -163,7 +163,7 @@ deploy-worker-dev:
     TgsSettingKey: $TgsWorkerSettingKey
     HelmTemplateFolderName: $HelmTemplateWorkerFolderName
   environment:
-    name: dev
+    name: worker-dev
   stage: deploy-dev
   needs:
     - push-nuget
@@ -209,7 +209,7 @@ deploy-service-staging:
     TgsSettingKey: $TgsServiceSettingKey
     HelmTemplateFolderName: $HelmTemplateServiceFolderName
   environment:
-    name: staging
+    name: service-staging
   stage: deploy-staging
   needs:
     - deploy-service-dev
@@ -255,7 +255,7 @@ deploy-worker-staging:
     TgsSettingKey: $TgsWorkerSettingKey
     HelmTemplateFolderName: $HelmTemplateWorkerFolderName
   environment:
-    name: staging
+    name: worker-staging
   stage: deploy-staging
   needs:
     - deploy-worker-dev
@@ -301,7 +301,7 @@ deploy-service-prod:
     TgsSettingKey: $TgsServiceSettingKey
     HelmTemplateFolderName: $HelmTemplateServiceFolderName
   environment:
-    name: prod
+    name: service-prod
   stage: deploy-prod
   needs:
     - deploy-service-staging
@@ -347,7 +347,7 @@ deploy-worker-prod:
     TgsSettingKey: $TgsWorkerSettingKey
     HelmTemplateFolderName: $HelmTemplateWorkerFolderName
   environment:
-    name: prod
+    name: worker-prod
   stage: deploy-prod
   needs:
     - deploy-worker-staging
