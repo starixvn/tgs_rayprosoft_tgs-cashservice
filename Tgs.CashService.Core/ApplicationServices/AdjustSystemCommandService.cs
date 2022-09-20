@@ -11,7 +11,7 @@ internal class AdjustSystemCommandService : IGetService<AdjustSystemCommand, Exc
     public AdjustSystemCommandService(IWalletExchangeService walletExchangeService) => _walletExchangeService =
         walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
-    public async ValueTask<ExchangeResult> GetAsync(AdjustSystemCommand command,
+    public ValueTask<ExchangeResult> GetAsync(AdjustSystemCommand command,
         CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
@@ -25,12 +25,11 @@ internal class AdjustSystemCommandService : IGetService<AdjustSystemCommand, Exc
             CreatedUser = command.CreatedByUserId
         };
 
-        return await _walletExchangeService
-            .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+        return _walletExchangeService
+            .SendRequestAsync(request, cancellationToken);
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(AdjustSystemV2Command command, CancellationToken cancellationToken = default)
+    public ValueTask<ExchangeResult> GetAsync(AdjustSystemV2Command command, CancellationToken cancellationToken = default)
     {
         var description = new
         {
@@ -49,8 +48,7 @@ internal class AdjustSystemCommandService : IGetService<AdjustSystemCommand, Exc
             CreatedUser = command.CreatedByUserId
         };
 
-        return await _walletExchangeService
-            .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+        return _walletExchangeService
+            .SendRequestAsync(request, cancellationToken);
     }
 }

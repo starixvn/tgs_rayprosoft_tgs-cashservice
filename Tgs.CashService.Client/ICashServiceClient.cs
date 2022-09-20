@@ -2,6 +2,7 @@
 
 public partial interface ICashServiceClient
 {
+    [Obsolete("舊版api")]
     ValueTask<TransactionResponse> AdjustCompanyAsync(
         Guid walletId,
         decimal amount,
@@ -10,7 +11,24 @@ public partial interface ICashServiceClient
         Guid createdByUserId,
         CancellationToken cancellationToken = default);
 
+    ValueTask<TransactionResponse> AdjustCompanyV2Async(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid createdByUserId,
+        CancellationToken cancellationToken = default);
+
+    [Obsolete("舊版api")]
     ValueTask<TransactionResponse> AdjustBonusAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid createdByUserId,
+        CancellationToken cancellationToken = default);
+
+    ValueTask<TransactionResponse> AdjustBonusV2Async(
         Guid walletId,
         decimal amount,
         string? description,
@@ -94,6 +112,7 @@ public partial interface ICashServiceClient
         string? externalId,
         CancellationToken cancellationToken = default);
 
+    [Obsolete("舊版api")]
     ValueTask<TransactionResponse> AdjustAgentAsync(
         Guid walletId,
         decimal amount,
@@ -102,6 +121,15 @@ public partial interface ICashServiceClient
         Guid createdByUserId,
         CancellationToken cancellationToken = default);
 
+    ValueTask<TransactionResponse> AdjustAgentV2Async(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid createdByUserId,
+        CancellationToken cancellationToken = default);
+
+    [Obsolete("舊版api")]
     ValueTask<TransactionResponse> AdjustSystemAsync(
         Guid walletId,
         decimal amount,
