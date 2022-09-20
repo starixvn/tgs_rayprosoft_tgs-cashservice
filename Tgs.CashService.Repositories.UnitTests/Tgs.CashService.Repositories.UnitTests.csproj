@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="DbMocker" Version="1.22.0" />
+    <PackageReference Include="JunitXml.TestLogger" Version="3.0.114" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.8" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
     <PackageReference Include="coverlet.collector" Version="3.1.2">
