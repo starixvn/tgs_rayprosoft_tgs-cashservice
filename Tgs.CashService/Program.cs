@@ -1,10 +1,14 @@
+using FluentdForward.OpenTelemetry.MessagePack;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Npgsql;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Tgs.CashService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,25 +27,39 @@ builder.Logging
             var nodeIp = builder.Configuration.GetValue<string>("NODE_IP");
             fluentOptions.Host = nodeIp;
             fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
-            fluentOptions.UseMessagePack();
+            fluentOptions.UseMessagePack(LogRecordFormatterResolver.GetResolverInstanceWithExtendInfo(
+                "MachineInfo",
+                () => new
+                {
+                    Environment.MachineName
+                }));
         });
     });
 
-builder.Services.AddRouting(options => options.LowercaseUrls = true);
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen(c =>
-{
-    var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
-    foreach (var xmlFileName in xmlFileNames)
-        c.IncludeXmlComments(xmlFileName);
+builder.Services
+    .AddRouting(options => options.LowercaseUrls = true)
+    .AddControllers();
 
-    c.SwaggerDoc("v1",
-        new OpenApiInfo
-        {
-            Title = "Tgs.CashService",
-            Version = "v1"
-        });
-});
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = ApiVersion.Parse("1");
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ApiVersionReader = new HeaderApiVersionReader("API-VERSION");
+    })
+    .AddVersionedApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+    });
+
+builder.Services
+    .AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>()
+    .AddSwaggerGen(c =>
+    {
+        var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
+        foreach (var xmlFileName in xmlFileNames)
+            c.IncludeXmlComments(xmlFileName);
+    });
 
 builder.Services
     .AddCashServiceCore((options, sp) =>
@@ -51,7 +69,8 @@ builder.Services
         options.RedisConnectionString = config.GetConnectionString("Redis");
     })
     .Decorate<IWalletExchangeService, WalletExchangeServiceDecorator>();
-builder.Services.AddHealthChecks();
+builder.Services
+    .AddHealthChecks();
 
 builder.Services
     .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
@@ -112,7 +131,12 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tgs.CashService v1"));
+app.UseApiVersioning();
+app.UseSwaggerUI(c =>
+{
+    foreach (var desc in app.Services.GetRequiredService<IApiVersionDescriptionProvider>().ApiVersionDescriptions)
+        c.SwaggerEndpoint($"/swagger/{desc.GroupName}/swagger.json", $"Tgs.CashService {desc.GroupName}");
+});
 
 app.MapControllers();
 app.MapSwagger();

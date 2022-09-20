@@ -1,3 +1,4 @@
+using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -23,19 +24,23 @@ builder.Logging
             var nodeIp = builder.Configuration.GetValue<string>("NODE_IP");
             fluentOptions.Host = nodeIp;
             fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
-            fluentOptions.UseMessagePack();
+            fluentOptions.UseMessagePack(LogRecordFormatterResolver.GetResolverInstanceWithExtendInfo(
+                "MachineInfo",
+                () => new
+                {
+                    MachineName = Environment.MachineName
+                }));
         });
     });
 
-builder.Services.AddDbRepository((sp, dbBuilder) =>
-{
-    var config = sp.GetRequiredService<IConfiguration>();
-
-    _ = dbBuilder
-        .UseNpgsql(config.GetConnectionString("Tgs"));
-});
-
 builder.Services
+    .AddDbRepository((sp, dbBuilder) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
+
+        _ = dbBuilder
+            .UseNpgsql(config.GetConnectionString("Tgs"));
+    })
     .AddCashServiceWorker((options, sp) =>
     {
         var config = sp.GetService<IConfiguration>();
@@ -58,7 +63,8 @@ builder.Services
         .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");
-builder.Services.AddHealthChecks();
+builder.Services
+    .AddHealthChecks();
 
 builder.Services
     .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(

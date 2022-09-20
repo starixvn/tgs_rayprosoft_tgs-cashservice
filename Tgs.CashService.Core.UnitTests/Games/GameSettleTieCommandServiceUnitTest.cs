@@ -3,32 +3,31 @@ using NUnit.Framework;
 using Tgs.Cash.Protos;
 using Tgs.CashService.ApplicationServices;
 
-namespace Tgs.CashService.Core.UnitTests.Games
+namespace Tgs.CashService.Core.UnitTests.Games;
+
+[TestFixture]
+public class GameSettleTieCommandServiceUnitTest
 {
-    [TestFixture]
-    public class GameSettleTieCommandServiceUnitTest
+    [Test]
+    public async Task Can_Create_GameSettleTie_Exchange()
     {
-        [Test]
-        public async Task Can_Create_GameSettleTie_Exchange()
-        {
-            var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-            var sut = new GameSettleTieCommandService(fakeWalletExchangeService);
+        var sut = new GameSettleTieCommandService(fakeWalletExchangeService);
 
-            var command = new GameSettleTieCommand(
-                Guid.NewGuid(),
-                100M,
-                Guid.NewGuid().ToString("N"));
+        var command = new GameSettleTieCommand(
+            Guid.NewGuid(),
+            100M,
+            Guid.NewGuid().ToString("N"));
 
-            _ = await sut.GetAsync(command).ConfigureAwait(false);
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-            _ = fakeWalletExchangeService.Received(1)
-                .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                    request => request.WalletId == command.WalletId
-                               && request.TransactionType == TransactionType.GameSettleTie.ToString()
-                               && request.Amount == command.Amount
-                               && request.Description == string.Empty
-                               && request.ExternalId == command.ExternalId));
-        }
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                           && request.TransactionType == TransactionType.GameSettleTie.ToString()
+                           && request.Amount == command.Amount
+                           && request.Description == string.Empty
+                           && request.ExternalId == command.ExternalId));
     }
 }

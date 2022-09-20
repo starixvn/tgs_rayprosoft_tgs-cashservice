@@ -1,8 +1,7 @@
-﻿namespace Tgs.CashService.ApplicationServices
-{
-    public record GameProviderFundRefundCommand(
-        Guid WalletId,
-        decimal Amount,
-        string? Description,
-        string? ExternalId);
-}
+﻿namespace Tgs.CashService.ApplicationServices;
+
+public record GameProviderFundRefundCommand(
+    Guid WalletId,
+    decimal Amount,
+    string? Description,
+    string? ExternalId);

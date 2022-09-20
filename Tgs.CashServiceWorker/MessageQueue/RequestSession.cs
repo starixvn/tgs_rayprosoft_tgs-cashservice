@@ -31,7 +31,7 @@ internal class RequestSession : IMessageSession
 
         var subjectKey = await _redisDatabase.StringGetAsync(redisKey).ConfigureAwait(false);
 
-        if (!subjectKey.HasValue || (string)subjectKey != Environment.MachineName)
+        if (!subjectKey.HasValue || (string?)subjectKey != Environment.MachineName)
             throw new RequestInvalidSubjectException($"This machine ({Environment.MachineName}) not match {subjectKey}");
 
         _ = await _redisDatabase
