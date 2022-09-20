@@ -452,6 +452,25 @@ public class WalletController : ControllerBase
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
+    [ApiVersion("2.0")]
+    [HttpPut("adjust/agent/{walletId}", Name = "AdjustAgentV2")]
+    public async ValueTask<TransactionResultViewModel> AdjustAgentV2Async(
+        [FromServices] IGetService<AdjustAgentV2Command, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] AdjustAgentViewModel viewModel)
+    {
+        var result = await service
+            .GetAsync(new AdjustAgentV2Command(
+                walletId,
+                viewModel.Amount,
+                viewModel.Description,
+                viewModel.ExternalId,
+                viewModel.CreatedByUserId), this.CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
     /// <summary>
     ///     System adjust the account asynchronous.
     /// </summary>
