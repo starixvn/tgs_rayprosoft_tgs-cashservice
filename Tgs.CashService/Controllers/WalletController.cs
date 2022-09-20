@@ -63,6 +63,25 @@ public class WalletController : ControllerBase
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
+    [ApiVersion("2.0")]
+    [HttpPut("adjust/bonus/{walletId}", Name = "AdjustBonusV2")]
+    public async ValueTask<TransactionResultViewModel> AdjustBonusV2Async(
+        [FromServices] IGetService<AdjustBonusV2Command, ExchangeResult> service,
+        Guid walletId,
+        [FromBody] AdjustBonusViewModel request)
+    {
+        var result = await service
+            .GetAsync(new AdjustBonusV2Command(
+                walletId,
+                request.Amount,
+                request.Description,
+                request.ExternalId,
+                request.CreatedByUserId), this.CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
     /// <summary>
     ///     Balances the asynchronous.
     /// </summary>

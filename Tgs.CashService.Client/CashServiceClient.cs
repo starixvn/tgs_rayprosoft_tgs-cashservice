@@ -541,4 +541,35 @@ internal partial class CashServiceClient : ICashServiceClient
 
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
+
+    public async ValueTask<TransactionResponse> AdjustBonusV2Async(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        string? externalId,
+        Guid createdByUserId,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId,
+            CreatedByUserId = createdByUserId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        requestContent.Headers.Add("API-VERSION", "2.0");
+
+        var response = await _httpClient
+            .PutAsync($"/wallet/adjust/bonus/{walletId}", requestContent, cancellationToken)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 }
