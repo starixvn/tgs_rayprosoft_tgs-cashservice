@@ -78,6 +78,11 @@ public enum TransactionType
     /// </summary>
     AdjustResettledBetManual = 5010,
 
+    // 轉帳 6000~6999
+    Transfer = 6100,
+    TransferCommit = 6200,
+    TransferRollback = 6300,
+
     /// <summary>
     ///
     ///     遊戲 10000~15999

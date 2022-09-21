@@ -55,30 +55,30 @@ internal class WalletRepository : IWalletRepository
                 return TimeSpan.FromMilliseconds(wait);
             })
             .ExecuteAsync(() => _dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
-            @"
-                UPDATE dbo.wallets AS C
-                SET
-                    balance = C.balance + @amount,
-                    locked_balance = C.locked_balance + @lockAmount,
-                    updated_on = @updatedOn
-                FROM
-                    dbo.wallets AS O
-                WHERE
-                    C.id = O.id
-                    AND
-                    C.id = @walletId
-                RETURNING
-                    O.balance AS OriginBalance,
-                    O.locked_balance AS OriginLockedBalance,
-                    C.balance AS PostBalance,
-                    C.locked_balance AS PostLockedBalance",
-            new
-            {
-                walletId,
-                amount,
-                lockAmount,
-                updatedOn
-            }))
+                @"
+                    UPDATE dbo.wallets AS C
+                    SET
+                        balance = C.balance + @amount,
+                        locked_balance = C.locked_balance + @lockAmount,
+                        updated_on = @updatedOn
+                    FROM
+                        dbo.wallets AS O
+                    WHERE
+                        C.id = O.id
+                        AND
+                        C.id = @walletId
+                    RETURNING
+                        O.balance AS OriginBalance,
+                        O.locked_balance AS OriginLockedBalance,
+                        C.balance AS PostBalance,
+                        C.locked_balance AS PostLockedBalance",
+                new
+                {
+                    walletId,
+                    amount,
+                    lockAmount,
+                    updatedOn
+                }))
             .ConfigureAwait(false);
 
         if (updateResult is null)
