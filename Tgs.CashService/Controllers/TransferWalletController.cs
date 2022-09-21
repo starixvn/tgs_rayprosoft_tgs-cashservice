@@ -19,13 +19,33 @@ public class TransferWalletController : ControllerBase
         var command = new TransferLockCommand(
             walletId,
             viewModel.Amount,
-            viewModel.LockAmount,
             viewModel.Description,
             viewModel.ExternalId,
             executor);
 
         var result = await exchangeService
-            .GetAsync(command, HttpContext.RequestAborted)
+            .GetAsync(command, this.CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
+    [HttpPut("transfer/{walletId}", Name = "TransferCommit")]
+    public async Task<TransactionResultViewModel> CommitTransferAsync(
+        [FromServices] IGetService<TransferCommitCommand, ExchangeResult> exchangeService,
+        [FromHeader(Name = "Modifier")] Guid executor,
+        Guid walletId,
+        [FromBody] TransferViewModel viewModel)
+    {
+        var command = new TransferCommitCommand(
+            walletId,
+            viewModel.Amount,
+            viewModel.Description,
+            viewModel.ExternalId,
+            executor);
+
+        var result = await exchangeService
+            .GetAsync(command, this.CreateCancellationToken())
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);

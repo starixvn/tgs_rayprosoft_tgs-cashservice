@@ -18,8 +18,8 @@ internal class TransferLockCommandService : IGetService<TransferLockCommand, Exc
         {
             WalletId = command.WalletId,
             TransactionType = TransactionType.Transfer.ToString(),
-            Amount = command.Amount,
-            LockAmount = command.LockAmount,
+            Amount = -command.Amount,
+            LockAmount = command.Amount,
             Description = command.Description ?? string.Empty,
             ExternalId = command.ExternalId.ToString(),
             CreatedUser = command.Executor

@@ -10,7 +10,6 @@ internal partial class CashServiceClient
     public ValueTask<TransactionResponse> LockTransferAsync(
         Guid walletId,
         decimal amount,
-        decimal lockAmount,
         string? description,
         Guid externalId,
         Guid executor,
@@ -19,7 +18,6 @@ internal partial class CashServiceClient
         var request = new
         {
             Amount = amount,
-            LockAmount = lockAmount,
             Description = description,
             ExternalId = externalId
         };
@@ -30,6 +28,37 @@ internal partial class CashServiceClient
 
         return _httpClient
             .PostAsync($"/wallet/transfer-lock/{walletId}", requestContent, cancellationToken)
+            .ToAsyncEnumerable()
+            .Do(response => response.EnsureSuccessStatusCode())
+            .SelectMany(response => response.Content
+                .ReadFromJsonAsync<TransactionResponse>(_SerializerOptions, cancellationToken)
+                .ToAsyncEnumerable())
+            .Where(result => result is not null)
+            .Select(result => result!)
+            .FirstAsync(cancellationToken);
+    }
+
+    public ValueTask<TransactionResponse> CommitTransferAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        Guid externalId,
+        Guid executor,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        requestContent.Headers.Add("Modifier", executor.ToString());
+
+        return _httpClient
+            .PutAsync($"/wallet/transfer/{walletId}", requestContent, cancellationToken)
             .ToAsyncEnumerable()
             .Do(response => response.EnsureSuccessStatusCode())
             .SelectMany(response => response.Content

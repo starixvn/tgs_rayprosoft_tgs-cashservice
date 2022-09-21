@@ -82,6 +82,9 @@ public enum TransactionType
     Transfer = 6100,
     TransferCommit = 6200,
     TransferRollback = 6300,
+    Receive = 6400,
+    ReceiveCommit = 6500,
+    ReceiveRollback = 6600,
 
     /// <summary>
     ///
