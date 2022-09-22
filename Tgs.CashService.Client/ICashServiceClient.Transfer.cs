@@ -25,4 +25,12 @@ public partial interface ICashServiceClient
         Guid externalId,
         Guid executor,
         CancellationToken cancellationToken = default);
+
+    ValueTask<TransactionResponse> LockReceiveAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        Guid externalId,
+        Guid executor,
+        CancellationToken cancellationToken = default);
 }

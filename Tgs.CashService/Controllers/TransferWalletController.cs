@@ -30,6 +30,27 @@ public class TransferWalletController : ControllerBase
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
+    [HttpPost("receive-lock/{walletId}", Name = "ReceiveLock")]
+    public async Task<TransactionResultViewModel> ReceiveLockAsync(
+        [FromServices] IGetService<ReceiveLockCommand, ExchangeResult> exchangeService,
+        [FromHeader(Name = "Modifier")] Guid executor,
+        Guid walletId,
+        [FromBody] TransferViewModel viewModel)
+    {
+        var command = new ReceiveLockCommand(
+            walletId,
+            viewModel.Amount,
+            viewModel.Description,
+            viewModel.ExternalId,
+            executor);
+
+        var result = await exchangeService
+            .GetAsync(command, this.CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
     [HttpPut("transfer/{walletId}", Name = "TransferCommit")]
     public async Task<TransactionResultViewModel> CommitTransferAsync(
         [FromServices] IGetService<TransferCommitCommand, ExchangeResult> exchangeService,

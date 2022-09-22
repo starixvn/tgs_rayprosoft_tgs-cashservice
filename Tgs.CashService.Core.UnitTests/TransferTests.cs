@@ -87,4 +87,31 @@ public class TransferTests
                     && request.ExternalId == command.ExternalId.ToString()
                     && request.CreatedUser == command.Executor));
     }
+
+    [Test]
+    public async Task Can_Create_ReceiveLock_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new ReceiveLockCommandService(fakeWalletExchangeService);
+
+        var command = new ReceiveLockCommand(
+            Guid.NewGuid(),
+            100M,
+            "測試開始轉帳交易",
+            Guid.NewGuid(),
+            Guid.NewGuid());
+
+        _ = await sut.GetAsync(command);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.Receive.ToString()
+                    && request.Amount == 0M
+                    && request.LockAmount == command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId.ToString()
+                    && request.CreatedUser == command.Executor));
+    }
 }
