@@ -141,4 +141,31 @@ public class TransferTests
                     && request.ExternalId == command.ExternalId.ToString()
                     && request.CreatedUser == command.Executor));
     }
+
+    [Test]
+    public async Task Can_Create_ReceiveRollback_Exchange()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new ReceiveRollbackCommandService(fakeWalletExchangeService);
+
+        var command = new ReceiveRollbackCommand(
+            Guid.NewGuid(),
+            100M,
+            "測試回滾轉帳交易",
+            Guid.NewGuid(),
+            Guid.NewGuid());
+
+        _ = await sut.GetAsync(command);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.ReceiveRollback.ToString()
+                    && request.Amount == 0M
+                    && request.LockAmount == -command.Amount
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId.ToString()
+                    && request.CreatedUser == command.Executor));
+    }
 }
