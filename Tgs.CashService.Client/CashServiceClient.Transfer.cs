@@ -137,4 +137,35 @@ internal partial class CashServiceClient
             .Select(result => result!)
             .FirstAsync(cancellationToken);
     }
+
+    public ValueTask<TransactionResponse> CommitReceiveAsync(
+        Guid walletId,
+        decimal amount,
+        string? description,
+        Guid externalId,
+        Guid executor,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            ExternalId = externalId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+        requestContent.Headers.Add("Modifier", executor.ToString());
+
+        return _httpClient
+            .PutAsync($"/wallet/receive/{walletId}", requestContent, cancellationToken)
+            .ToAsyncEnumerable()
+            .Do(response => response.EnsureSuccessStatusCode())
+            .SelectMany(response => response.Content
+                .ReadFromJsonAsync<TransactionResponse>(_SerializerOptions, cancellationToken)
+                .ToAsyncEnumerable())
+            .Where(result => result is not null)
+            .Select(result => result!)
+            .FirstAsync(cancellationToken);
+    }
 }

@@ -72,6 +72,27 @@ public class TransferWalletController : ControllerBase
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
+    [HttpPut("receive/{walletId}", Name = "ReceiveCommit")]
+    public async Task<TransactionResultViewModel> CommitReceiveAsync(
+        [FromServices] IGetService<ReceiveCommitCommand, ExchangeResult> exchangeService,
+        [FromHeader(Name = "Modifier")] Guid executor,
+        Guid walletId,
+        [FromBody] TransferViewModel viewModel)
+    {
+        var command = new ReceiveCommitCommand(
+            walletId,
+            viewModel.Amount,
+            viewModel.Description,
+            viewModel.ExternalId,
+            executor);
+
+        var result = await exchangeService
+            .GetAsync(command, this.CreateCancellationToken())
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
     [HttpDelete("transfer/{walletId}", Name = "TransferRollback")]
     public async Task<TransactionResultViewModel> RollbackTransferAsync(
         [FromServices] IGetService<TransferRollbackCommand, ExchangeResult> exchangeService,
