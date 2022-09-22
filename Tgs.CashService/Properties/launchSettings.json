@@ -1,29 +1,29 @@
 {
-  "$schema": "http://json.schemastore.org/launchsettings.json",
-  "profiles": {
-    "Tgs.CashService": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "OTEL_SERVICE_NAME": "Cash-API(local)",
-        "NODE_IP": "otel.rpgp.cc"
-      },
-      "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:44331/"
-    },
-    "Docker": {
-      "commandName": "Docker",
-      "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
-      "publishAllPorts": true,
-      "useSSL": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "OTEL_SERVICE_NAME": "Cash-API(local)",
-        "NODE_IP": "otel.rpgp.cc"
-      }
-    }
-  }
+	"$schema": "http://json.schemastore.org/launchsettings.json",
+	"profiles": {
+		"Tgs.CashService": {
+			"commandName": "Project",
+			"launchBrowser": true,
+			"launchUrl": "swagger",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development",
+				"OTEL_SERVICE_NAME": "Cash-API(local)",
+				"NODE_IP": "otel.rpgp.cc"
+			},
+			"dotnetRunMessages": "true",
+			"applicationUrl": "https://localhost:44331/"
+		},
+		"Docker": {
+			"commandName": "Docker",
+			"launchBrowser": true,
+			"launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+			"publishAllPorts": true,
+			"useSSL": true,
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development",
+				"OTEL_SERVICE_NAME": "Cash-API(local)",
+				"NODE_IP": "otel.rpgp.cc"
+			}
+		}
+	}
 }

@@ -1,25 +1,25 @@
 {
-  "profiles": {
-    "Tgs.CashServiceWorker": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "OTEL_SERVICE_NAME": "Cash-Worker(local)",
-        "NODE_IP": "otel.rpgp.cc"
-      },
-      "applicationUrl": "https://localhost:7159;http://localhost:5159",
-      "dotnetRunMessages": true
-    },
-    "Docker": {
-      "commandName": "Docker",
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
-      "publishAllPorts": true,
-      "useSSL": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "OTEL_SERVICE_NAME": "Cash-Worker(local)",
-        "NODE_IP": "otel.rpgp.cc"
-      }
-    }
-  }
+	"profiles": {
+		"Tgs.CashServiceWorker": {
+			"commandName": "Project",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development",
+				"OTEL_SERVICE_NAME": "Cash-Worker(local)",
+				"NODE_IP": "otel.rpgp.cc"
+			},
+			"applicationUrl": "https://localhost:7159;http://localhost:5159",
+			"dotnetRunMessages": true
+		},
+		"Docker": {
+			"commandName": "Docker",
+			"launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+			"publishAllPorts": true,
+			"useSSL": true,
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development",
+				"OTEL_SERVICE_NAME": "Cash-Worker(local)",
+				"NODE_IP": "otel.rpgp.cc"
+			}
+		}
+	}
 }
