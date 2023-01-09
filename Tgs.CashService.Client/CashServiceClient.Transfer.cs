@@ -69,7 +69,7 @@ internal partial class CashServiceClient
             .FirstAsync(cancellationToken);
     }
 
-    public ValueTask<TransactionResponse> RollbackTransferAsync(
+    public async ValueTask<TransactionResponse> RollbackTransferAsync(
         Guid walletId,
         decimal amount,
         string? description,
@@ -95,7 +95,7 @@ internal partial class CashServiceClient
             Content = requestContent
         };
 
-        return _httpClient
+        return await _httpClient
             .SendAsync(requestMessage, cancellationToken)
             .ToAsyncEnumerable()
             .Do(response => response.EnsureSuccessStatusCode())
@@ -104,7 +104,8 @@ internal partial class CashServiceClient
                 .ToAsyncEnumerable())
             .Where(result => result is not null)
             .Select(result => result!)
-            .FirstAsync(cancellationToken);
+            .FirstAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public ValueTask<TransactionResponse> LockReceiveAsync(
@@ -169,7 +170,7 @@ internal partial class CashServiceClient
             .FirstAsync(cancellationToken);
     }
 
-    public ValueTask<TransactionResponse> RollbackReceiveAsync(
+    public async ValueTask<TransactionResponse> RollbackReceiveAsync(
         Guid walletId,
         decimal amount,
         string? description,
@@ -195,7 +196,7 @@ internal partial class CashServiceClient
             Content = requestContent
         };
 
-        return _httpClient
+        return await _httpClient
             .SendAsync(requestMessage, cancellationToken)
             .ToAsyncEnumerable()
             .Do(response => response.EnsureSuccessStatusCode())
@@ -204,6 +205,7 @@ internal partial class CashServiceClient
                 .ToAsyncEnumerable())
             .Where(result => result is not null)
             .Select(result => result!)
-            .FirstAsync(cancellationToken);
+            .FirstAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 }
