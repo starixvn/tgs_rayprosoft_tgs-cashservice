@@ -1,4 +1,4 @@
-using FluentdForward.OpenTelemetry.MessagePack;
+﻿using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -21,9 +21,9 @@ builder.Logging
         options.ParseStateValues = true;
         _ = options.AddFluentdForwardExporter(fluentOptions =>
         {
-            var nodeIp = builder.Configuration.GetValue<string>("NODE_IP");
+            var nodeIp = builder.Configuration.GetValue<string>("NODE_IP")!;
             fluentOptions.Host = nodeIp;
-            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
+            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME")!;
             fluentOptions.UseMessagePack(LogRecordFormatterResolver.GetResolverInstanceWithExtendInfo(
                 "MachineInfo",
                 () => new
@@ -39,13 +39,13 @@ builder.Services
         var config = sp.GetRequiredService<IConfiguration>();
 
         _ = dbBuilder
-            .UseNpgsql(config.GetConnectionString("Tgs"));
+            .UseNpgsql("name=Tgs");
     })
     .AddCashServiceWorker((options, sp) =>
     {
-        var config = sp.GetService<IConfiguration>();
+        var config = sp.GetRequiredService<IConfiguration>();
 
-        options.RedisConnectionString = config.GetConnectionString("Redis");
+        options.RedisConnectionString = config.GetConnectionString("Redis")!;
     });
 
 builder.Services
@@ -55,7 +55,7 @@ builder.Services
         {
             var configuration = sp.GetRequiredService<IConfiguration>();
 
-            options.Url = configuration.GetConnectionString("Nats");
+            options.Url = configuration.GetConnectionString("Nats")!;
         })
         .AddProcessor<BidProcessor>("tgs.cash.bid")
         .AddSession<RequestSession>($"tgs.cash.worker.{Environment.MachineName}")

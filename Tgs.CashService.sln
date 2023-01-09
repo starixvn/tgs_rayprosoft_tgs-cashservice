@@ -13,7 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		CodeMaid.config = CodeMaid.config
-		Jenkinsfile = Jenkinsfile
 		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
@@ -27,11 +26,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService.Integration
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashServiceWorker", "Tgs.CashServiceWorker\Tgs.CashServiceWorker.csproj", "{3F2EED22-B928-45EA-BED5-29E05CBB1C0E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.CashServiceWorker.Core", "Tgs.CashServiceWorker.Core\Tgs.CashServiceWorker.Core.csproj", "{303E45BA-53F7-4235-8CF9-B1DA7458243B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashServiceWorker.Core", "Tgs.CashServiceWorker.Core\Tgs.CashServiceWorker.Core.csproj", "{303E45BA-53F7-4235-8CF9-B1DA7458243B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.CashServiceWorker.Core.UnitTests", "Tgs.CashServiceWorker.Core.UnitTests\Tgs.CashServiceWorker.Core.UnitTests.csproj", "{3E987B21-7309-4F77-9B6C-94F072616291}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashServiceWorker.Core.UnitTests", "Tgs.CashServiceWorker.Core.UnitTests\Tgs.CashServiceWorker.Core.UnitTests.csproj", "{3E987B21-7309-4F77-9B6C-94F072616291}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.CashService.Common", "Tgs.CashService.Common\Tgs.CashService.Common.csproj", "{ED5486B7-A477-492C-A7C6-A336980DFB28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService.Common", "Tgs.CashService.Common\Tgs.CashService.Common.csproj", "{ED5486B7-A477-492C-A7C6-A336980DFB28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
