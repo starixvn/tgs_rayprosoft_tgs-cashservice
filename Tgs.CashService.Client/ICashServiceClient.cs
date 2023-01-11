@@ -155,4 +155,12 @@ public partial interface ICashServiceClient
         string? externalId,
         Guid createdByUserId,
         CancellationToken cancellationToken = default);
+
+    ValueTask<PagingResponse<TransactionLog>> QueryTransactionLogsAsync(
+        Guid walletId,
+        DateTime from,
+        DateTime to,
+        IEnumerable<int> queryTransactionTypes,
+        PagingConditions paging,
+        CancellationToken cancellationToken = default);
 }

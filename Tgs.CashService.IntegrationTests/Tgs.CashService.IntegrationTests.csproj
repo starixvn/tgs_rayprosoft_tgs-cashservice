@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<IsPackable>false</IsPackable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ThreadPoolMinThreads>100</ThreadPoolMinThreads>
+		<SqlQueryToolsConnectionString />
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -14,21 +15,21 @@
 
 	<ItemGroup>
 		<PackageReference Include="JunitXml.TestLogger" Version="3.0.114" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.8" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.8" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
-		<PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
-		<PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
-		<PackageReference Include="coverlet.collector" Version="3.1.2">
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.2" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
+		<PackageReference Include="coverlet.collector" Version="3.2.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="NSubstitute" Version="4.4.0" />
-		<PackageReference Include="PhoenixToolkits.CodeAnalysis.Analyzers" Version="0.0.7">
+		<PackageReference Include="PhoenixToolkits.CodeAnalysis.Analyzers" Version="0.0.8">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Tgs.WebApi.Toolkits" Version="0.0.13" />
+		<PackageReference Include="Tgs.WebApi.Toolkits" Version="0.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
