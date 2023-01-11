@@ -1,7 +1,8 @@
-using FluentdForward.OpenTelemetry.MessagePack;
+﻿using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using OpenTelemetry.Exporter;
@@ -24,9 +25,9 @@ builder.Logging
         options.ParseStateValues = true;
         _ = options.AddFluentdForwardExporter(fluentOptions =>
         {
-            var nodeIp = builder.Configuration.GetValue<string>("NODE_IP");
+            var nodeIp = builder.Configuration.GetValue<string>("NODE_IP")!;
             fluentOptions.Host = nodeIp;
-            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
+            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME")!;
             fluentOptions.UseMessagePack(LogRecordFormatterResolver.GetResolverInstanceWithExtendInfo(
                 "MachineInfo",
                 () => new
@@ -62,11 +63,12 @@ builder.Services
     });
 
 builder.Services
+    .AddCashServiceRepositories((_, optionsBuilder) => optionsBuilder.UseNpgsql("name=Tgs"))
     .AddCashServiceCore((options, sp) =>
     {
         var config = sp.GetRequiredService<IConfiguration>();
 
-        options.RedisConnectionString = config.GetConnectionString("Redis");
+        options.RedisConnectionString = config.GetConnectionString("Redis")!;
     })
     .Decorate<IWalletExchangeService, WalletExchangeServiceDecorator>();
 builder.Services
@@ -119,7 +121,7 @@ builder.Services
         {
             var configuration = sp.GetRequiredService<IConfiguration>();
 
-            options.Url = configuration.GetConnectionString("Nats");
+            options.Url = configuration.GetConnectionString("Nats")!;
         })
         .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()

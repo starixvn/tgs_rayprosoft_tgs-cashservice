@@ -10,6 +10,7 @@
 		<DockerfileBuildArguments>--build-arg "BuildConfiguration=$(Configuration)" --secret id=nuget,src="$(GlobalNugetConfig)"</DockerfileBuildArguments>
 		<DockerfileTag Condition="$(DockerfileTag) == ''">cash/service</DockerfileTag>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<SqlQueryToolsConnectionString />
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -41,6 +42,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Tgs.CashService.Core\Tgs.CashService.Core.csproj" />
+		<ProjectReference Include="..\Tgs.CashService.ServiceRepositories\Tgs.CashService.ServiceRepositories.csproj" />
 	</ItemGroup>
 
 </Project>

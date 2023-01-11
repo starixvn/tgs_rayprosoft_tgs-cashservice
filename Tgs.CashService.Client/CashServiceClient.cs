@@ -1,7 +1,9 @@
 ﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Web;
 
 namespace Tgs.CashService.Client;
 
@@ -602,5 +604,36 @@ internal partial class CashServiceClient : ICashServiceClient
         var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
+
+    public async ValueTask<PagingResponse<TransactionLog>> QueryTransactionLogsAsync(
+        Guid walletId,
+        DateTime from,
+        DateTime to,
+        IEnumerable<int> queryTransactionTypes,
+        PagingConditions paging,
+        CancellationToken cancellationToken = default)
+    {
+        var queryStrings = HttpUtility.ParseQueryString(string.Empty);
+
+        queryStrings.Add("from", from.ToString("o"));
+        queryStrings.Add("to", to.ToString("o"));
+
+        foreach (var queryType in queryTransactionTypes)
+            queryStrings.Add("type", queryType.ToString());
+
+        queryStrings.Add("page", paging.Page.ToString());
+        queryStrings.Add("rows", paging.Rows.ToString());
+
+        return await _httpClient.GetAsync($"/api/transaction-log/{walletId}?{queryStrings}", cancellationToken)
+            .ToAsyncEnumerable()
+            .Do(response => response.EnsureSuccessStatusCode())
+            .SelectMany(response => response.Content
+                .ReadFromJsonAsync<PagingResponse<TransactionLog>>(_SerializerOptions)
+                .ToAsyncEnumerable())
+            .Where(result => result is not null)
+            .Select(result => result!)
+            .FirstAsync(cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
     }
 }

@@ -30,4 +30,8 @@
     <ProjectReference Include="..\Tgs.CashService.Core\Tgs.CashService.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="NUnit.Framework" />
+  </ItemGroup>
+
 </Project>

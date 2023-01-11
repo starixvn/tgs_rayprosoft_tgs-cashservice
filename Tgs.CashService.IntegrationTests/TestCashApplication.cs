@@ -22,15 +22,11 @@ internal class TestCashApplication : WebApplicationFactory<Program>
 
         _ = builder
             .ConfigureLogging(logging => logging.ClearProviders().AddConsole())
-            .ConfigureServices(services =>
-            {
-                _ = services.AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
+            .ConfigureServices(services => services
+                .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
                     sp => new ConfigureNamedOptions<OtlpExporterOptions>(
                         Options.DefaultName,
-                        exporterOptions =>
-                        {
-                            exporterOptions.TimeoutMilliseconds = 0;
-                        }));
-            });
+                        exporterOptions => exporterOptions.TimeoutMilliseconds = 0))
+                .AddFakeNatsMessageQueue());
     }
 }
