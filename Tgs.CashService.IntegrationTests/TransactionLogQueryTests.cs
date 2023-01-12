@@ -357,16 +357,6 @@ public class TransactionLogQueryTests
         var expected = new[]
         {
             new Client.TransactionLog(
-                transactionLogs[0].Id,
-                transactionLogs[0].RecordedOn,
-                transactionLogs[0].Type,
-                transactionLogs[0].Amount,
-                transactionLogs[0].Balance,
-                transactionLogs[0].LockAmount,
-                transactionLogs[0].LockedBalance,
-                transactionLogs[0].Description,
-                transactionLogs[0].ExternalTransactionId),
-            new Client.TransactionLog(
                 transactionLogs[2].Id,
                 transactionLogs[2].RecordedOn,
                 transactionLogs[2].Type,
@@ -375,7 +365,17 @@ public class TransactionLogQueryTests
                 transactionLogs[2].LockAmount,
                 transactionLogs[2].LockedBalance,
                 transactionLogs[2].Description,
-                transactionLogs[2].ExternalTransactionId)
+                transactionLogs[2].ExternalTransactionId),
+            new Client.TransactionLog(
+                transactionLogs[0].Id,
+                transactionLogs[0].RecordedOn,
+                transactionLogs[0].Type,
+                transactionLogs[0].Amount,
+                transactionLogs[0].Balance,
+                transactionLogs[0].LockAmount,
+                transactionLogs[0].LockedBalance,
+                transactionLogs[0].Description,
+                transactionLogs[0].ExternalTransactionId)
         };
 
         var actual = await sut.QueryTransactionLogsAsync(

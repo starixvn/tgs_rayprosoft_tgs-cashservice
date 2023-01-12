@@ -43,12 +43,12 @@ public enum TransactionType
     //Promotion = 3000,
 
     /// <summary>
-    ///     The promotion vip level upgrade
+    /// The promotion vip level upgrade
     /// </summary>
     PromotionVipLevelUpgrade = 3800,
 
     /// <summary>
-    ///     The promotion vip level season
+    /// The promotion vip level season
     /// </summary>
     PromotionVipLevelSeason = 3850,
 
@@ -59,7 +59,7 @@ public enum TransactionType
     /// </summary>
     //Dividend = 4000,
     /// <summary>
-    ///     The dividend all agent rebate
+    /// The dividend all agent rebate
     /// </summary>
     DividendAllAgentRebate = 4100,
 
@@ -74,7 +74,7 @@ public enum TransactionType
     AdjustBonus = 5400,
 
     /// <summary>
-    ///     已結算單再調整
+    /// 已結算單再調整
     /// </summary>
     AdjustResettledBetManual = 5010,
 
@@ -88,8 +88,7 @@ public enum TransactionType
     ReceiveRollback = 6600,
 
     /// <summary>
-    ///
-    ///     遊戲 10000~15999
+    /// 遊戲 10000~15999
     /// </summary>
     //Game = 10000
 

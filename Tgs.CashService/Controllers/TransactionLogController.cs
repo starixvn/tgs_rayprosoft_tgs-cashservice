@@ -26,7 +26,7 @@ public class TransactionLogController : ControllerBase
 
         paging.SortByPropertyName(
             pagingViewModel.SortBy ?? nameof(TransactionLog.RecordedOn),
-            pagingViewModel.IsDesc ?? false);
+            pagingViewModel.IsDesc ?? true);
 
         var query = new TransactionLogQuery(
             walletId,
