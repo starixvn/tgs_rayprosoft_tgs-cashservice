@@ -104,4 +104,29 @@ public class PromotionTests
                     && request.Description == command.Description
                     && request.ExternalId == command.ExternalId));
     }
+
+    [Test]
+    public async Task Truncate_To_2_Decimal_places()
+    {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
+        var sut = new PromotionCommandService(fakeWalletExchangeService);
+
+        var command = new PromotionCommand(
+            Guid.NewGuid(),
+            100.123456M,
+            Guid.NewGuid().ToString("N"),
+            "測試活動紅利",
+            null);
+
+        _ = await sut.GetAsync(command).ConfigureAwait(false);
+
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
+                request => request.WalletId == command.WalletId
+                    && request.TransactionType == TransactionType.Promotion.ToString()
+                    && request.Amount == 100.12M
+                    && request.Description == command.Description
+                    && request.ExternalId == command.ExternalId));
+    }
 }
