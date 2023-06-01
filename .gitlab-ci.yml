@@ -34,35 +34,19 @@ push-nuget:
 push-docker-image:
   extends: .push-docker-image-template
   script:
-    - export Tag="$(date -d $CI_PIPELINE_CREATED_AT +%Y%m%d%H%M).$CI_PIPELINE_IID"
-    - dotnet build "Tgs.CashService/Tgs.CashService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ServiceImageName:$Tag" --no-restore
-    - docker push $ServiceImageName:$Tag
-    - dotnet build "Tgs.CashServiceWorker/Tgs.CashServiceWorker.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$WorkerImageName:$Tag" --no-restore
-    - docker push $WorkerImageName:$Tag
+    - push_docker "Tgs.CashService/Tgs.CashService.csproj" $ServiceImageName $Tag
+    - push_docker "Tgs.CashServiceWorker/Tgs.CashServiceWorker.csproj" $WorkerImageName $Tag
 
 push-k8s-template:
   extends: .push-k8s-template
   script:
-    - mkdir -p artifacts/k8s
-    - cp -R deployment/k8s/$HelmTemplateServiceFolderName artifacts/k8s/
-    - |
-      yq -i e '
-        .image.repository = strenv(ServiceImageName) |
-        .image.tag = strenv(Tag)
-      ' artifacts/k8s/$HelmTemplateServiceFolderName/values.yaml
-    - cp -R deployment/k8s/$HelmTemplateWorkerFolderName artifacts/k8s/
-    - |
-      yq -i e '
-        .image.repository = strenv(WorkerImageName) |
-        .image.tag = strenv(Tag)
-      ' artifacts/k8s/$HelmTemplateWorkerFolderName/values.yaml
+    - push_k8s_template $HelmTemplateServiceFolderName $ServiceImageName $Tag
+    - push_k8s_template $HelmTemplateWorkerFolderName $WorkerImageName $Tag
 
 deploy-service-dev:
   extends: .deploy-template
   variables:
     namespace: dev
-    TgsSettingKey: $TgsServiceSettingKey
-    HelmTemplateFolderName: $HelmTemplateServiceFolderName
     kube_config: KubeConfig_Raypro_dev
   environment:
     name: service-dev
@@ -74,14 +58,14 @@ deploy-service-dev:
       artifacts: true
   only:
     - main
-  when: always
+  when: on_success
+  script:
+    - deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
 
 deploy-worker-dev:
   extends: .deploy-template
   variables:
     namespace: dev
-    TgsSettingKey: $TgsWorkerSettingKey
-    HelmTemplateFolderName: $HelmTemplateWorkerFolderName
     kube_config: KubeConfig_Raypro_dev
   environment:
     name: worker-dev
@@ -93,14 +77,14 @@ deploy-worker-dev:
       artifacts: true
   only:
     - main
-  when: always
+  when: on_success
+  script:
+    - deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
 
 deploy-service-staging:
   extends: .deploy-template
   variables:
     namespace: staging
-    TgsSettingKey: $TgsServiceSettingKey
-    HelmTemplateFolderName: $HelmTemplateServiceFolderName
     kube_config: KubeConfig_Raypro_staging
   environment:
     name: service-staging
@@ -111,13 +95,13 @@ deploy-service-staging:
       artifacts: true
   only:
     - main
+  script:
+    - deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
 
 deploy-worker-staging:
   extends: .deploy-template
   variables:
     namespace: staging
-    TgsSettingKey: $TgsWorkerSettingKey
-    HelmTemplateFolderName: $HelmTemplateWorkerFolderName
     kube_config: KubeConfig_Raypro_staging
   environment:
     name: worker-staging
@@ -128,13 +112,13 @@ deploy-worker-staging:
       artifacts: true
   only:
     - main
+  script:
+    - deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
 
 deploy-service-prod:
   extends: .deploy-template
   variables:
     namespace: prod
-    TgsSettingKey: $TgsServiceSettingKey
-    HelmTemplateFolderName: $HelmTemplateServiceFolderName
     kube_config: KubeConfig_Raypro_prod
   environment:
     name: service-prod
@@ -146,13 +130,13 @@ deploy-service-prod:
   only:
     - main
   when: manual
+  script:
+    - deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
 
 deploy-worker-prod:
   extends: .deploy-template
   variables:
     namespace: prod
-    TgsSettingKey: $TgsWorkerSettingKey
-    HelmTemplateFolderName: $HelmTemplateWorkerFolderName
     kube_config: KubeConfig_Raypro_prod
   environment:
     name: worker-prod
@@ -163,3 +147,5 @@ deploy-worker-prod:
       artifacts: true
   only:
     - main
+  script:
+    - deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
