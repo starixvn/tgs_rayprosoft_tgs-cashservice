@@ -29,8 +29,8 @@ unit-test:
 push-nuget:
   extends: .push-nuget-template
   script:
-    - push_nuget "Tgs.CashService.Client"
-    
+    - push_package "Tgs.CashService.Client"
+
 push-docker-image:
   extends: .push-docker-image-template
   script:
