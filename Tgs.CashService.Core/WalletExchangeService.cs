@@ -96,7 +96,7 @@ internal class WalletExchangeService : IWalletExchangeService
             var bidResponse = BidResponse.Parser.ParseFrom(bidResponseData.Span);
 
             machineName = bidResponse.Subject;
-            _logger.LogInformation("Subject is {machineName}", machineName);
+            _logger.LogInformation("Subject is {MachineName}", machineName);
         }
 
         return machineName;

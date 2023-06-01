@@ -110,10 +110,8 @@ internal class WalletReception : IDisposable
 
             var wallet = await repository
                 .GetWalletAsync(exchangeTask.Request.WalletId, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (wallet == null)
-                throw new InvalidOperationException("Can't found wallet.");
+                .ConfigureAwait(false)
+                ?? throw new InvalidOperationException("Can't found wallet.");
 
             var result = await repository.ExchangeAsync(
                 wallet.BrandId,

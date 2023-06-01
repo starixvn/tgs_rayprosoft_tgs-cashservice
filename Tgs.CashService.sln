@@ -32,7 +32,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashServiceWorker.Core.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService.Common", "Tgs.CashService.Common\Tgs.CashService.Common.csproj", "{ED5486B7-A477-492C-A7C6-A336980DFB28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.CashService.ServiceRepositories", "Tgs.CashService.ServiceRepositories\Tgs.CashService.ServiceRepositories.csproj", "{9BE849E9-12EC-4128-B62B-B035269AAED4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService.ServiceRepositories", "Tgs.CashService.ServiceRepositories\Tgs.CashService.ServiceRepositories.csproj", "{9BE849E9-12EC-4128-B62B-B035269AAED4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.CashQueryService", "Tgs.CashQueryService\Tgs.CashQueryService.csproj", "{030F01EB-4199-4A62-8E17-782F36657A86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +90,10 @@ Global
 		{9BE849E9-12EC-4128-B62B-B035269AAED4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BE849E9-12EC-4128-B62B-B035269AAED4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BE849E9-12EC-4128-B62B-B035269AAED4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{030F01EB-4199-4A62-8E17-782F36657A86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{030F01EB-4199-4A62-8E17-782F36657A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{030F01EB-4199-4A62-8E17-782F36657A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{030F01EB-4199-4A62-8E17-782F36657A86}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

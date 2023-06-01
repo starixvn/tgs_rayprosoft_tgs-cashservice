@@ -80,7 +80,8 @@ builder.Services
 
                 config.GetSection("Opentelemetry:Tracing").Bind(exporterOptions);
             }))
-    .AddOpenTelemetryTracing(
+    .AddOpenTelemetry()
+    .WithTracing(
         tracingBuilder => tracingBuilder
             .SetResourceBuilder(ResourceBuilder.CreateDefault()
                 .AddEnvironmentVariableDetector())
@@ -91,6 +92,7 @@ builder.Services
             .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
             .AddProfileViewExporter()
             .AddOtlpExporter())
+    .Services
     .AddProfileViewer()
     .Configure<AspNetCoreInstrumentationOptions>(options =>
     {

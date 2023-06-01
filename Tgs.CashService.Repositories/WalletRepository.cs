@@ -55,7 +55,7 @@ internal class WalletRepository : IWalletRepository
                 return TimeSpan.FromMilliseconds(wait);
             })
             .ExecuteAsync(() => _dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
-                @"
+                """
                     UPDATE dbo.wallets AS C
                     SET
                         balance = C.balance + @amount,
@@ -71,7 +71,8 @@ internal class WalletRepository : IWalletRepository
                         O.balance AS OriginBalance,
                         O.locked_balance AS OriginLockedBalance,
                         C.balance AS PostBalance,
-                        C.locked_balance AS PostLockedBalance",
+                        C.locked_balance AS PostLockedBalance
+                    """,
                 new
                 {
                     walletId,
@@ -79,10 +80,8 @@ internal class WalletRepository : IWalletRepository
                     lockAmount,
                     updatedOn
                 }))
-            .ConfigureAwait(false);
-
-        if (updateResult is null)
-            throw new WalletExchangeFailException();
+            .ConfigureAwait(false)
+            ?? throw new WalletExchangeFailException();
 
         if (updateResult.PostLockedBalance < 0M)
         {
@@ -96,7 +95,7 @@ internal class WalletRepository : IWalletRepository
                     return TimeSpan.FromMilliseconds(wait);
                 })
                 .ExecuteAsync(() => _dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
-                    @"
+                    """
                         UPDATE dbo.wallets AS C
                         SET
                             balance = C.balance + @amount,
@@ -112,7 +111,8 @@ internal class WalletRepository : IWalletRepository
                             O.balance AS OriginBalance,
                             O.locked_balance AS OriginLockedBalance,
                             C.balance AS PostBalance,
-                            C.locked_balance AS PostLockedBalance",
+                            C.locked_balance AS PostLockedBalance
+                        """,
                     new
                     {
                         walletId,
