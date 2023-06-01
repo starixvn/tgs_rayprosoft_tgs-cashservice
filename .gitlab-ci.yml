@@ -1,6 +1,6 @@
 include:
   - project: rayprosoft/tgs-ci-scripts
-    ref: feats/add-push-nuget-template
+    ref: main
     file: GitLab/Templates/gitlab-job-templates.yml
 
 variables:
