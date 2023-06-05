@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>11</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Interactive.Async" Version="6.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\CashQuery.Common\CashQuery.Common.csproj" />
+	</ItemGroup>
+
+</Project>

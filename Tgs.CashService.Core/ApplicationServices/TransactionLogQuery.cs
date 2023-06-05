@@ -1,4 +1,5 @@
-﻿using Tgs.Paging;
+﻿using Tgs.Cash.Common;
+using Tgs.Paging;
 
 namespace Tgs.CashService.ApplicationServices;
 public record TransactionLogQuery(

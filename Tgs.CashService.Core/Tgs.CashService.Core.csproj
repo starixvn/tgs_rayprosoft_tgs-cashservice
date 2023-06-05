@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Cash.CommonModels\Cash.CommonModels.csproj" />
     <ProjectReference Include="..\Tgs.CashService.Common\Tgs.CashService.Common.csproj" />
   </ItemGroup>
 

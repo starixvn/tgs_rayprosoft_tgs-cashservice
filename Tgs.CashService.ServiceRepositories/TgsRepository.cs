@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Tgs.Cash.Common;
 using Tgs.CashService.Repositories.Entities;
 using Tgs.Paging;
 

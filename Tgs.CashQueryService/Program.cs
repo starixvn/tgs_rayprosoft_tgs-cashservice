@@ -1,4 +1,5 @@
-﻿using FluentdForward.OpenTelemetry.MessagePack;
+﻿using System.Text.Json.Serialization;
+using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
@@ -27,7 +28,13 @@ builder.Logging
     });
 
 builder.Services
-    .AddControllers();
+    .AddRouting(routeOptions => routeOptions.LowercaseUrls = true)
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
+    });
 
 builder.Services
     .AddSwaggerGen(swaggerGenOptions =>
