@@ -22,8 +22,8 @@ public class AdjustQueryController : ControllerBase
             viewModel.AdjustTypes,
             viewModel.UserId,
             viewModel.Operator,
-            pagingViewModel.Skip,
-            pagingViewModel.Take);
+            pagingViewModel.Take,
+            pagingViewModel.Skip);
 
         return queryService.QueryAsync(query, HttpContext.RequestAborted)
             .Select(record => new AdjustRecordListItemViewModel

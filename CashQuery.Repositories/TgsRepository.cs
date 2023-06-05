@@ -1,4 +1,5 @@
-﻿using Tgs.CashQuery.Repositories.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Tgs.CashQuery.Repositories.Entities;
 using Tgs.CashQueryService;
 
 namespace Tgs.CashQuery.Repositories;
@@ -38,6 +39,7 @@ public class TgsRepository : ITgsRepository
         }
 
         return query
+            .OrderByDescending(record => record.CreatedOn)
             .Select(record => new
             {
                 record.Id,
@@ -50,6 +52,8 @@ public class TgsRepository : ITgsRepository
                 record.CreatedOn,
                 record.Remark
             })
+            .Skip(skip)
+            .Take(take)
             .ToAsyncEnumerable()
             .Select(row => new AdjustRecord(
                 row.Id,

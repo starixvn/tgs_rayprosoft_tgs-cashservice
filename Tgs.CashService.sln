@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.CashQuery.Client", "Tgs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashQuery.Common", "CashQuery.Common\CashQuery.Common.csproj", "{879644B1-0BC2-4D16-926F-59CFA7E4BCD2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.CashQueryService.IntegrationTests", "Tgs.CashQueryService.IntegrationTests\Tgs.CashQueryService.IntegrationTests.csproj", "{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -286,6 +288,18 @@ Global
 		{879644B1-0BC2-4D16-926F-59CFA7E4BCD2}.Release|x64.Build.0 = Release|Any CPU
 		{879644B1-0BC2-4D16-926F-59CFA7E4BCD2}.Release|x86.ActiveCfg = Release|Any CPU
 		{879644B1-0BC2-4D16-926F-59CFA7E4BCD2}.Release|x86.Build.0 = Release|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Debug|x64.Build.0 = Debug|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Debug|x86.Build.0 = Debug|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Release|x64.ActiveCfg = Release|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Release|x64.Build.0 = Release|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Release|x86.ActiveCfg = Release|Any CPU
+		{B54EB98D-F4A9-45D0-8978-0F9E0A941C82}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

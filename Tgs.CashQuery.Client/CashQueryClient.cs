@@ -24,7 +24,7 @@ internal class CashQueryClient
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public IAsyncEnumerable<AdjustRecordListItem> QueryPlayerAdjustRecords(
+    public IAsyncEnumerable<AdjustRecordListItem> QueryPlayerAdjustRecordsAsync(
         Guid brandId,
         AdjustRecordQueryCondition condition,
         int skip = 0,
@@ -52,7 +52,7 @@ internal class CashQueryClient
             $"/adjust/player/{brandId}?{string.Join(
                 "&",
                 queryStrings.Select(
-                    kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"))}", 
+                    kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"))}",
             cancellationToken)
             .ToAsyncEnumerable()
             .Do(response => response.EnsureSuccessStatusCode())

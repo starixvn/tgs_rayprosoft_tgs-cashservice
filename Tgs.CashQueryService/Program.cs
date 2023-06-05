@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using FluentdForward.OpenTelemetry.MessagePack;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
@@ -26,6 +27,11 @@ builder.Logging
                 }));
         });
     });
+
+builder.Services
+    .AddCashQuery()
+    .AddCashQueryRepositories(dbBuiler => dbBuiler
+        .UseNpgsql("name=Tgs"));
 
 builder.Services
     .AddRouting(routeOptions => routeOptions.LowercaseUrls = true)
