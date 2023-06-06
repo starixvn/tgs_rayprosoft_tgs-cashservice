@@ -28,8 +28,8 @@ public class AdjustAgentWalletRecordQueryServiceTests
         // Assert
         _ = fakeTgsRepository.Received(1)
             .QueryAgentAdjustRecordsAsync(
+                Arg.Is(query.BrandId),
                 Arg.Is(new AdjustRecordQueryCondition(
-                    query.BrandId,
                     query.CreatedOnRange,
                     query.SearchTypes,
                     query.AgentId?.ToString(),

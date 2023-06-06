@@ -13,8 +13,8 @@ internal class AdjustAgentWalletRecordQueryService : IQueryService<AdjustAgentWa
 
     public IAsyncEnumerable<AdjustRecord> QueryAsync(AdjustAgentWalletRecordQuery query, CancellationToken cancellationToken = default)
         => _tgsRepository.QueryAgentAdjustRecordsAsync(
+            query.BrandId,
             new AdjustRecordQueryCondition(
-                query.BrandId,
                 query.CreatedOnRange,
                 query.SearchTypes,
                 query.AgentId?.ToString(),

@@ -31,8 +31,8 @@ public class AdjustPlayerWalletRecordQueryServiceTests
         // Assert
         _ = fakeTgsRepository.Received(1)
             .QueryPlayerAdjustRecordsAsync(
+                Arg.Is(query.BrandId),
                 Arg.Is(new AdjustRecordQueryCondition(
-                    query.BrandId,
                     query.CreatedOnRange,
                     query.SearchTypes,
                     query.PlayerCode,

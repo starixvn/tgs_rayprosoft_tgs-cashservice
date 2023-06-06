@@ -13,8 +13,8 @@ internal class AdjustPlayerWalletRecordQueryService : IQueryService<AdjustPlayer
 
     public IAsyncEnumerable<AdjustRecord> QueryAsync(AdjustPlayerWalletRecordQuery query, CancellationToken cancellationToken = default)
         => _tgsRepository.QueryPlayerAdjustRecordsAsync(
+            query.BrandId,
             new AdjustRecordQueryCondition(
-                query.BrandId,
                 query.CreatedOnRange,
                 query.SearchTypes,
                 query.PlayerCode,

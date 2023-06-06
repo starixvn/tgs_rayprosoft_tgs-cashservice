@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reactive.Linq;
+using Microsoft.EntityFrameworkCore;
 using Tgs.CashQuery.Repositories.Entities;
 using Tgs.CashQueryService;
 
@@ -14,13 +15,14 @@ public class TgsRepository : ITgsRepository
     }
 
     public IAsyncEnumerable<AdjustRecord> QueryPlayerAdjustRecordsAsync(
+        Guid brandId,
         AdjustRecordQueryCondition condition,
         int take,
         int skip = 0,
         CancellationToken cancellationToken = default)
     {
         var query = from record in _dbContext.AdjustPlayerRecords.AsQueryable()
-                    where record.BrandId == condition.BrandId
+                    where record.BrandId == brandId
                         && record.CreatedOn >= condition.CreatedOnRange.From
                         && record.CreatedOn < condition.CreatedOnRange.To
                     select record;
@@ -69,13 +71,14 @@ public class TgsRepository : ITgsRepository
     }
 
     public IAsyncEnumerable<AdjustRecord> QueryAgentAdjustRecordsAsync(
+        Guid brandId,
         AdjustRecordQueryCondition condition,
         int take,
         int skip = 0,
         CancellationToken ctancellationToken = default)
     {
         var query = from record in _dbContext.AdjustAgentRecords.AsQueryable()
-                    where record.BrandId == condition.BrandId
+                    where record.BrandId == brandId
                         && record.CreatedOn >= condition.CreatedOnRange.From
                         && record.CreatedOn < condition.CreatedOnRange.To
                     select record;
@@ -124,5 +127,96 @@ public class TgsRepository : ITgsRepository
                 row.CreatedByUsername,
                 row.Remark,
                 row.CreatedOn));
+    }
+
+    public IAsyncEnumerable<BrandAdjustSummary> QueryPlayerAdjustSummariesAsync(
+        AdjustRecordQueryCondition condition,
+        CancellationToken cancellationToken = default)
+    {
+        var query = from record in _dbContext.AdjustPlayerRecords.AsQueryable()
+                    where record.CreatedOn >= condition.CreatedOnRange.From
+                        && record.CreatedOn < condition.CreatedOnRange.To
+                    select record;
+
+        if (!string.IsNullOrEmpty(condition.UserId))
+            query = query.Where(record => record.PlayerCode == condition.UserId);
+
+        if (!string.IsNullOrEmpty(condition.Operator))
+            query = query.Where(record => record.CreatedByUsername == condition.Operator);
+
+        if (condition.SearchTypes is not null && condition.SearchTypes.Any())
+        {
+            var searchTypes = condition.SearchTypes.Select(type => (short)type).ToArray();
+
+            query = query.Where(record => searchTypes.Contains(record.Type));
+        }
+
+        return query
+            .GroupBy(record => new { record.BrandId, record.Type })
+            .OrderBy(g => g.Key.BrandId)
+            .Select(g => new
+            {
+                g.Key.BrandId,
+                g.Key.Type,
+                Count = g.Count()
+            })
+            .ToAsyncEnumerable()
+            .PivotAsync(
+                g => g.BrandId,
+                (brandId, records) =>
+                {
+                    var dict = new Dictionary<AdjustType, int>(5)
+                    {
+                        [AdjustType.CompanyAdjust] = 0,
+                        [AdjustType.AgentAdjust] = 0,
+                        [AdjustType.SystemAdjust] = 0,
+                        [AdjustType.TransferAdjust] = 0,
+                        [AdjustType.BonusAdjust] = 0
+                    };
+
+                    foreach (var rec in records)
+                    {
+                        var adjustType = (AdjustType)rec.Type;
+
+                        dict[adjustType] = rec.Count;
+                    }
+
+                    return new BrandAdjustSummary(
+                        brandId,
+                        dict[AdjustType.CompanyAdjust],
+                        dict[AdjustType.AgentAdjust],
+                        dict[AdjustType.SystemAdjust],
+                        dict[AdjustType.TransferAdjust],
+                        dict[AdjustType.BonusAdjust]);
+                });
+    }
+}
+
+file static class AsyncEnumerableExtensions
+{
+    public static async IAsyncEnumerable<TRow> PivotAsync<TSource, TKey, TRow>(
+        this IAsyncEnumerable<TSource> source,
+        Func<TSource, TKey> keySelector,
+        Func<TKey, IEnumerable<TSource>, TRow> transform)
+    {
+        var currentKey = default(TKey);
+        var collection = new List<TSource>();
+
+        await foreach (var item in source)
+        {
+            var itemKey = keySelector(item);
+
+            if (EqualityComparer<TKey>.Default.Equals(currentKey, default))
+                currentKey = itemKey;
+
+            if (!EqualityComparer<TKey>.Default.Equals(currentKey, itemKey))
+            {
+                yield return transform(currentKey!, collection);
+
+                currentKey = itemKey;
+            }
+
+            collection.Add(item);
+        }
     }
 }
