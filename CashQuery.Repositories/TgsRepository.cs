@@ -67,4 +67,62 @@ public class TgsRepository : ITgsRepository
                 row.Remark,
                 row.CreatedOn));
     }
+
+    public IAsyncEnumerable<AdjustRecord> QueryAgentAdjustRecordsAsync(
+        AdjustRecordQueryCondition condition,
+        int take,
+        int skip = 0,
+        CancellationToken ctancellationToken = default)
+    {
+        var query = from record in _dbContext.AdjustAgentRecords.AsQueryable()
+                    where record.BrandId == condition.BrandId
+                        && record.CreatedOn >= condition.CreatedOnRange.From
+                        && record.CreatedOn < condition.CreatedOnRange.To
+                    select record;
+
+        if (!string.IsNullOrEmpty(condition.UserId))
+        {
+            var agentId = Guid.Parse(condition.UserId);
+
+            query = query.Where(record => record.AgentId == agentId);
+        }
+
+        if (!string.IsNullOrEmpty(condition.Operator))
+            query = query.Where(record => record.CreatedByUsername == condition.Operator);
+
+        if (condition.SearchTypes is not null && condition.SearchTypes.Any())
+        {
+            var searchTypes = condition.SearchTypes.Select(type => (short)type).ToArray();
+
+            query = query.Where(record => searchTypes.Contains(record.Type));
+        }
+
+        return query
+            .OrderByDescending(record => record.CreatedOn)
+            .Select(record => new
+            {
+                record.Id,
+                record.BrandId,
+                record.AgentId,
+                record.Type,
+                record.Amount,
+                record.CreatedByUsername,
+                record.CreatedOn,
+                record.Remark
+            })
+            .Skip(skip)
+            .Take(take)
+            .ToAsyncEnumerable()
+            .Select(row => new AdjustRecord(
+                row.Id,
+                row.BrandId,
+                row.AgentId.ToString(),
+                UserType.Player,
+                (AdjustType)row.Type,
+                row.Amount,
+                0M,
+                row.CreatedByUsername,
+                row.Remark,
+                row.CreatedOn));
+    }
 }

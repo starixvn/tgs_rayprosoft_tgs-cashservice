@@ -39,4 +39,37 @@ public class AdjustQueryController : ControllerBase
                 Remark = record.Remark
             });
     }
+
+    [HttpGet("agent/{brandId}", Name = "QueryAgentAdjustRecords")]
+    public IAsyncEnumerable<AdjustRecordListItemViewModel> QueryAgentAdjustRecordsAsync(
+        [FromServices] IQueryService<AdjustAgentWalletRecordQuery, AdjustRecord> queryService,
+        Guid brandId,
+        [FromQuery] AdjustRecordQueryViewModel viewModel,
+        [FromQuery] PagingViewModel pagingViewModel)
+    {
+        var query = new AdjustAgentWalletRecordQuery(
+            brandId,
+            (viewModel.From, viewModel.To),
+            viewModel.AdjustTypes,
+            string.IsNullOrWhiteSpace(viewModel.UserId)
+                ? null
+                : Guid.Parse(viewModel.UserId),
+            viewModel.Operator,
+            pagingViewModel.Take,
+            pagingViewModel.Skip);
+
+        return queryService.QueryAsync(query, HttpContext.RequestAborted)
+            .Select(record => new AdjustRecordListItemViewModel
+            {
+                Id = record.Id,
+                AdjustType = record.AdjustType,
+                UserId = record.UserId,
+                Amount = record.Amount,
+                BrandId = record.BrandId,
+                BucketAmount = record.BucketAmount,
+                CreatedOn = record.CreatedOn,
+                Operator = record.Operator,
+                Remark = record.Remark
+            });
+    }
 }

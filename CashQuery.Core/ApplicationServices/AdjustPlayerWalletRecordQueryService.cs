@@ -17,7 +17,7 @@ internal class AdjustPlayerWalletRecordQueryService : IQueryService<AdjustPlayer
                 query.BrandId,
                 query.CreatedOnRange,
                 query.SearchTypes,
-                query.UserId,
+                query.PlayerCode,
                 query.Operator),
             query.Take,
             query.Skip,

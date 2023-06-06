@@ -6,7 +6,7 @@ public record AdjustPlayerWalletRecordQuery(
     Guid BrandId,
     ValueRange<DateTime> CreatedOnRange,
     IEnumerable<AdjustType>? SearchTypes,
-    string? UserId,
+    string? PlayerCode,
     string? Operator,
     int Take,
     int Skip = 0);

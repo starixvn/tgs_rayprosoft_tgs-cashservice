@@ -35,7 +35,7 @@ public class AdjustPlayerWalletRecordQueryServiceTests
                     query.BrandId,
                     query.CreatedOnRange,
                     query.SearchTypes,
-                    query.UserId,
+                    query.PlayerCode,
                     query.Operator)),
                 Arg.Is(query.Take),
                 Arg.Is(query.Skip));
