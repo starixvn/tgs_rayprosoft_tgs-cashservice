@@ -5,6 +5,4 @@ public record AdjustPlayerSummaryQuery(
     ValueRange<DateTime> CreatedOnRange,
     IEnumerable<AdjustType>? SearchTypes,
     string? PlayerCode,
-    string? Operator,
-    int Take,
-    int Skip = 0);
+    string? Operator);

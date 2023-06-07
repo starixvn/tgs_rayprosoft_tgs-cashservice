@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tgs.CashQuery.Client;
 using Tgs.CashQuery.Repositories.Entities;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Tgs.CashQueryService.IntegrationTests;
@@ -77,7 +76,6 @@ public class AdjustQueryTests
                 AdjustmentType = 1
             }
         };
-
 
         await dbContext.AdjustPlayerRecords.AddRangeAsync(playerRecords);
 
@@ -161,7 +159,6 @@ public class AdjustQueryTests
             }
         };
 
-
         await dbContext.AdjustAgentRecords.AddRangeAsync(agentRecords);
 
         _ = await dbContext.SaveChangesAsync();
@@ -184,5 +181,95 @@ public class AdjustQueryTests
         // Assert
         _ = Assert.Single(actual);
         Assert.Equal(expected, actual[0]);
+    }
+
+    [Fact]
+    public async Task 查詢玩家調帳總覽()
+    {
+        // Arrange
+        await using var web = CashQueryTestHost.Factory
+            .WithWebHostBuilder(hostBuilder => hostBuilder
+                .ConfigureLogging(logging => logging.AddXUnit(_testOutputHelper)));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashQueryClient(httpClient);
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        var brandId = Guid.NewGuid();
+        var brandId2 = Guid.NewGuid();
+        var condition = new CashQuery.Client.AdjustRecordQueryCondition(
+            (From: DateTime.Now.AddDays(-1D), To: DateTime.Now.AddHours(1D)),
+            null,
+            null,
+            null);
+
+        var playerRecords = new[]
+        {
+            new AdjustPlayerRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId,
+                Type = (short)AdjustType.CompanyAdjust,
+                PlayerCode = "test1",
+                Amount = 10M,
+                BucketAmount = 10M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.ToUniversalTime(),
+                AdjustmentType = 1
+            },
+            new AdjustPlayerRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId,
+                Type = (short)AdjustType.AgentAdjust,
+                PlayerCode = "test2",
+                Amount = 20M,
+                BucketAmount = 20M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.AddSeconds(1D).ToUniversalTime(),
+                AdjustmentType = 1
+            },
+            new AdjustPlayerRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId2,
+                Type = (short)AdjustType.CompanyAdjust,
+                PlayerCode = "test1",
+                Amount = 30M,
+                BucketAmount = 30M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.AddSeconds(2D).ToUniversalTime(),
+                AdjustmentType = 1
+            }
+        };
+
+        await dbContext.AdjustPlayerRecords.AddRangeAsync(playerRecords);
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var expected = new[]{
+            new AdjustSummaryListItem(
+                brandId,
+                1,
+                1,
+                0,
+                0,
+                0),
+            new AdjustSummaryListItem(
+                brandId2,
+                1,
+                0,
+                0,
+                0,
+                0)
+        };
+
+        // Act
+        var actual = await sut.QueryPlayerAdjustSummariesAsync(condition).ToArrayAsync();
+
+        // Assert
+        Assert.Equivalent(expected, actual);
     }
 }

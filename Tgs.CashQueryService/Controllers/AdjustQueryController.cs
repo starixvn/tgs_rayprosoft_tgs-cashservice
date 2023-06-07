@@ -72,4 +72,27 @@ public class AdjustQueryController : ControllerBase
                 Remark = record.Remark
             });
     }
+
+    [HttpGet("summary/player", Name = "QueryPlayerAdjustSummaries")]
+    public IAsyncEnumerable<AdjustSummaryListItemViewModel> QueryPlayerAdjustSummariesAsync(
+        [FromServices] IQueryService<AdjustPlayerSummaryQuery, BrandAdjustSummary> queryService,
+        [FromQuery] AdjustRecordQueryViewModel viewModel)
+    {
+        var query = new AdjustPlayerSummaryQuery(
+            (viewModel.From, viewModel.To),
+            viewModel.AdjustTypes,
+            viewModel.UserId,
+            viewModel.Operator);
+
+        return queryService.QueryAsync(query, HttpContext.RequestAborted)
+            .Select(summary => new AdjustSummaryListItemViewModel
+            {
+                BrandId = summary.BrandId,
+                Agent = summary.Agent,
+                Company = summary.Company,
+                System = summary.System,
+                Transfer = summary.Transfer,
+                Bonus = summary.Bonus
+            });
+    }
 }

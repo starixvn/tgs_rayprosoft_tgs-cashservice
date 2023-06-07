@@ -200,7 +200,7 @@ file static class AsyncEnumerableExtensions
         Func<TKey, IEnumerable<TSource>, TRow> transform)
     {
         var currentKey = default(TKey);
-        var collection = new List<TSource>();
+        var collection = new List<TSource>(5);
 
         await foreach (var item in source)
         {
@@ -213,10 +213,15 @@ file static class AsyncEnumerableExtensions
             {
                 yield return transform(currentKey!, collection);
 
+                collection = new List<TSource>(5);
                 currentKey = itemKey;
             }
 
             collection.Add(item);
         }
+
+        if (collection.Count > 0
+            && !EqualityComparer<TKey>.Default.Equals(currentKey, default))
+            yield return transform(currentKey!, collection);
     }
 }

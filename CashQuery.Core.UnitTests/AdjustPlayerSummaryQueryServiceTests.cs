@@ -20,9 +20,7 @@ public class AdjustPlayerSummaryQueryServiceTests
             (From: currentDate.AddDays(-1D), To: currentDate),
             null,
             null,
-            null,
-            10,
-            0);
+            null);
 
         // Act
         _ = await sut.QueryAsync(query).ToArrayAsync();
