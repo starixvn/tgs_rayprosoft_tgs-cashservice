@@ -120,8 +120,8 @@ public class TgsRepository : ITgsRepository
                 row.Id,
                 row.BrandId,
                 row.AgentId.ToString(),
-                UserType.Player,
-                (AdjustType)row.Type,
+                UserType.Agent,
+                AdjustType.AgentOther,
                 row.Amount,
                 0M,
                 row.CreatedByUsername,
@@ -187,8 +187,52 @@ public class TgsRepository : ITgsRepository
                         dict[AdjustType.AgentAdjust],
                         dict[AdjustType.SystemAdjust],
                         dict[AdjustType.TransferAdjust],
-                        dict[AdjustType.BonusAdjust]);
+                        dict[AdjustType.BonusAdjust],
+                        0);
                 });
+    }
+
+    public IAsyncEnumerable<BrandAdjustSummary> QueryAgentAdjustSummariesAsync(AdjustRecordQueryCondition condition, CancellationToken cancellationToken = default)
+    {
+        var query = from record in _dbContext.AdjustAgentRecords.AsQueryable()
+                    where record.CreatedOn >= condition.CreatedOnRange.From
+                        && record.CreatedOn < condition.CreatedOnRange.To
+                    select record;
+
+        if (!string.IsNullOrEmpty(condition.UserId))
+        {
+            var agentId = Guid.Parse(condition.UserId);
+
+            query = query.Where(record => record.AgentId == agentId);
+        }
+
+        if (!string.IsNullOrEmpty(condition.Operator))
+            query = query.Where(record => record.CreatedByUsername == condition.Operator);
+
+        if (condition.SearchTypes is not null && condition.SearchTypes.Any())
+        {
+            var searchTypes = condition.SearchTypes.Select(type => (short)type).ToArray();
+
+            query = query.Where(record => searchTypes.Contains(record.Type));
+        }
+
+        return query
+            .GroupBy(record => new { record.BrandId, record.Type })
+            .OrderBy(g => g.Key.BrandId)
+            .Select(g => new
+            {
+                g.Key.BrandId,
+                Count = g.Count()
+            })
+            .ToAsyncEnumerable()
+            .Select(row => new BrandAdjustSummary(
+                row.BrandId,
+                0,
+                0,
+                0,
+                0,
+                0,
+                row.Count));
     }
 }
 
@@ -200,7 +244,7 @@ file static class AsyncEnumerableExtensions
         Func<TKey, IEnumerable<TSource>, TRow> transform)
     {
         var currentKey = default(TKey);
-        var collection = new List<TSource>(5);
+        var collection = new List<TSource>(6);
 
         await foreach (var item in source)
         {
@@ -213,7 +257,7 @@ file static class AsyncEnumerableExtensions
             {
                 yield return transform(currentKey!, collection);
 
-                collection = new List<TSource>(5);
+                collection = new List<TSource>(6);
                 currentKey = itemKey;
             }
 

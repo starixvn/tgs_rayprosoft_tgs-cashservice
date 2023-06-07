@@ -137,4 +137,38 @@ internal class CashQueryClient
                 .Where(arr => arr is not null)
                 .SelectMany(arr => arr!));
     }
+
+    public IAsyncEnumerable<AdjustSummaryListItem> QueryAgentAdjustSummariesAsync(
+        AdjustRecordQueryCondition condition,
+        CancellationToken cancellationToken = default)
+    {
+        var queryStrings = new List<KeyValuePair<string, string>> {
+            new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
+            new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
+        };
+
+        if (condition.SearchTypes is not null && condition.SearchTypes.Any())
+            foreach (var type in condition.SearchTypes)
+                queryStrings.Add(new KeyValuePair<string, string>("type", type.ToString()));
+
+        if (!string.IsNullOrEmpty(condition.UserId))
+            queryStrings.Add(new KeyValuePair<string, string>("userId", condition.UserId));
+
+        if (!string.IsNullOrEmpty(condition.Operator))
+            queryStrings.Add(new KeyValuePair<string, string>("operator", condition.Operator));
+
+        return _httpClient.GetAsync(
+            $"/adjust/summary/agent?{string.Join(
+                "&",
+                queryStrings.Select(
+                    kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"))}",
+            cancellationToken)
+            .ToAsyncEnumerable()
+            .Do(response => response.EnsureSuccessStatusCode())
+            .SelectMany(response => response.Content
+                .ReadFromJsonAsync<IAsyncEnumerable<AdjustSummaryListItem>>(_SerializerOptions, cancellationToken)
+                .ToAsyncEnumerable()
+                .Where(arr => arr is not null)
+                .SelectMany(arr => arr!));
+    }
 }

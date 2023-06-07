@@ -95,4 +95,30 @@ public class AdjustQueryController : ControllerBase
                 Bonus = summary.Bonus
             });
     }
+
+    [HttpGet("summary/agent", Name = "QueryAgentAdjustSummaries")]
+    public IAsyncEnumerable<AdjustSummaryListItemViewModel> QueryAgentAdjustSummariesAsync(
+        [FromServices] IQueryService<AdjustAgentSummaryQuery, BrandAdjustSummary> queryService,
+        [FromQuery] AdjustRecordQueryViewModel viewModel)
+    {
+        var query = new AdjustAgentSummaryQuery(
+            (viewModel.From, viewModel.To),
+            viewModel.AdjustTypes,
+            string.IsNullOrWhiteSpace(viewModel.UserId)
+                ? null
+                : Guid.Parse(viewModel.UserId),
+            viewModel.Operator);
+
+        return queryService.QueryAsync(query, HttpContext.RequestAborted)
+            .Select(summary => new AdjustSummaryListItemViewModel
+            {
+                BrandId = summary.BrandId,
+                Agent = summary.Agent,
+                Company = summary.Company,
+                System = summary.System,
+                Transfer = summary.Transfer,
+                Bonus = summary.Bonus,
+                AgentOther = summary.AgentOther
+            });
+    }
 }

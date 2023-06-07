@@ -13,4 +13,6 @@ public class AdjustSummaryListItemViewModel
     public int Transfer { get; set; }
 
     public int Bonus { get; set; }
+
+    public int AgentOther { get; set; }
 }

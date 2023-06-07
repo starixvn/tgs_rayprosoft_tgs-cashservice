@@ -19,4 +19,8 @@ public interface ITgsRepository
     IAsyncEnumerable<BrandAdjustSummary> QueryPlayerAdjustSummariesAsync(
         AdjustRecordQueryCondition condition,
         CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<BrandAdjustSummary> QueryAgentAdjustSummariesAsync(
+        AdjustRecordQueryCondition condition,
+        CancellationToken cancellationToken = default);
 }

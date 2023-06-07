@@ -128,7 +128,6 @@ public class AdjustQueryTests
             {
                 Id = Guid.NewGuid(),
                 BrandId = brandId,
-                Type = (short)AdjustType.CompanyAdjust,
                 AgentId = Guid.NewGuid(),
                 Amount = 10M,
                 CreatedByUsername = "system",
@@ -139,7 +138,6 @@ public class AdjustQueryTests
             {
                 Id = Guid.NewGuid(),
                 BrandId = brandId,
-                Type = (short)AdjustType.CompanyAdjust,
                 AgentId = Guid.NewGuid(),
                 Amount = 20M,
                 CreatedByUsername = "system",
@@ -150,7 +148,6 @@ public class AdjustQueryTests
             {
                 Id = Guid.NewGuid(),
                 BrandId = brandId,
-                Type = (short)AdjustType.CompanyAdjust,
                 AgentId = Guid.NewGuid(),
                 Amount = 30M,
                 CreatedByUsername = "system",
@@ -167,7 +164,7 @@ public class AdjustQueryTests
             agentRecords[2].Id,
             agentRecords[2].BrandId,
             agentRecords[2].AgentId.ToString(),
-            (AdjustType)agentRecords[2].Type,
+            AdjustType.AgentOther,
             agentRecords[2].Amount,
             0M,
             agentRecords[2].CreatedByUsername,
@@ -256,10 +253,12 @@ public class AdjustQueryTests
                 1,
                 0,
                 0,
+                0,
                 0),
             new AdjustSummaryListItem(
                 brandId2,
                 1,
+                0,
                 0,
                 0,
                 0,
@@ -268,6 +267,92 @@ public class AdjustQueryTests
 
         // Act
         var actual = await sut.QueryPlayerAdjustSummariesAsync(condition).ToArrayAsync();
+
+        // Assert
+        Assert.Equivalent(expected, actual);
+    }
+
+    [Fact]
+    public async Task 查詢代理調帳總覽()
+    {
+        // Arrange
+        await using var web = CashQueryTestHost.Factory
+            .WithWebHostBuilder(hostBuilder => hostBuilder
+                .ConfigureLogging(logging => logging.AddXUnit(_testOutputHelper)));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashQueryClient(httpClient);
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        var brandId = Guid.NewGuid();
+        var brandId2 = Guid.NewGuid();
+        var condition = new CashQuery.Client.AdjustRecordQueryCondition(
+            (From: DateTime.Now.AddDays(-1D), To: DateTime.Now.AddHours(1D)),
+            null,
+            null,
+            null);
+
+        var agentRecords = new[]
+        {
+            new AdjustAgentRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId,
+                AgentId = Guid.NewGuid(),
+                Amount = 10M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.ToUniversalTime(),
+                AdjustmentType = 1
+            },
+            new AdjustAgentRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId,
+                AgentId = Guid.NewGuid(),
+                Amount = 20M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.AddSeconds(1D).ToUniversalTime(),
+                AdjustmentType = 1
+            },
+            new AdjustAgentRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId2,
+                AgentId = Guid.NewGuid(),
+                Amount = 30M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.AddSeconds(2D).ToUniversalTime(),
+                AdjustmentType = 1
+            }
+        };
+
+        await dbContext.AdjustAgentRecords.AddRangeAsync(agentRecords);
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var expected = new[]{
+            new AdjustSummaryListItem(
+                brandId,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2),
+            new AdjustSummaryListItem(
+                brandId2,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1)
+        };
+
+        // Act
+        var actual = await sut.QueryAgentAdjustSummariesAsync(condition).ToArrayAsync();
 
         // Assert
         Assert.Equivalent(expected, actual);

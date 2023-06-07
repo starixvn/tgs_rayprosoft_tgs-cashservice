@@ -5,4 +5,5 @@ public record BrandAdjustSummary(
     int Agent,
     int System,
     int Transfer,
-    int Bonus);
+    int Bonus,
+    int AgentOther);

@@ -7,5 +7,6 @@ public enum AdjustType : short
     AgentAdjust = 5100,
     SystemAdjust = 5200,
     TransferAdjust = 5300,
-    BonusAdjust = 5400
+    BonusAdjust = 5400,
+    AgentOther = 8000
 }
