@@ -53,6 +53,8 @@ builder.Services
                 Version = "v1"
             });
 
+        swaggerGenOptions.ApplyWebApiToolkitSupport();
+
         var xmlFileNames = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
         foreach (var xmlFileName in xmlFileNames)
             swaggerGenOptions.IncludeXmlComments(xmlFileName);

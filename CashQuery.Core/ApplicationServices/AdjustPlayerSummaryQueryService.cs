@@ -2,7 +2,9 @@
 
 namespace Tgs.CashQueryService.ApplicationServices;
 
-internal class AdjustPlayerSummaryQueryService : IQueryService<AdjustPlayerSummaryQuery, BrandAdjustSummary>
+internal class AdjustPlayerSummaryQueryService
+    : IQueryService<AdjustPlayerSummaryQuery, BrandAdjustSummary>,
+    IGetService<AdjustPlayerSummaryQuery, int>
 {
     private readonly ITgsRepository _tgsRepository;
 
@@ -13,6 +15,15 @@ internal class AdjustPlayerSummaryQueryService : IQueryService<AdjustPlayerSumma
 
     public IAsyncEnumerable<BrandAdjustSummary> QueryAsync(AdjustPlayerSummaryQuery query, CancellationToken cancellationToken = default)
         => _tgsRepository.QueryPlayerAdjustSummariesAsync(
+            new AdjustRecordQueryCondition(
+                query.CreatedOnRange,
+                query.SearchTypes,
+                query.PlayerCode,
+                query.Operator),
+            cancellationToken);
+
+    public ValueTask<int> GetAsync(AdjustPlayerSummaryQuery query, CancellationToken cancellationToken = default)
+        => _tgsRepository.CountQueryPlayerAdjustSummariesAsync(
             new AdjustRecordQueryCondition(
                 query.CreatedOnRange,
                 query.SearchTypes,

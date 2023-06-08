@@ -32,8 +32,7 @@ internal class CashQueryClient
     {
         var queryStrings = new List<KeyValuePair<string, string>> {
             new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
-            new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O")),
-            new KeyValuePair<string, string>("skip", skip.ToString())
+            new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
         };
 
         if (condition.SearchTypes is not null && condition.SearchTypes.Any())
@@ -46,19 +45,33 @@ internal class CashQueryClient
         if (!string.IsNullOrEmpty(condition.Operator))
             queryStrings.Add(new KeyValuePair<string, string>("operator", condition.Operator));
 
-        return _httpClient.GetAsync(
-            $"/adjust/player/{brandId}?{string.Join(
-                "&",
-                queryStrings.Select(
-                    kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"))}",
-            cancellationToken)
+        var requestPath = $"/adjust/player/{brandId}?{string.Join(
+            "&",
+            queryStrings.Select(
+                kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"))}";
+        var countRequest = new HttpRequestMessage(HttpMethod.Head, $"{requestPath}&skip={skip}");
+
+        /*
+         * 後端 api 最多回傳 1000 筆資料，先查詢總筆數，
+         * 利用延遲特性在讀取該分頁時再查詢資料
+         */
+        return _httpClient.SendAsync(countRequest, cancellationToken)
             .ToAsyncEnumerable()
             .Do(response => response.EnsureSuccessStatusCode())
-            .SelectMany(response => response.Content
-                .ReadFromJsonAsync<IAsyncEnumerable<AdjustRecordListItem>>(_SerializerOptions, cancellationToken)
+            .SelectMany(response => response.Headers
+                .GetValues("Tgs-Return")
                 .ToAsyncEnumerable()
-                .Where(arr => arr is not null)
-                .SelectMany(arr => arr!))
+                .Take(1))
+            .Select(int.Parse)
+            .SelectMany(count => AsyncEnumerable.Range(0, (int)Math.Ceiling(count / 1000D))
+                .SelectMany(idx => _httpClient.GetAsync($"{requestPath}&skip={skip + idx * 1000}")
+                    .ToAsyncEnumerable()
+                    .Do(response => response.EnsureSuccessStatusCode())
+                    .SelectMany(response => response.Content
+                        .ReadFromJsonAsync<IAsyncEnumerable<AdjustRecordListItem>>(_SerializerOptions, cancellationToken)
+                        .ToAsyncEnumerable()
+                        .Where(arr => arr is not null)
+                        .SelectMany(arr => arr!))))
             .Select(record => record with { UserType = UserType.Player });
     }
 
@@ -71,7 +84,6 @@ internal class CashQueryClient
         var queryStrings = new List<KeyValuePair<string, string>> {
             new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
             new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O")),
-            new KeyValuePair<string, string>("skip", skip.ToString()),
         };
 
         if (condition.SearchTypes is not null && condition.SearchTypes.Any())
@@ -84,19 +96,29 @@ internal class CashQueryClient
         if (!string.IsNullOrEmpty(condition.Operator))
             queryStrings.Add(new KeyValuePair<string, string>("operator", condition.Operator));
 
-        return _httpClient.GetAsync(
-            $"/adjust/agent/{brandId}?{string.Join(
-                "&",
-                queryStrings.Select(
-                    kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"))}",
-            cancellationToken)
+        var requestPath = $"/adjust/agent/{brandId}?{string.Join(
+            "&",
+            queryStrings.Select(
+                kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"))}";
+        var countRequest = new HttpRequestMessage(HttpMethod.Head, $"{requestPath}&skip={skip}");
+
+        return _httpClient.SendAsync(countRequest, cancellationToken)
             .ToAsyncEnumerable()
             .Do(response => response.EnsureSuccessStatusCode())
-            .SelectMany(response => response.Content
-                .ReadFromJsonAsync<IAsyncEnumerable<AdjustRecordListItem>>(_SerializerOptions, cancellationToken)
+            .SelectMany(response => response.Headers
+                .GetValues("Tgs-Return")
                 .ToAsyncEnumerable()
-                .Where(arr => arr is not null)
-                .SelectMany(arr => arr!))
+                .Take(1))
+            .Select(int.Parse)
+            .SelectMany(count => AsyncEnumerable.Range(0, count)
+                .SelectMany(idx => _httpClient.GetAsync($"{requestPath}&skip={skip + idx * 1000}")
+                    .ToAsyncEnumerable()
+                    .Do(response => response.EnsureSuccessStatusCode())
+                    .SelectMany(response => response.Content
+                        .ReadFromJsonAsync<IAsyncEnumerable<AdjustRecordListItem>>(_SerializerOptions, cancellationToken)
+                        .ToAsyncEnumerable()
+                        .Where(arr => arr is not null)
+                        .SelectMany(arr => arr!))))
             .Select(record => record with { UserType = UserType.Agent });
     }
 

@@ -2,7 +2,9 @@
 
 namespace Tgs.CashQueryService.ApplicationServices;
 
-internal class AdjustAgentSummaryQueryService : IQueryService<AdjustAgentSummaryQuery, BrandAdjustSummary>
+internal class AdjustAgentSummaryQueryService
+    : IQueryService<AdjustAgentSummaryQuery, BrandAdjustSummary>,
+    IGetService<AdjustAgentSummaryQuery, int>
 {
     private readonly ITgsRepository _tgsRepository;
 
@@ -13,6 +15,15 @@ internal class AdjustAgentSummaryQueryService : IQueryService<AdjustAgentSummary
 
     public IAsyncEnumerable<BrandAdjustSummary> QueryAsync(AdjustAgentSummaryQuery query, CancellationToken cancellationToken = default)
         => _tgsRepository.QueryAgentAdjustSummariesAsync(
+            new AdjustRecordQueryCondition(
+                query.CreatedOnRange,
+                query.SearchTypes,
+                query.AgentId?.ToString(),
+                query.Operator),
+            cancellationToken);
+
+    public ValueTask<int> GetAsync(AdjustAgentSummaryQuery query, CancellationToken cancellationToken = default)
+        => _tgsRepository.CountQueryAgentAdjustSummariesAsync(
             new AdjustRecordQueryCondition(
                 query.CreatedOnRange,
                 query.SearchTypes,

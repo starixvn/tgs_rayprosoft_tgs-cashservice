@@ -34,4 +34,33 @@ public class AdjustPlayerSummaryQueryServiceTests
                     query.PlayerCode,
                     query.Operator)));
     }
+
+    [Fact]
+    public async Task 計算玩家調帳統計筆數()
+    {
+        // Arrange
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
+
+        var sut = new AdjustPlayerSummaryQueryService(fakeTgsRepository);
+
+        var currentDate = DateTime.Now;
+
+        var query = new AdjustPlayerSummaryQuery(
+            (From: currentDate.AddDays(-1D), To: currentDate),
+            null,
+            null,
+            null);
+
+        // Act
+        _ = await sut.GetAsync(query);
+
+        // Assert
+        _ = fakeTgsRepository.Received(1)
+            .CountQueryPlayerAdjustSummariesAsync(
+                Arg.Is(new AdjustRecordQueryCondition(
+                    query.CreatedOnRange,
+                    query.SearchTypes,
+                    query.PlayerCode,
+                    query.Operator)));
+    }
 }

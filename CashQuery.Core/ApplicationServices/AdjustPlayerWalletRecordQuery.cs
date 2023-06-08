@@ -1,5 +1,4 @@
-﻿
-using Tgs.Cash.Common;
+﻿using Tgs.Cash.Common;
 
 namespace Tgs.CashQueryService.ApplicationServices;
 public record AdjustPlayerWalletRecordQuery(

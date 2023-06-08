@@ -82,7 +82,7 @@ public class TgsRepository : ITgsRepository
                 record.Remark
             })
             .Skip(skip)
-            .Take(1)
+            .Take(1000)
             .ToAsyncEnumerable()
             .Select(row => new AdjustRecord(
                 row.Id,

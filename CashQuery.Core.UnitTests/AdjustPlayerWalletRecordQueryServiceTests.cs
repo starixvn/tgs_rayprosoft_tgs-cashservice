@@ -1,6 +1,7 @@
 ﻿using NSubstitute;
 using Tgs.CashQueryService;
 using Tgs.CashQueryService.ApplicationServices;
+using Xunit;
 
 namespace CashQuery.Core.UnitTests;
 
@@ -37,5 +38,37 @@ public class AdjustPlayerWalletRecordQueryServiceTests
                     query.PlayerCode,
                     query.Operator)),
                 Arg.Is(query.Skip));
+    }
+
+    [Fact]
+    public async Task 計算玩家調帳記錄回傳筆數()
+    {
+        // Arrange
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
+
+        var sut = new AdjustPlayerWalletRecordQueryService(fakeTgsRepository);
+
+        var currentDate = DateTime.Now;
+
+        var query = new AdjustPlayerWalletRecordQuery(
+            Guid.NewGuid(),
+            (From: currentDate.AddDays(-1D), To: currentDate),
+            null,
+            null,
+            null,
+            0);
+
+        // Act
+        _ = await sut.GetAsync(query);
+
+        // Assert
+        _ = fakeTgsRepository.Received(1)
+            .CountQueryPlayerAdjustRecordsAsync(
+                Arg.Is(query.BrandId),
+                Arg.Is(new AdjustRecordQueryCondition(
+                    query.CreatedOnRange,
+                    query.SearchTypes,
+                    query.PlayerCode,
+                    query.Operator)));
     }
 }
