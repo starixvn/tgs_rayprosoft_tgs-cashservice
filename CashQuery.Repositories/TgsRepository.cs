@@ -20,24 +20,7 @@ public class TgsRepository : ITgsRepository
         int skip = 0,
         CancellationToken cancellationToken = default)
     {
-        var query = from record in _dbContext.AdjustPlayerRecords.AsQueryable()
-                    where record.BrandId == brandId
-                        && record.CreatedOn >= condition.CreatedOnRange.From
-                        && record.CreatedOn < condition.CreatedOnRange.To
-                    select record;
-
-        if (!string.IsNullOrEmpty(condition.UserId))
-            query = query.Where(record => record.PlayerCode == condition.UserId);
-
-        if (!string.IsNullOrEmpty(condition.Operator))
-            query = query.Where(record => record.CreatedByUsername == condition.Operator);
-
-        if (condition.SearchTypes is not null && condition.SearchTypes.Any())
-        {
-            var searchTypes = condition.SearchTypes.Select(type => (short)type).ToArray();
-
-            query = query.Where(record => searchTypes.Contains(record.Type));
-        }
+        var query = BuildPlayerAdjustRecordsQuery(brandId, condition);
 
         return query
             .OrderByDescending(record => record.CreatedOn)
@@ -69,34 +52,21 @@ public class TgsRepository : ITgsRepository
                 row.CreatedOn));
     }
 
+    public async ValueTask<int> CountQueryPlayerAdjustRecordsAsync(
+        Guid brandId,
+        AdjustRecordQueryCondition condition,
+        CancellationToken cancellationToken = default)
+        => await BuildPlayerAdjustRecordsQuery(
+            brandId,
+            condition).CountAsync(cancellationToken).ConfigureAwait(false);
+
     public IAsyncEnumerable<AdjustRecord> QueryAgentAdjustRecordsAsync(
         Guid brandId,
         AdjustRecordQueryCondition condition,
         int skip = 0,
         CancellationToken ctancellationToken = default)
     {
-        var query = from record in _dbContext.AdjustAgentRecords.AsQueryable()
-                    where record.BrandId == brandId
-                        && record.CreatedOn >= condition.CreatedOnRange.From
-                        && record.CreatedOn < condition.CreatedOnRange.To
-                    select record;
-
-        if (!string.IsNullOrEmpty(condition.UserId))
-        {
-            var agentId = Guid.Parse(condition.UserId);
-
-            query = query.Where(record => record.AgentId == agentId);
-        }
-
-        if (!string.IsNullOrEmpty(condition.Operator))
-            query = query.Where(record => record.CreatedByUsername == condition.Operator);
-
-        if (condition.SearchTypes is not null && condition.SearchTypes.Any())
-        {
-            var searchTypes = condition.SearchTypes.Select(type => (short)type).ToArray();
-
-            query = query.Where(record => searchTypes.Contains(record.Type));
-        }
+        var query = BuildAgentAdjustRecordsQuery(brandId, condition);
 
         return query
             .OrderByDescending(record => record.CreatedOn)
@@ -112,7 +82,7 @@ public class TgsRepository : ITgsRepository
                 record.Remark
             })
             .Skip(skip)
-            .Take(1000)
+            .Take(1)
             .ToAsyncEnumerable()
             .Select(row => new AdjustRecord(
                 row.Id,
@@ -127,27 +97,19 @@ public class TgsRepository : ITgsRepository
                 row.CreatedOn));
     }
 
-    public IAsyncEnumerable<BrandAdjustSummary> QueryPlayerAdjustSummariesAsync(
+    public async ValueTask<int> CountQueryAgentAdjustRecordsAsync(
+        Guid brandId,
         AdjustRecordQueryCondition condition,
         CancellationToken cancellationToken = default)
+        => await BuildAgentAdjustRecordsQuery(
+            brandId,
+            condition).CountAsync(cancellationToken).ConfigureAwait(false);
+
+    public IAsyncEnumerable<BrandAdjustSummary> QueryPlayerAdjustSummariesAsync(
+            AdjustRecordQueryCondition condition,
+        CancellationToken cancellationToken = default)
     {
-        var query = from record in _dbContext.AdjustPlayerRecords.AsQueryable()
-                    where record.CreatedOn >= condition.CreatedOnRange.From
-                        && record.CreatedOn < condition.CreatedOnRange.To
-                    select record;
-
-        if (!string.IsNullOrEmpty(condition.UserId))
-            query = query.Where(record => record.PlayerCode == condition.UserId);
-
-        if (!string.IsNullOrEmpty(condition.Operator))
-            query = query.Where(record => record.CreatedByUsername == condition.Operator);
-
-        if (condition.SearchTypes is not null && condition.SearchTypes.Any())
-        {
-            var searchTypes = condition.SearchTypes.Select(type => (short)type).ToArray();
-
-            query = query.Where(record => searchTypes.Contains(record.Type));
-        }
+        var query = BuildPlayerAdjustSummariesQuery(condition);
 
         return query
             .GroupBy(record => new { record.BrandId, record.Type })
@@ -190,7 +152,42 @@ public class TgsRepository : ITgsRepository
                 });
     }
 
+    public async ValueTask<int> CountQueryPlayerAdjustSummariesAsync(AdjustRecordQueryCondition condition, CancellationToken cancellation = default)
+        => await BuildPlayerAdjustSummariesQuery(condition)
+            .DistinctBy(record => record.BrandId)
+            .CountAsync(cancellation)
+            .ConfigureAwait(false);
+
     public IAsyncEnumerable<BrandAdjustSummary> QueryAgentAdjustSummariesAsync(AdjustRecordQueryCondition condition, CancellationToken cancellationToken = default)
+    {
+        var query = BuildAgentAdjustSummariesQuery(condition);
+
+        return query
+            .GroupBy(record => new { record.BrandId, record.Type })
+            .OrderBy(g => g.Key.BrandId)
+            .Select(g => new
+            {
+                g.Key.BrandId,
+                Count = g.Count()
+            })
+            .ToAsyncEnumerable()
+            .Select(row => new BrandAdjustSummary(
+                row.BrandId,
+                0,
+                0,
+                0,
+                0,
+                0,
+                row.Count));
+    }
+
+    public async ValueTask<int> CountQueryAgentAdjustSummariesAsync(AdjustRecordQueryCondition condition, CancellationToken cancellation = default)
+        => await BuildAgentAdjustSummariesQuery(condition)
+            .DistinctBy(record => record.BrandId)
+            .CountAsync(cancellation)
+            .ConfigureAwait(false);
+
+    private IQueryable<AdjustAgentRecord> BuildAgentAdjustSummariesQuery(AdjustRecordQueryCondition condition)
     {
         var query = from record in _dbContext.AdjustAgentRecords.AsQueryable()
                     where record.CreatedOn >= condition.CreatedOnRange.From
@@ -214,23 +211,82 @@ public class TgsRepository : ITgsRepository
             query = query.Where(record => searchTypes.Contains(record.Type));
         }
 
-        return query
-            .GroupBy(record => new { record.BrandId, record.Type })
-            .OrderBy(g => g.Key.BrandId)
-            .Select(g => new
-            {
-                g.Key.BrandId,
-                Count = g.Count()
-            })
-            .ToAsyncEnumerable()
-            .Select(row => new BrandAdjustSummary(
-                row.BrandId,
-                0,
-                0,
-                0,
-                0,
-                0,
-                row.Count));
+        return query;
+    }
+
+    private IQueryable<AdjustPlayerRecord> BuildPlayerAdjustSummariesQuery(AdjustRecordQueryCondition condition)
+    {
+        var query = from record in _dbContext.AdjustPlayerRecords.AsQueryable()
+                    where record.CreatedOn >= condition.CreatedOnRange.From
+                        && record.CreatedOn < condition.CreatedOnRange.To
+                    select record;
+
+        if (!string.IsNullOrEmpty(condition.UserId))
+            query = query.Where(record => record.PlayerCode == condition.UserId);
+
+        if (!string.IsNullOrEmpty(condition.Operator))
+            query = query.Where(record => record.CreatedByUsername == condition.Operator);
+
+        if (condition.SearchTypes is not null && condition.SearchTypes.Any())
+        {
+            var searchTypes = condition.SearchTypes.Select(type => (short)type).ToArray();
+
+            query = query.Where(record => searchTypes.Contains(record.Type));
+        }
+
+        return query;
+    }
+
+    private IQueryable<AdjustAgentRecord> BuildAgentAdjustRecordsQuery(Guid brandId, AdjustRecordQueryCondition condition)
+    {
+        var query = from record in _dbContext.AdjustAgentRecords.AsQueryable()
+                    where record.BrandId == brandId
+                        && record.CreatedOn >= condition.CreatedOnRange.From
+                        && record.CreatedOn < condition.CreatedOnRange.To
+                    select record;
+
+        if (!string.IsNullOrEmpty(condition.UserId))
+        {
+            var agentId = Guid.Parse(condition.UserId);
+
+            query = query.Where(record => record.AgentId == agentId);
+        }
+
+        if (!string.IsNullOrEmpty(condition.Operator))
+            query = query.Where(record => record.CreatedByUsername == condition.Operator);
+
+        if (condition.SearchTypes is not null && condition.SearchTypes.Any())
+        {
+            var searchTypes = condition.SearchTypes.Select(type => (short)type).ToArray();
+
+            query = query.Where(record => searchTypes.Contains(record.Type));
+        }
+
+        return query;
+    }
+
+    private IQueryable<AdjustPlayerRecord> BuildPlayerAdjustRecordsQuery(Guid brandId, AdjustRecordQueryCondition condition)
+    {
+        var query = from record in _dbContext.AdjustPlayerRecords.AsQueryable()
+                    where record.BrandId == brandId
+                        && record.CreatedOn >= condition.CreatedOnRange.From
+                        && record.CreatedOn < condition.CreatedOnRange.To
+                    select record;
+
+        if (!string.IsNullOrEmpty(condition.UserId))
+            query = query.Where(record => record.PlayerCode == condition.UserId);
+
+        if (!string.IsNullOrEmpty(condition.Operator))
+            query = query.Where(record => record.CreatedByUsername == condition.Operator);
+
+        if (condition.SearchTypes is not null && condition.SearchTypes.Any())
+        {
+            var searchTypes = condition.SearchTypes.Select(type => (short)type).ToArray();
+
+            query = query.Where(record => searchTypes.Contains(record.Type));
+        }
+
+        return query;
     }
 }
 
