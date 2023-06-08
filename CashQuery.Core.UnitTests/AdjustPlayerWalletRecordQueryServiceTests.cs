@@ -22,7 +22,6 @@ public class AdjustPlayerWalletRecordQueryServiceTests
             null,
             null,
             null,
-            10,
             0);
 
         // Act
@@ -37,7 +36,6 @@ public class AdjustPlayerWalletRecordQueryServiceTests
                     query.SearchTypes,
                     query.PlayerCode,
                     query.Operator)),
-                Arg.Is(query.Take),
                 Arg.Is(query.Skip));
     }
 }

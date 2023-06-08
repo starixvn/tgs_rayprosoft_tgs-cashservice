@@ -17,7 +17,6 @@ public class TgsRepository : ITgsRepository
     public IAsyncEnumerable<AdjustRecord> QueryPlayerAdjustRecordsAsync(
         Guid brandId,
         AdjustRecordQueryCondition condition,
-        int take,
         int skip = 0,
         CancellationToken cancellationToken = default)
     {
@@ -55,7 +54,7 @@ public class TgsRepository : ITgsRepository
                 record.Remark
             })
             .Skip(skip)
-            .Take(take)
+            .Take(1000)
             .ToAsyncEnumerable()
             .Select(row => new AdjustRecord(
                 row.Id,
@@ -73,7 +72,6 @@ public class TgsRepository : ITgsRepository
     public IAsyncEnumerable<AdjustRecord> QueryAgentAdjustRecordsAsync(
         Guid brandId,
         AdjustRecordQueryCondition condition,
-        int take,
         int skip = 0,
         CancellationToken ctancellationToken = default)
     {
@@ -114,7 +112,7 @@ public class TgsRepository : ITgsRepository
                 record.Remark
             })
             .Skip(skip)
-            .Take(take)
+            .Take(1000)
             .ToAsyncEnumerable()
             .Select(row => new AdjustRecord(
                 row.Id,

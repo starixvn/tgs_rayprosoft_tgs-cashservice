@@ -19,7 +19,6 @@ internal class AdjustAgentWalletRecordQueryService : IQueryService<AdjustAgentWa
                 query.SearchTypes,
                 query.AgentId?.ToString(),
                 query.Operator),
-            query.Take,
             query.Skip,
             cancellationToken);
 }

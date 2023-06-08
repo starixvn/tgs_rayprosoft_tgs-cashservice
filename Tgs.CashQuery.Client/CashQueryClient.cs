@@ -28,14 +28,12 @@ internal class CashQueryClient
         Guid brandId,
         AdjustRecordQueryCondition condition,
         int skip = 0,
-        int take = 10,
         CancellationToken cancellationToken = default)
     {
         var queryStrings = new List<KeyValuePair<string, string>> {
             new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
             new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O")),
-            new KeyValuePair<string, string>("skip", skip.ToString()),
-            new KeyValuePair<string, string>("take", take.ToString())
+            new KeyValuePair<string, string>("skip", skip.ToString())
         };
 
         if (condition.SearchTypes is not null && condition.SearchTypes.Any())
@@ -68,14 +66,12 @@ internal class CashQueryClient
         Guid brandId,
         AdjustRecordQueryCondition condition,
         int skip = 0,
-        int take = 10,
         CancellationToken cancellationToken = default)
     {
         var queryStrings = new List<KeyValuePair<string, string>> {
             new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
             new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O")),
             new KeyValuePair<string, string>("skip", skip.ToString()),
-            new KeyValuePair<string, string>("take", take.ToString())
         };
 
         if (condition.SearchTypes is not null && condition.SearchTypes.Any())
@@ -101,7 +97,7 @@ internal class CashQueryClient
                 .ToAsyncEnumerable()
                 .Where(arr => arr is not null)
                 .SelectMany(arr => arr!))
-            .Select(record => record with { UserType = UserType.Player });
+            .Select(record => record with { UserType = UserType.Agent });
     }
 
     public IAsyncEnumerable<AdjustSummaryListItem> QueryPlayerAdjustSummariesAsync(

@@ -7,5 +7,4 @@ public record AdjustAgentWalletRecordQuery(
     IEnumerable<AdjustType>? SearchTypes,
     Guid? AgentId,
     string? Operator,
-    int Take,
     int Skip = 0);

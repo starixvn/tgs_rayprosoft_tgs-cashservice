@@ -81,24 +81,47 @@ public class AdjustQueryTests
 
         _ = await dbContext.SaveChangesAsync();
 
-        var expected = new AdjustRecordListItem(
-            playerRecords[2].Id,
-            playerRecords[2].BrandId,
-            playerRecords[2].PlayerCode,
-            (AdjustType)playerRecords[2].Type,
-            playerRecords[2].Amount,
-            playerRecords[2].BucketAmount,
-            playerRecords[2].CreatedByUsername,
-            playerRecords[2].Remark,
-            playerRecords[2].CreatedOn,
-            UserType.Player);
+        var expected = new[]{
+            new AdjustRecordListItem(
+                playerRecords[2].Id,
+                playerRecords[2].BrandId,
+                playerRecords[2].PlayerCode,
+                (AdjustType)playerRecords[2].Type,
+                playerRecords[2].Amount,
+                playerRecords[2].BucketAmount,
+                playerRecords[2].CreatedByUsername,
+                playerRecords[2].Remark,
+                playerRecords[2].CreatedOn,
+                UserType.Player),
+            new AdjustRecordListItem(
+                playerRecords[1].Id,
+                playerRecords[1].BrandId,
+                playerRecords[1].PlayerCode,
+                (AdjustType)playerRecords[1].Type,
+                playerRecords[1].Amount,
+                playerRecords[1].BucketAmount,
+                playerRecords[1].CreatedByUsername,
+                playerRecords[1].Remark,
+                playerRecords[1].CreatedOn,
+                UserType.Player),
+            new AdjustRecordListItem(
+                playerRecords[0].Id,
+                playerRecords[0].BrandId,
+                playerRecords[0].PlayerCode,
+                (AdjustType)playerRecords[0].Type,
+                playerRecords[0].Amount,
+                playerRecords[0].BucketAmount,
+                playerRecords[0].CreatedByUsername,
+                playerRecords[0].Remark,
+                playerRecords[0].CreatedOn,
+                UserType.Player)
+        };
 
         // Act
-        var actual = await sut.QueryPlayerAdjustRecordsAsync(brandId, condition, 0, 1).ToArrayAsync();
+        var actual = await sut.QueryPlayerAdjustRecordsAsync(brandId, condition, 0).ToArrayAsync();
 
         // Assert
-        _ = Assert.Single(actual);
-        Assert.Equal(expected, actual[0]);
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
@@ -160,24 +183,47 @@ public class AdjustQueryTests
 
         _ = await dbContext.SaveChangesAsync();
 
-        var expected = new AdjustRecordListItem(
-            agentRecords[2].Id,
-            agentRecords[2].BrandId,
-            agentRecords[2].AgentId.ToString(),
-            AdjustType.AgentOther,
-            agentRecords[2].Amount,
-            0M,
-            agentRecords[2].CreatedByUsername,
-            agentRecords[2].Remark,
-            agentRecords[2].CreatedOn,
-            UserType.Player);
+        var expected = new[] {
+            new AdjustRecordListItem(
+                agentRecords[2].Id,
+                agentRecords[2].BrandId,
+                agentRecords[2].AgentId.ToString(),
+                AdjustType.AgentOther,
+                agentRecords[2].Amount,
+                0M,
+                agentRecords[2].CreatedByUsername,
+                agentRecords[2].Remark,
+                agentRecords[2].CreatedOn,
+                UserType.Agent),
+            new AdjustRecordListItem(
+                agentRecords[1].Id,
+                agentRecords[1].BrandId,
+                agentRecords[1].AgentId.ToString(),
+                AdjustType.AgentOther,
+                agentRecords[1].Amount,
+                0M,
+                agentRecords[1].CreatedByUsername,
+                agentRecords[1].Remark,
+                agentRecords[1].CreatedOn,
+                UserType.Agent),
+            new AdjustRecordListItem(
+                agentRecords[0].Id,
+                agentRecords[0].BrandId,
+                agentRecords[0].AgentId.ToString(),
+                AdjustType.AgentOther,
+                agentRecords[0].Amount,
+                0M,
+                agentRecords[0].CreatedByUsername,
+                agentRecords[0].Remark,
+                agentRecords[0].CreatedOn,
+                UserType.Agent)
+        };
 
         // Act
-        var actual = await sut.QueryAgentAdjustRecordsAsync(brandId, condition, 0, 1).ToArrayAsync();
+        var actual = await sut.QueryAgentAdjustRecordsAsync(brandId, condition, 0).ToArrayAsync();
 
         // Assert
-        _ = Assert.Single(actual);
-        Assert.Equal(expected, actual[0]);
+        Assert.Equal(expected, actual);
     }
 
     [Fact]

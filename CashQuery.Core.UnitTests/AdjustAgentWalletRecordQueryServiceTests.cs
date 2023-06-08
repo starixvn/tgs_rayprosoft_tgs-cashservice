@@ -34,7 +34,6 @@ public class AdjustAgentWalletRecordQueryServiceTests
                     query.SearchTypes,
                     query.AgentId?.ToString(),
                     query.Operator)),
-                Arg.Is(query.Take),
                 Arg.Is(query.Skip));
     }
 }

@@ -14,7 +14,7 @@ public class AdjustQueryController : ControllerBase
         [FromServices] IQueryService<AdjustPlayerWalletRecordQuery, AdjustRecord> queryService,
         Guid brandId,
         [FromQuery] AdjustRecordQueryViewModel viewModel,
-        [FromQuery] PagingViewModel pagingViewModel)
+        [FromQuery(Name = "skip")] int skip = 0)
     {
         var query = new AdjustPlayerWalletRecordQuery(
             brandId,
@@ -22,8 +22,7 @@ public class AdjustQueryController : ControllerBase
             viewModel.AdjustTypes,
             viewModel.UserId,
             viewModel.Operator,
-            pagingViewModel.Take,
-            pagingViewModel.Skip);
+            skip);
 
         return queryService.QueryAsync(query, HttpContext.RequestAborted)
             .Select(record => new AdjustRecordListItemViewModel
@@ -45,7 +44,7 @@ public class AdjustQueryController : ControllerBase
         [FromServices] IQueryService<AdjustAgentWalletRecordQuery, AdjustRecord> queryService,
         Guid brandId,
         [FromQuery] AdjustRecordQueryViewModel viewModel,
-        [FromQuery] PagingViewModel pagingViewModel)
+        [FromQuery(Name = "skip")] int skip = 0)
     {
         var query = new AdjustAgentWalletRecordQuery(
             brandId,
@@ -55,8 +54,7 @@ public class AdjustQueryController : ControllerBase
                 ? null
                 : Guid.Parse(viewModel.UserId),
             viewModel.Operator,
-            pagingViewModel.Take,
-            pagingViewModel.Skip);
+            skip);
 
         return queryService.QueryAsync(query, HttpContext.RequestAborted)
             .Select(record => new AdjustRecordListItemViewModel

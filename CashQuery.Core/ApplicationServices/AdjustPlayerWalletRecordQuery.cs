@@ -8,5 +8,4 @@ public record AdjustPlayerWalletRecordQuery(
     IEnumerable<AdjustType>? SearchTypes,
     string? PlayerCode,
     string? Operator,
-    int Take,
     int Skip = 0);
