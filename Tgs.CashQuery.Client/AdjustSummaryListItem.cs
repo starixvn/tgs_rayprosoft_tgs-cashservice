@@ -1,4 +1,4 @@
-﻿namespace Tgs.CashQuery.Client;
+﻿namespace Tgs.CashQueryService.Client;
 public record AdjustSummaryListItem(
     Guid BrandId,
     int Company,

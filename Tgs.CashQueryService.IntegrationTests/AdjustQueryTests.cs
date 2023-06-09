@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Tgs.CashQuery.Client;
 using Tgs.CashQuery.Repositories.Entities;
+using Tgs.CashQueryService.Client;
 using Xunit.Abstractions;
 
 namespace Tgs.CashQueryService.IntegrationTests;
@@ -31,7 +31,7 @@ public class AdjustQueryTests
         var dbContext = web.Services.GetRequiredService<TgsContext>();
 
         var brandId = Guid.NewGuid();
-        var condition = new CashQuery.Client.AdjustRecordQueryCondition(
+        var condition = new Tgs.CashQueryService.Client.AdjustRecordQueryCondition(
             (From: DateTime.Now.AddDays(-1D), To: DateTime.Now.AddHours(1D)),
             null,
             null,
@@ -139,7 +139,7 @@ public class AdjustQueryTests
         var dbContext = web.Services.GetRequiredService<TgsContext>();
 
         var brandId = Guid.NewGuid();
-        var condition = new CashQuery.Client.AdjustRecordQueryCondition(
+        var condition = new Tgs.CashQueryService.Client.AdjustRecordQueryCondition(
             (From: DateTime.Now.AddDays(-1D), To: DateTime.Now.AddHours(1D)),
             null,
             null,
@@ -242,7 +242,7 @@ public class AdjustQueryTests
 
         var brandId = Guid.NewGuid();
         var brandId2 = Guid.NewGuid();
-        var condition = new CashQuery.Client.AdjustRecordQueryCondition(
+        var condition = new Tgs.CashQueryService.Client.AdjustRecordQueryCondition(
             (From: DateTime.Now.AddDays(-1D), To: DateTime.Now.AddHours(1D)),
             null,
             null,
@@ -334,7 +334,7 @@ public class AdjustQueryTests
 
         var brandId = Guid.NewGuid();
         var brandId2 = Guid.NewGuid();
-        var condition = new CashQuery.Client.AdjustRecordQueryCondition(
+        var condition = new Tgs.CashQueryService.Client.AdjustRecordQueryCondition(
             (From: DateTime.Now.AddDays(-1D), To: DateTime.Now.AddHours(1D)),
             null,
             null,

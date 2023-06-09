@@ -2,10 +2,11 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Tgs.CashQueryService;
+using Tgs.CashQueryService.Client;
 
-namespace Tgs.CashQuery.Client;
+namespace Tgs.CashQueryService.Client;
 
-internal class CashQueryClient
+internal class CashQueryClient : ICashQueryClient
 {
     private static readonly JsonSerializerOptions _SerializerOptions = new(JsonSerializerDefaults.Web)
     {

@@ -1,4 +1,5 @@
-﻿namespace Tgs.CashQueryService;
+﻿using Tgs.CashQueryService;
+namespace Tgs.CashQueryService.Client;
 public record AdjustRecordListItem(
     Guid Id,
     Guid BrandId,

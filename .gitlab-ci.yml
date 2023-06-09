@@ -6,10 +6,13 @@ include:
 variables:
   ServiceImageName: pgtgs/cashservice-api
   WorkerImageName: pgtgs/cashservice-worker
+  QueryImageName: pgtgs/cashservice-query
   TgsServiceSettingKey: cashservice-api
   TgsWorkerSettingKey: cashservice-worker
+  TgsQuerySettingKey: cash-query
   HelmTemplateServiceFolderName: cashservice-api
   HelmTemplateWorkerFolderName: cashservice-worker
+  HelmTemplateQueryFolderName: cashservice-query
   BuildCacheKey: Tgs.CashService.$CI_PIPELINE_IID
 
 stages:
@@ -30,18 +33,21 @@ push-nuget:
   extends: .push-nuget-template
   script:
     - push_package "Tgs.CashService.Client"
+    - push_package "Tgs.CashQuery.Client"
 
 push-docker-image:
   extends: .push-docker-image-template
   script:
     - push_docker "Tgs.CashService/Tgs.CashService.csproj" $ServiceImageName $Tag
     - push_docker "Tgs.CashServiceWorker/Tgs.CashServiceWorker.csproj" $WorkerImageName $Tag
+    - push_docker "Tgs.CashQueryService/Tgs.CashQueryService.csproj" $QueryImageName $Tag
 
 push-k8s-template:
   extends: .push-k8s-template
   script:
     - push_k8s_template $HelmTemplateServiceFolderName $ServiceImageName $Tag
     - push_k8s_template $HelmTemplateWorkerFolderName $WorkerImageName $Tag
+    - push_k8s_template $HelmTemplateQueryFolderName $QueryImageName $Tag
 
 deploy-service-dev:
   extends: .deploy-template
@@ -81,6 +87,25 @@ deploy-worker-dev:
   script:
     - deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
 
+deploy-query-dev:
+  extends: .deploy-template 
+  variables:
+    namespace: dev
+    kube_config: KubeConfig_Raypro_dev
+  environment:
+    name: query-dev
+  stage: deploy-dev
+  needs:
+    - push-nuget
+    - push-docker-image
+    - job: push-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: on_success
+  script:
+    - deploy_k8s $TgsQuerySettingKey $HelmTemplateQueryFolderName $namespace
+
 deploy-service-staging:
   extends: .deploy-template
   variables:
@@ -114,6 +139,23 @@ deploy-worker-staging:
     - main
   script:
     - deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
+
+deploy-query-staging:
+  extends: .deploy-template
+  variables:
+    namespace: staging
+    kube_config: KubeConfig_Raypro_staging
+  environment:
+    name: query-staging
+  stage: deploy-staging
+  needs:
+    - deploy-query-dev
+    - job: push-k8s-template
+      artifacts: true
+  only:
+    - main
+  script:
+    - deploy_k8s $TgsQuerySettingKey $HelmTemplateQueryFolderName $namespace
 
 deploy-service-prod:
   extends: .deploy-template
@@ -149,3 +191,20 @@ deploy-worker-prod:
     - main
   script:
     - deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
+
+deploy-query-prod:
+  extends: .deploy-template
+  variables:
+    namespace: prod
+    kube_config: KubeConfig_Raypro_prod
+  environment:
+    name: query-prod
+  stage: deploy-prod
+  needs:
+    - deploy-query-staging
+    - job: push-k8s-template
+      artifacts: true
+  only:
+    - main
+  script:
+    - deploy_k8s $TgsQuerySettingKey $HelmTemplateQueryFolderName $namespace
