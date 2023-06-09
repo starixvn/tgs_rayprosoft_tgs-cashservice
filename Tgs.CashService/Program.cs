@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -75,19 +76,6 @@ builder.Services
     .AddHealthChecks();
 
 builder.Services
-    .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
-        sp => new ConfigureNamedOptions<OtlpExporterOptions>(
-            Microsoft.Extensions.Options.Options.DefaultName,
-            exporterOptions =>
-            {
-                var config = sp.GetRequiredService<IConfiguration>();
-                var nodeIp = config.GetValue<string>("NODE_IP");
-
-                if (!string.IsNullOrWhiteSpace(nodeIp))
-                    exporterOptions.Endpoint = new Uri($"http://{nodeIp}:4317");
-
-                config.GetSection("Opentelemetry:Tracing").Bind(exporterOptions);
-            }))
     .AddOpenTelemetry()
     .WithTracing(
         tracingBuilder => tracingBuilder
@@ -100,6 +88,12 @@ builder.Services
             .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
             .AddProfileViewExporter()
             .AddOtlpExporter())
+    .WithMetrics(meterBuilder => meterBuilder
+        .SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddEnvironmentVariableDetector())
+        .AddAspNetCoreInstrumentation()
+        .AddRuntimeInstrumentation()
+        .AddOtlpExporter())
     .Services
     .AddProfileViewer()
     .Configure<AspNetCoreInstrumentationOptions>(options => options.Filter =

@@ -12,7 +12,7 @@
     <PackageReference Include="DbMocker" Version="1.22.0" />
     <PackageReference Include="JunitXml.TestLogger" Version="3.0.124" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.5" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
     <PackageReference Include="coverlet.collector" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

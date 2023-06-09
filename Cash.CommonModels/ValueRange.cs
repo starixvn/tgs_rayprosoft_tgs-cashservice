@@ -1,11 +1,7 @@
-﻿namespace Tgs.CashService;
+﻿namespace Tgs.Cash.Common;
 
-public readonly struct ValueRange<T> where T : IComparable<T>
+public readonly record struct ValueRange<T>(T From, T To) where T : IComparable<T>
 {
-    public T From { get; init; }
-
-    public T To { get; init; }
-
     public static implicit operator ValueRange<T>((T From, T To) value)
         => new()
         {
