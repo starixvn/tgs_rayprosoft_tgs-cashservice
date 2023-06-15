@@ -118,10 +118,82 @@ public class AdjustQueryTests
         };
 
         // Act
-        var actual = await sut.QueryPlayerAdjustRecordsAsync(brandId, condition, 0).ToArrayAsync();
+        var actual = await sut.QueryPlayerAdjustRecordsAsync(brandId, condition, 3).ToArrayAsync();
 
         // Assert
         Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async Task 取得玩家調帳記錄筆數()
+    {
+        // Arrange
+        await using var web = CashQueryTestHost.Factory
+            .WithWebHostBuilder(hostBuilder => hostBuilder
+                .ConfigureLogging(logging => logging.AddXUnit(_testOutputHelper)));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashQueryClient(httpClient);
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        var brandId = Guid.NewGuid();
+        var condition = new Tgs.CashQueryService.Client.AdjustRecordQueryCondition(
+            (From: DateTime.Now.AddDays(-1D), To: DateTime.Now.AddHours(1D)),
+            null,
+            null,
+            null);
+
+        var playerRecords = new[]
+        {
+            new AdjustPlayerRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId,
+                Type = (short)AdjustType.CompanyAdjust,
+                PlayerCode = "test1",
+                Amount = 10M,
+                BucketAmount = 10M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.ToUniversalTime(),
+                AdjustmentType = 1
+            },
+            new AdjustPlayerRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId,
+                Type = (short)AdjustType.CompanyAdjust,
+                PlayerCode = "test2",
+                Amount = 20M,
+                BucketAmount = 20M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.AddSeconds(1D).ToUniversalTime(),
+                AdjustmentType = 1
+            },
+            new AdjustPlayerRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId,
+                Type = (short)AdjustType.CompanyAdjust,
+                PlayerCode = "test1",
+                Amount = 30M,
+                BucketAmount = 30M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.AddSeconds(2D).ToUniversalTime(),
+                AdjustmentType = 1
+            }
+        };
+
+        await dbContext.AdjustPlayerRecords.AddRangeAsync(playerRecords);
+
+        _ = await dbContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.CountPlayerAdjustRecordsAsync(brandId, condition);
+
+        // Assert
+        Assert.Equal(3, actual);
     }
 
     [Fact]
@@ -220,10 +292,76 @@ public class AdjustQueryTests
         };
 
         // Act
-        var actual = await sut.QueryAgentAdjustRecordsAsync(brandId, condition, 0).ToArrayAsync();
+        var actual = await sut.QueryAgentAdjustRecordsAsync(brandId, condition, 3).ToArrayAsync();
 
         // Assert
         Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async Task 取得代理調帳記錄筆數()
+    {
+        // Arrange
+        await using var web = CashQueryTestHost.Factory
+            .WithWebHostBuilder(hostBuilder => hostBuilder
+                .ConfigureLogging(logging => logging.AddXUnit(_testOutputHelper)));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashQueryClient(httpClient);
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        var brandId = Guid.NewGuid();
+        var condition = new Client.AdjustRecordQueryCondition(
+            (From: DateTime.Now.AddDays(-1D), To: DateTime.Now.AddHours(1D)),
+            null,
+            null,
+            null);
+
+        var agentRecords = new[]
+        {
+            new AdjustAgentRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId,
+                AgentId = Guid.NewGuid(),
+                Amount = 10M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.ToUniversalTime(),
+                AdjustmentType = 1
+            },
+            new AdjustAgentRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId,
+                AgentId = Guid.NewGuid(),
+                Amount = 20M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.AddSeconds(1D).ToUniversalTime(),
+                AdjustmentType = 1
+            },
+            new AdjustAgentRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = brandId,
+                AgentId = Guid.NewGuid(),
+                Amount = 30M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.AddSeconds(2D).ToUniversalTime(),
+                AdjustmentType = 1
+            }
+        };
+
+        await dbContext.AdjustAgentRecords.AddRangeAsync(agentRecords);
+
+        _ = await dbContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.CountAgentAdjustRecordsAsync(brandId, condition);
+
+        // Assert
+        Assert.Equal(3, actual);
     }
 
     [Fact]
