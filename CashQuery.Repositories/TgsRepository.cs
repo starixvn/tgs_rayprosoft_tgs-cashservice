@@ -118,14 +118,15 @@ public class TgsRepository : ITgsRepository
             {
                 g.Key.BrandId,
                 g.Key.Type,
-                Count = g.Count()
+                Count = g.Count(),
+                Amount = g.Sum(record => record.Amount)
             })
             .ToAsyncEnumerable()
             .PivotAsync(
                 g => g.BrandId,
                 (brandId, records) =>
                 {
-                    var dict = new Dictionary<AdjustType, int>(5)
+                    var countMap = new Dictionary<AdjustType, int>(5)
                     {
                         [AdjustType.CompanyAdjust] = 0,
                         [AdjustType.AgentAdjust] = 0,
@@ -133,22 +134,37 @@ public class TgsRepository : ITgsRepository
                         [AdjustType.TransferAdjust] = 0,
                         [AdjustType.BonusAdjust] = 0
                     };
+                    var amountMap = new Dictionary<AdjustType, decimal>(5)
+                    {
+                        [AdjustType.CompanyAdjust] = 0M,
+                        [AdjustType.AgentAdjust] = 0M,
+                        [AdjustType.SystemAdjust] = 0M,
+                        [AdjustType.TransferAdjust] = 0M,
+                        [AdjustType.BonusAdjust] = 0M
+                    };
 
                     foreach (var rec in records)
                     {
                         var adjustType = (AdjustType)rec.Type;
 
-                        dict[adjustType] = rec.Count;
+                        countMap[adjustType] = rec.Count;
+                        amountMap[adjustType] = rec.Amount;
                     }
 
                     return new BrandAdjustSummary(
                         brandId,
-                        dict[AdjustType.CompanyAdjust],
-                        dict[AdjustType.AgentAdjust],
-                        dict[AdjustType.SystemAdjust],
-                        dict[AdjustType.TransferAdjust],
-                        dict[AdjustType.BonusAdjust],
-                        0);
+                        countMap[AdjustType.CompanyAdjust],
+                        countMap[AdjustType.AgentAdjust],
+                        countMap[AdjustType.SystemAdjust],
+                        countMap[AdjustType.TransferAdjust],
+                        countMap[AdjustType.BonusAdjust],
+                        0,
+                        amountMap[AdjustType.CompanyAdjust],
+                        amountMap[AdjustType.AgentAdjust],
+                        amountMap[AdjustType.SystemAdjust],
+                        amountMap[AdjustType.TransferAdjust],
+                        amountMap[AdjustType.BonusAdjust],
+                        0M);
                 });
     }
 
@@ -168,7 +184,8 @@ public class TgsRepository : ITgsRepository
             .Select(g => new
             {
                 g.Key.BrandId,
-                Count = g.Count()
+                Count = g.Count(),
+                Amount = g.Sum(record => record.Amount)
             })
             .ToAsyncEnumerable()
             .Select(row => new BrandAdjustSummary(
@@ -178,7 +195,13 @@ public class TgsRepository : ITgsRepository
                 0,
                 0,
                 0,
-                row.Count));
+                row.Count,
+                0M,
+                0M,
+                0M,
+                0M,
+                0M,
+                row.Amount));
     }
 
     public async ValueTask<int> CountQueryAgentAdjustSummariesAsync(AdjustRecordQueryCondition condition, CancellationToken cancellation = default)

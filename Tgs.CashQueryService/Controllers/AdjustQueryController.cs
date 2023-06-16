@@ -144,7 +144,12 @@ public class AdjustQueryController : ControllerBase
                 Company = summary.Company,
                 System = summary.System,
                 Transfer = summary.Transfer,
-                Bonus = summary.Bonus
+                Bonus = summary.Bonus,
+                CompanyAmount = summary.CompanyAmount,
+                AgentAmount = summary.AgentAmount,
+                SystemAmount = summary.SystemAmount,
+                TransferAmount = summary.TransferAmount,
+                BonusAmount = summary.BonusAmount
             });
     }
 
@@ -165,12 +170,8 @@ public class AdjustQueryController : ControllerBase
             .Select(summary => new AdjustSummaryListItemViewModel
             {
                 BrandId = summary.BrandId,
-                Agent = summary.Agent,
-                Company = summary.Company,
-                System = summary.System,
-                Transfer = summary.Transfer,
-                Bonus = summary.Bonus,
-                AgentOther = summary.AgentOther
+                AgentOther = summary.AgentOther,
+                AgentOtherAmount = summary.AgentOtherAmount
             });
     }
 }

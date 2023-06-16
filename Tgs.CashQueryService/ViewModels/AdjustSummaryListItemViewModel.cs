@@ -15,4 +15,16 @@ public class AdjustSummaryListItemViewModel
     public int Bonus { get; set; }
 
     public int AgentOther { get; set; }
+
+    public decimal CompanyAmount { get; set; }
+
+    public decimal AgentAmount { get; set; }
+
+    public decimal SystemAmount { get; set; }
+
+    public decimal TransferAmount { get; set; }
+
+    public decimal BonusAmount { get; set; }
+
+    public decimal AgentOtherAmount { get; set; }
 }
