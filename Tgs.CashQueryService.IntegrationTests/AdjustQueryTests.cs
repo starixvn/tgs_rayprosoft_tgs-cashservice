@@ -438,7 +438,13 @@ public class AdjustQueryTests
                 0,
                 0,
                 0,
-                0),
+                0,
+                10M,
+                20M,
+                0M,
+                0M,
+                0M,
+                0M),
             new AdjustSummaryListItem(
                 brandId2,
                 1,
@@ -446,7 +452,13 @@ public class AdjustQueryTests
                 0,
                 0,
                 0,
-                0)
+                0,
+                30M,
+                0M,
+                0M,
+                0M,
+                0M,
+                0M)
         };
 
         // Act
@@ -524,7 +536,13 @@ public class AdjustQueryTests
                 0,
                 0,
                 0,
-                2),
+                2,
+                0M,
+                0M,
+                0M,
+                0M,
+                0M,
+                30M),
             new AdjustSummaryListItem(
                 brandId2,
                 0,
@@ -532,7 +550,13 @@ public class AdjustQueryTests
                 0,
                 0,
                 0,
-                1)
+                1,
+                0M,
+                0M,
+                0M,
+                0M,
+                0M,
+                30M)
         };
 
         // Act
