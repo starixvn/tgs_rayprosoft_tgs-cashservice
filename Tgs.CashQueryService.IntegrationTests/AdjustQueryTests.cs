@@ -87,7 +87,7 @@ public class AdjustQueryTests
                 playerRecords[2].BrandId,
                 playerRecords[2].PlayerCode,
                 (AdjustType)playerRecords[2].Type,
-                (AdjustmentType)playerRecords[2].AdjustmentType,
+                (OperationMode)playerRecords[2].AdjustmentType,
                 playerRecords[2].Amount,
                 playerRecords[2].BucketAmount,
                 playerRecords[2].CreatedByUsername,
@@ -99,7 +99,7 @@ public class AdjustQueryTests
                 playerRecords[1].BrandId,
                 playerRecords[1].PlayerCode,
                 (AdjustType)playerRecords[1].Type,
-                (AdjustmentType)playerRecords[1].AdjustmentType,
+                (OperationMode)playerRecords[1].AdjustmentType,
                 playerRecords[1].Amount,
                 playerRecords[1].BucketAmount,
                 playerRecords[1].CreatedByUsername,
@@ -111,7 +111,7 @@ public class AdjustQueryTests
                 playerRecords[0].BrandId,
                 playerRecords[0].PlayerCode,
                 (AdjustType)playerRecords[0].Type,
-                (AdjustmentType)playerRecords[0].AdjustmentType,
+                (OperationMode)playerRecords[0].AdjustmentType,
                 playerRecords[0].Amount,
                 playerRecords[0].BucketAmount,
                 playerRecords[0].CreatedByUsername,
@@ -264,7 +264,7 @@ public class AdjustQueryTests
                 agentRecords[2].BrandId,
                 agentRecords[2].AgentId.ToString(),
                 AdjustType.AgentOther,
-                (AdjustmentType)agentRecords[2].AdjustmentType,
+                (OperationMode)agentRecords[2].AdjustmentType,
                 agentRecords[2].Amount,
                 0M,
                 agentRecords[2].CreatedByUsername,
@@ -276,7 +276,7 @@ public class AdjustQueryTests
                 agentRecords[1].BrandId,
                 agentRecords[1].AgentId.ToString(),
                 AdjustType.AgentOther,
-                (AdjustmentType)agentRecords[1].AdjustmentType,
+                (OperationMode)agentRecords[1].AdjustmentType,
                 agentRecords[1].Amount,
                 0M,
                 agentRecords[1].CreatedByUsername,
@@ -288,7 +288,7 @@ public class AdjustQueryTests
                 agentRecords[0].BrandId,
                 agentRecords[0].AgentId.ToString(),
                 AdjustType.AgentOther,
-                (AdjustmentType)agentRecords[0].AdjustmentType,
+                (OperationMode)agentRecords[0].AdjustmentType,
                 agentRecords[0].Amount,
                 0M,
                 agentRecords[0].CreatedByUsername,
@@ -404,7 +404,7 @@ public class AdjustQueryTests
                 BucketAmount = 20M,
                 CreatedByUsername = "system",
                 CreatedOn = DateTime.Now.ToUniversalTime(),
-                AdjustmentType = (short)AdjustmentType.Add,
+                AdjustmentType = (short)OperationMode.Add,
             },
             new AdjustPlayerRecord
             {
@@ -416,7 +416,7 @@ public class AdjustQueryTests
                 BucketAmount = 10M,
                 CreatedByUsername = "system",
                 CreatedOn = DateTime.Now.ToUniversalTime(),
-                AdjustmentType = (short)AdjustmentType.Subtract,
+                AdjustmentType = (short)OperationMode.Subtract,
             },
             new AdjustPlayerRecord
             {
@@ -428,7 +428,7 @@ public class AdjustQueryTests
                 BucketAmount = 30M,
                 CreatedByUsername = "system",
                 CreatedOn = DateTime.Now.AddSeconds(1D).ToUniversalTime(),
-                AdjustmentType = (short)AdjustmentType.Add,
+                AdjustmentType = (short)OperationMode.Add,
             },
             new AdjustPlayerRecord
             {
@@ -440,7 +440,7 @@ public class AdjustQueryTests
                 BucketAmount = 20M,
                 CreatedByUsername = "system",
                 CreatedOn = DateTime.Now.AddSeconds(1D).ToUniversalTime(),
-                AdjustmentType = (short)AdjustmentType.Add,
+                AdjustmentType = (short)OperationMode.Add,
             },
             new AdjustPlayerRecord
             {
@@ -452,7 +452,7 @@ public class AdjustQueryTests
                 BucketAmount = 10M,
                 CreatedByUsername = "system",
                 CreatedOn = DateTime.Now.AddSeconds(1D).ToUniversalTime(),
-                AdjustmentType = (short)AdjustmentType.Subtract,
+                AdjustmentType = (short)OperationMode.Subtract,
             },
             new AdjustPlayerRecord
             {
@@ -464,7 +464,7 @@ public class AdjustQueryTests
                 BucketAmount = 30M,
                 CreatedByUsername = "system",
                 CreatedOn = DateTime.Now.AddSeconds(2D).ToUniversalTime(),
-                AdjustmentType = (short)AdjustmentType.Add,
+                AdjustmentType = (short)OperationMode.Add,
             }
         };
 
@@ -542,7 +542,7 @@ public class AdjustQueryTests
                 Amount = 30M,
                 CreatedByUsername = "system",
                 CreatedOn = DateTime.Now.ToUniversalTime(),
-                AdjustmentType = (short)AdjustmentType.Add
+                AdjustmentType = (short)OperationMode.Add
             },
             new AdjustAgentRecord
             {
@@ -552,7 +552,7 @@ public class AdjustQueryTests
                 Amount = 20M,
                 CreatedByUsername = "system",
                 CreatedOn = DateTime.Now.AddSeconds(1D).ToUniversalTime(),
-                AdjustmentType = (short)AdjustmentType.Add
+                AdjustmentType = (short)OperationMode.Add
             },
             new AdjustAgentRecord
             {
@@ -562,7 +562,7 @@ public class AdjustQueryTests
                 Amount = 10M,
                 CreatedByUsername = "system",
                 CreatedOn = DateTime.Now.AddSeconds(1D).ToUniversalTime(),
-                AdjustmentType = (short) AdjustmentType.Subtract
+                AdjustmentType = (short) OperationMode.Subtract
             },
             new AdjustAgentRecord
             {
@@ -572,7 +572,7 @@ public class AdjustQueryTests
                 Amount = 30M,
                 CreatedByUsername = "system",
                 CreatedOn = DateTime.Now.AddSeconds(2D).ToUniversalTime(),
-                AdjustmentType = (short)AdjustmentType.Add
+                AdjustmentType = (short)OperationMode.Add
             }
         };
 
