@@ -4,7 +4,7 @@ public record AdjustRecordListItem(
     Guid BrandId,
     string UserId,
     AdjustType AdjustType,
-    OperationMode AdjustmentType,
+    OperationMode OperationMode,
     decimal Amount,
     decimal BucketAmount,
     string Operator,
