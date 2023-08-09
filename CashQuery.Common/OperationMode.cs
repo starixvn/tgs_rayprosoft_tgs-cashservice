@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashQueryService;
 
-public enum AdjustmentType
+public enum OperationMode
 {
     Add = 1,
     Subtract = 2
