@@ -123,7 +123,8 @@ public class TgsRepository : ITgsRepository
                 g.Key.BrandId,
                 g.Key.Type,
                 Count = g.Count(),
-                Amount = g.Sum(record => record.Amount * (record.AdjustmentType == (short)AdjustmentType.Add ? 1 : -1))
+                Amount = g.Where(record => record.AdjustmentType == 1).Sum(record => record.Amount)
+                    - g.Where(record => record.AdjustmentType == 2).Sum(record => record.Amount),
             })
             .ToAsyncEnumerable()
             .PivotAsync(
@@ -189,7 +190,8 @@ public class TgsRepository : ITgsRepository
             {
                 g.Key.BrandId,
                 Count = g.Count(),
-                Amount = g.Sum(record => record.Amount * (record.AdjustmentType == (short)AdjustmentType.Add ? 1 : -1))
+                Amount = g.Where(record => record.AdjustmentType == 1).Sum(record => record.Amount)
+                    - g.Where(record => record.AdjustmentType == 2).Sum(record => record.Amount)
             })
             .ToAsyncEnumerable()
             .Select(row => new BrandAdjustSummary(
