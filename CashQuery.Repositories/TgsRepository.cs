@@ -30,11 +30,12 @@ public class TgsRepository : ITgsRepository
                 record.BrandId,
                 record.PlayerCode,
                 record.Type,
+                record.AdjustmentType,
                 record.Amount,
                 record.BucketAmount,
                 record.CreatedByUsername,
                 record.CreatedOn,
-                record.Remark
+                record.Remark,
             })
             .Skip(skip)
             .Take(1000)
@@ -45,6 +46,7 @@ public class TgsRepository : ITgsRepository
                 row.PlayerCode,
                 UserType.Player,
                 (AdjustType)row.Type,
+                (AdjustmentType)row.AdjustmentType,
                 row.Amount,
                 row.BucketAmount,
                 row.CreatedByUsername,
@@ -76,6 +78,7 @@ public class TgsRepository : ITgsRepository
                 record.BrandId,
                 record.AgentId,
                 record.Type,
+                record.AdjustmentType,
                 record.Amount,
                 record.CreatedByUsername,
                 record.CreatedOn,
@@ -90,6 +93,7 @@ public class TgsRepository : ITgsRepository
                 row.AgentId.ToString(),
                 UserType.Agent,
                 AdjustType.AgentOther,
+                (AdjustmentType)row.AdjustmentType,
                 row.Amount,
                 0M,
                 row.CreatedByUsername,
@@ -119,7 +123,7 @@ public class TgsRepository : ITgsRepository
                 g.Key.BrandId,
                 g.Key.Type,
                 Count = g.Count(),
-                Amount = g.Sum(record => record.Amount)
+                Amount = g.Sum(record => record.Amount * (record.AdjustmentType == (short)AdjustmentType.Add ? 1 : -1))
             })
             .ToAsyncEnumerable()
             .PivotAsync(
@@ -185,7 +189,7 @@ public class TgsRepository : ITgsRepository
             {
                 g.Key.BrandId,
                 Count = g.Count(),
-                Amount = g.Sum(record => record.Amount)
+                Amount = g.Sum(record => record.Amount * (record.AdjustmentType == (short)AdjustmentType.Add ? 1 : -1))
             })
             .ToAsyncEnumerable()
             .Select(row => new BrandAdjustSummary(

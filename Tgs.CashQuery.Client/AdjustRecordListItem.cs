@@ -1,10 +1,10 @@
-﻿using Tgs.CashQueryService;
-namespace Tgs.CashQueryService.Client;
+﻿namespace Tgs.CashQueryService.Client;
 public record AdjustRecordListItem(
     Guid Id,
     Guid BrandId,
     string UserId,
     AdjustType AdjustType,
+    AdjustmentType AdjustmentType,
     decimal Amount,
     decimal BucketAmount,
     string Operator,
