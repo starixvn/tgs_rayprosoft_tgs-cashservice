@@ -5,7 +5,7 @@ public record AdjustRecord(
     string UserId,
     UserType UserType,
     AdjustType AdjustType,
-    OperationMode AdjustmentType,
+    OperationMode OperationMode,
     decimal Amount,
     decimal BucketAmount,
     string Operator,
