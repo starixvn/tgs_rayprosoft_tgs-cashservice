@@ -12,6 +12,8 @@ public class AdjustRecordListItemViewModel
 
     public required AdjustType AdjustType { get; set; }
 
+    public required AdjustmentType AdjustmentType { get; set; }
+
     public required decimal Amount { get; set; }
 
     public required decimal BucketAmount { get; set; }
