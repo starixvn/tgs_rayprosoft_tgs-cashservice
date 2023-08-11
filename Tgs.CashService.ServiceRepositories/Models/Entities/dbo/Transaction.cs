@@ -34,4 +34,6 @@ public partial class Transaction
     public decimal LockedBalance { get; set; }
 
     public decimal LockAmount { get; set; }
+
+    public virtual Wallet Wallet { get; set; } = null!;
 }

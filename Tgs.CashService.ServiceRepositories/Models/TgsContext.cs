@@ -14,7 +14,11 @@ public partial class TgsContext : DbContext
     {
     }
 
+    public virtual DbSet<GameAction> GameActions { get; set; }
+
     public virtual DbSet<Transaction> Transactions { get; set; }
+
+    public virtual DbSet<Wallet> Wallets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,7 +26,9 @@ public partial class TgsContext : DbContext
             .HasPostgresExtension("ltree")
             .HasPostgresExtension("pg_trgm");
 
+            modelBuilder.ApplyConfiguration(new Configurations.GameActionConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.TransactionConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.WalletConfiguration());
         OnModelCreatingPartial(modelBuilder);
     }
 

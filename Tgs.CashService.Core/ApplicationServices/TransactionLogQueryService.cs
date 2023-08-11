@@ -14,17 +14,30 @@ internal class TransactionLogQueryService
     }
 
     public IAsyncEnumerable<TransactionLog> QueryAsync(TransactionLogQuery query, CancellationToken cancellationToken = default)
-        => _tgsRepository.QueryTransactionLogsAsync(
-            query.WalletId,
-            query.QueryRange,
-            query.QueryTypes,
-            query.Paging,
-            cancellationToken);
+        => _tgsRepository.GetPlayerCodeByWalletIdAsync(query.WalletId, cancellationToken)
+            .AsTask()
+            .ToAsyncEnumerable()
+            .Where(playerCode => !string.IsNullOrEmpty(playerCode))
+            .SelectMany(playerCode => _tgsRepository.QueryTransactionLogsAsync(
+                query.WalletId,
+                playerCode!,
+                query.QueryRange,
+                query.QueryTypes,
+                query.Paging,
+                cancellationToken));
 
     public ValueTask<int> GetAsync(TransactionLogQuery query, CancellationToken cancellationToken = default)
-        => _tgsRepository.CountTransactionLogsQueryAsync(
-            query.WalletId,
-            query.QueryRange,
-            query.QueryTypes,
-            cancellationToken);
+        => _tgsRepository.GetPlayerCodeByWalletIdAsync(query.WalletId, cancellationToken)
+            .AsTask()
+            .ToAsyncEnumerable()
+            .Where(playerCode => !string.IsNullOrEmpty(playerCode))
+            .SelectMany(playerCode => _tgsRepository.CountTransactionLogsQueryAsync(
+                query.WalletId,
+                playerCode!,
+                query.QueryRange,
+                query.QueryTypes,
+                cancellationToken)
+                .AsTask()
+                .ToAsyncEnumerable())
+            .FirstAsync(cancellationToken: cancellationToken);
 }

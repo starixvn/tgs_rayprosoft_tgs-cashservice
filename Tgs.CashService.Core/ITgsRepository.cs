@@ -5,8 +5,11 @@ namespace Tgs.CashService;
 
 public interface ITgsRepository
 {
+    ValueTask<string?> GetPlayerCodeByWalletIdAsync(Guid walletId, CancellationToken cancellationToken = default);
+
     IAsyncEnumerable<TransactionLog> QueryTransactionLogsAsync(
         Guid walletId,
+        string playerCode,
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes,
         Paging<TransactionLog> paging,
@@ -14,6 +17,7 @@ public interface ITgsRepository
 
     ValueTask<int> CountTransactionLogsQueryAsync(
         Guid walletId,
+        string playerCode,
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes,
         CancellationToken cancellationToken = default);
