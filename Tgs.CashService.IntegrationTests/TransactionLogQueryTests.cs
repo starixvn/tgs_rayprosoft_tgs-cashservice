@@ -32,6 +32,7 @@ public class TransactionLogQueryTests
         var sut = new CashServiceClient(httpClient);
 
         var walletId = Guid.NewGuid();
+        var playerCode = "test1";
         var from = DateTime.Now.AddDays(-1D);
         var to = DateTime.Now.AddDays(1D);
 
@@ -41,7 +42,7 @@ public class TransactionLogQueryTests
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerCode = "test1",
+                PlayerCode = playerCode,
                 RecordedOn = DateTime.UtcNow,
                 Amount = 100,
                 Balance = 900,
@@ -54,6 +55,14 @@ public class TransactionLogQueryTests
         };
 
         await dbContext.Transactions.AddRangeAsync(transactionLogs);
+
+        _ = await dbContext.Wallets.AddAsync(new Wallet
+        {
+            Id = walletId,
+            PlayerCode = playerCode,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY"
+        });
 
         _ = await dbContext.SaveChangesAsync();
 
@@ -103,6 +112,7 @@ public class TransactionLogQueryTests
         var sut = new CashServiceClient(httpClient);
 
         var walletId = Guid.NewGuid();
+        var playerCode = "test1";
         var from = DateTime.Now.AddDays(-1D);
         var to = DateTime.Now.AddDays(1D);
         var paging = new PagingConditions(2, 1);
@@ -113,7 +123,7 @@ public class TransactionLogQueryTests
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerCode = "test1",
+                PlayerCode = playerCode,
                 RecordedOn = DateTime.UtcNow,
                 Amount = 100,
                 Balance = 900,
@@ -126,7 +136,7 @@ public class TransactionLogQueryTests
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerCode = "test1",
+                PlayerCode = playerCode,
                 RecordedOn = DateTime.UtcNow.AddSeconds(1),
                 Amount = 200,
                 Balance = 900,
@@ -139,7 +149,7 @@ public class TransactionLogQueryTests
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerCode = "test1",
+                PlayerCode = playerCode,
                 RecordedOn = DateTime.UtcNow.AddSeconds(2),
                 Amount = 300,
                 Balance = 900,
@@ -152,6 +162,14 @@ public class TransactionLogQueryTests
         };
 
         await dbContext.Transactions.AddRangeAsync(transactionLogs);
+
+        _ = await dbContext.Wallets.AddAsync(new Wallet
+        {
+            Id = walletId,
+            PlayerCode = playerCode,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY"
+        });
 
         _ = await dbContext.SaveChangesAsync();
 
@@ -202,6 +220,7 @@ public class TransactionLogQueryTests
         var sut = new CashServiceClient(httpClient);
 
         var walletId = Guid.NewGuid();
+        var playerCode = "test1";
         var from = DateTime.Now.AddDays(-1D);
         var to = DateTime.Now.AddDays(1D);
         var paging = new PagingConditions(1, 1);
@@ -212,7 +231,7 @@ public class TransactionLogQueryTests
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerCode = "test1",
+                PlayerCode = playerCode,
                 RecordedOn = DateTime.UtcNow.AddDays(-2D),
                 Amount = 100,
                 Balance = 900,
@@ -225,7 +244,7 @@ public class TransactionLogQueryTests
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerCode = "test1",
+                PlayerCode = playerCode,
                 RecordedOn = DateTime.UtcNow.AddSeconds(1),
                 Amount = 200,
                 Balance = 900,
@@ -238,7 +257,7 @@ public class TransactionLogQueryTests
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerCode = "test1",
+                PlayerCode = playerCode,
                 RecordedOn = DateTime.UtcNow.AddDays(2D),
                 Amount = 300,
                 Balance = 900,
@@ -251,6 +270,14 @@ public class TransactionLogQueryTests
         };
 
         await dbContext.Transactions.AddRangeAsync(transactionLogs);
+
+        _ = await dbContext.Wallets.AddAsync(new Wallet
+        {
+            Id = walletId,
+            PlayerCode = playerCode,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY"
+        });
 
         _ = await dbContext.SaveChangesAsync();
 
@@ -301,6 +328,7 @@ public class TransactionLogQueryTests
         var sut = new CashServiceClient(httpClient);
 
         var walletId = Guid.NewGuid();
+        var playerCode = "test1";
         var from = DateTime.Now.AddDays(-1D);
         var to = DateTime.Now.AddDays(1D);
         var queryTypes = new[] { 2100, 2300 };
@@ -312,7 +340,7 @@ public class TransactionLogQueryTests
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerCode = "test1",
+                PlayerCode = playerCode,
                 RecordedOn = DateTime.UtcNow,
                 Amount = 100,
                 Balance = 900,
@@ -325,7 +353,7 @@ public class TransactionLogQueryTests
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerCode = "test1",
+                PlayerCode = playerCode,
                 RecordedOn = DateTime.UtcNow.AddSeconds(1),
                 Amount = 200,
                 Balance = 900,
@@ -338,7 +366,7 @@ public class TransactionLogQueryTests
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerCode = "test1",
+                PlayerCode = playerCode,
                 RecordedOn = DateTime.UtcNow.AddSeconds(2),
                 Amount = 300,
                 Balance = 900,
@@ -351,6 +379,14 @@ public class TransactionLogQueryTests
         };
 
         await dbContext.Transactions.AddRangeAsync(transactionLogs);
+
+        _ = await dbContext.Wallets.AddAsync(new Wallet
+        {
+            Id = walletId,
+            PlayerCode = playerCode,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY"
+        });
 
         _ = await dbContext.SaveChangesAsync();
 
@@ -386,6 +422,86 @@ public class TransactionLogQueryTests
             paging);
 
         Assert.AreEqual(2, actual.TotalCount);
+        Assert.AreEqual(1, actual.Page);
+        CollectionAssert.AreEqual(expected, actual.Items.ToArray());
+    }
+
+    [TestMethod]
+    public async Task 查詢玩家遊戲帳變紀錄()
+    {
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services => services
+                .Replace(ServiceDescriptor.Singleton(sp =>
+                {
+                    var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                    _ = dbContextOptionsBuilder
+                        .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                        .ConfigureWarnings(x => x.Ignore(
+                            InMemoryEventId.TransactionIgnoredWarning));
+
+                    return new TgsContext(dbContextOptionsBuilder.Options);
+                }))));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var walletId = Guid.NewGuid();
+        var playerCode = "test1";
+        var from = DateTime.Now.AddDays(-1D);
+        var to = DateTime.Now.AddDays(1D);
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+        var gameActionLogs = new[]
+        {
+            new GameAction
+            {
+                Id= Guid.NewGuid(),
+                Amount= 100,
+                Balance= 900,
+                Type = 0,
+                RecordedOn = DateTime.UtcNow,
+                ExternalBetId = "aaa",
+                ExternalTransactionId = "aaa123",
+                PlayerCode = playerCode,
+                PlayerIp = "127.0.0.1",
+                ExternalGameActionGroupId = "aaa"
+            }
+        };
+
+        await dbContext.GameActions.AddRangeAsync(gameActionLogs);
+
+        _ = await dbContext.Wallets.AddAsync(new Wallet
+        {
+            Id = walletId,
+            PlayerCode = playerCode,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY"
+        });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var expected = gameActionLogs
+            .Select(trx => new Client.TransactionLog(
+                trx.Id,
+                trx.RecordedOn,
+                (int)TransactionType.GameBet,
+                trx.Amount,
+                trx.Balance,
+                0,
+                0,
+                null,
+                null))
+            .ToArray();
+
+        var actual = await sut.QueryTransactionLogsAsync(
+            walletId,
+            from,
+            to,
+            Array.Empty<int>(),
+            new PagingConditions(1, 10));
+
+        Assert.AreEqual(1, actual.TotalCount);
         Assert.AreEqual(1, actual.Page);
         CollectionAssert.AreEqual(expected, actual.Items.ToArray());
     }

@@ -2,6 +2,7 @@
 
 public enum TransactionType
 {
+    Unknown = -1,
     Deposit = 0,
     Withdrawal = 1,
 
