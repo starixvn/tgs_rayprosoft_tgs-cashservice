@@ -23,4 +23,6 @@ public interface ICashQueryClient
         CancellationToken cancellationToken = default);
 
     IAsyncEnumerable<AdjustSummaryListItem> QueryPlayerAdjustSummariesAsync(AdjustRecordQueryCondition condition, CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<PlayerAdjustRecord> QueryPlayerAdjustIncludeInNetProfitRecordsAsync(IEnumerable<Guid> TransactionIds, CancellationToken cancellationToken = default);
 }

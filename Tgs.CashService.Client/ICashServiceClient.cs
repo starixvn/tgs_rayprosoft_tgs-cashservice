@@ -163,4 +163,11 @@ public partial interface ICashServiceClient
         IEnumerable<int> queryTransactionTypes,
         PagingConditions paging,
         CancellationToken cancellationToken = default);
+
+    ValueTask<decimal?> QueryTransactionTotalAmountAsync(
+        Guid walletId,
+        DateTime from,
+        DateTime to,
+        IEnumerable<int> queryTransactionTypes,
+        CancellationToken cancellationToken = default);
 }

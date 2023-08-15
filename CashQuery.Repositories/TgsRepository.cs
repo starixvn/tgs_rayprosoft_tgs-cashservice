@@ -216,6 +216,19 @@ public class TgsRepository : ITgsRepository
             .CountAsync(cancellation)
             .ConfigureAwait(false);
 
+    public IAsyncEnumerable<PlayerAdjustRecord> QueryPlayerAdjustNetProfitAsync(
+        IEnumerable<Guid> transactionIds,
+        CancellationToken cancellationToken = default)
+    {
+        var ids = transactionIds.ToArray();
+
+        return _dbContext.AdjustPlayerRecords.AsQueryable()
+            .Where(apr => apr.TransactionId != null)
+            .Where(apr => ids.Contains(apr.TransactionId!.Value))
+            .Select(apr => new PlayerAdjustRecord(apr.TransactionId!.Value, apr.IncludeInNetProfit))
+            .ToAsyncEnumerable();
+    }
+
     private IQueryable<AdjustAgentRecord> BuildAgentAdjustSummariesQuery(AdjustRecordQueryCondition condition)
     {
         var query = from record in _dbContext.AdjustAgentRecords.AsQueryable()

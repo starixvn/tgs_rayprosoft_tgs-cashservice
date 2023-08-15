@@ -505,4 +505,68 @@ public class TransactionLogQueryTests
         Assert.AreEqual(1, actual.Page);
         CollectionAssert.AreEqual(expected, actual.Items.ToArray());
     }
+
+    [TestMethod]
+    public async Task 查詢玩家帳變紀錄總金額()
+    {
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services => services
+                .Replace(ServiceDescriptor.Singleton(sp =>
+                {
+                    var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                    _ = dbContextOptionsBuilder
+                        .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                        .ConfigureWarnings(x => x.Ignore(
+                            InMemoryEventId.TransactionIgnoredWarning));
+
+                    return new TgsContext(dbContextOptionsBuilder.Options);
+                }))));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var walletId = Guid.NewGuid();
+        var playerCode = "test1";
+        var from = DateTime.Now.AddDays(-1D);
+        var to = DateTime.Now.AddDays(1D);
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+        
+        var transactionLogs = new[] {
+            new Transaction
+            {
+                Id = Guid.NewGuid(),
+                PlayerCode = playerCode,
+                RecordedOn = DateTime.UtcNow,
+                Amount = 100M,
+                Balance = 900M,
+                BrandId= Guid.NewGuid(),
+                WalletId = walletId,
+                LockAmount = 0M,
+                LockedBalance = 0M,
+                Type = 1001
+            }
+        };
+
+        await dbContext.Transactions.AddRangeAsync(transactionLogs);
+
+        _ = await dbContext.Wallets.AddAsync(new Wallet
+        {
+            Id = walletId,
+            PlayerCode = playerCode,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY"
+        });
+
+        _ = await dbContext.SaveChangesAsync();        
+
+        var actual = await sut.QueryTransactionTotalAmountAsync(
+            walletId,
+            from,
+            to,
+            Array.Empty<int>());
+
+        Assert.AreEqual(100M, actual);
+    }
 }

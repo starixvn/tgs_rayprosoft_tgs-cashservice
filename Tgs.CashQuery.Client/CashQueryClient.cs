@@ -244,4 +244,48 @@ internal class CashQueryClient : ICashQueryClient
             .Select(int.Parse)
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    public IAsyncEnumerable<PlayerAdjustRecord> QueryPlayerAdjustIncludeInNetProfitRecordsAsync(
+        IEnumerable<Guid> TransactionIds,
+        CancellationToken cancellationToken = default)
+    {
+        var datas = Array.Empty<PlayerAdjustRecord>();
+
+        var splitCount = 50;
+        var queryTimes = Math.DivRem(TransactionIds.Count(), splitCount, out var rem);
+        if (rem > 0)
+            queryTimes++;
+
+        var adjustPlayerRecords = Enumerable.Range(0, queryTimes)
+            .AsParallel()
+            .Select(page => Task.Run(async () => await QueryPlayerAdjustIncludeInNetProfitsAsync(
+                TransactionIds
+                    .Skip(page * splitCount)
+                    .Take(splitCount),
+                cancellationToken).ToArrayAsync(cancellationToken).ConfigureAwait(false)))
+            .ToArray()
+            .ToAsyncEnumerable()
+            .SelectMany(t => t.ToAsyncEnumerable().SelectMany(arr => arr.ToAsyncEnumerable()));
+
+        return adjustPlayerRecords;
+    }
+
+    protected virtual IAsyncEnumerable<PlayerAdjustRecord> QueryPlayerAdjustIncludeInNetProfitsAsync(
+        IEnumerable<Guid> transactionIds,
+        CancellationToken cancellationToken)
+    {
+        var transactionQueryString = string.Join(
+            "&",
+            transactionIds.Select(id => $"trans={id}"));
+
+        return _httpClient
+            .GetAsync($"/adjust/player/netprofit?{transactionQueryString}", cancellationToken)
+            .ToAsyncEnumerable()
+            .Do(response => response.EnsureSuccessStatusCode())
+            .SelectMany(response => response.Content
+                .ReadFromJsonAsync<PlayerAdjustRecord[]>(_SerializerOptions, cancellationToken)
+                !.ToAsyncEnumerable())
+            .Where(arr => arr is not null)
+            .SelectMany(arr => arr!.ToAsyncEnumerable());
+    }
 }

@@ -59,4 +59,20 @@ public class TransactionLogController : ControllerBase
             TotalCount = totalCount
         };
     }
+
+    [HttpGet("totalamount/{walletId}", Name = "QueryTransactionTotalAmountAsync")]
+    public ValueTask<decimal?> QueryTransactionTotalAmountAsync(
+        [FromServices] IGetService<TransactionTotalAmountQuery, decimal?> getService,
+        [FromQuery] TransactionLogQueryViewModel queryConditions,
+        Guid walletId)
+    {
+        var query = new TransactionTotalAmountQuery(
+            walletId,
+            (queryConditions.From, queryConditions.To),
+            queryConditions.QueryTypes?.Select(n => (TransactionType)n) ?? Array.Empty<TransactionType>());
+
+        return getService.GetAsync(
+            query,
+            HttpContext.RequestAborted);
+    }
 }

@@ -176,4 +176,19 @@ public class AdjustQueryController : ControllerBase
                 AgentOtherAmount = summary.AgentOtherAmount
             });
     }
+
+    [HttpGet("player/netprofit", Name = "QueryPlayerAdjustIncludeInNetProfitRecords")]
+    public IAsyncEnumerable<AdjustPlayerRecordViewModel> QueryPlayerAdjustIncludeInNetProfitRecordsAsync(
+       [FromServices] IQueryService<AdjustPlayerNetProfitQuery, PlayerAdjustRecord> queryService,       
+       [FromQuery(Name = "trans")] IEnumerable<Guid> transactionIds)
+    {
+        var query = new AdjustPlayerNetProfitQuery(transactionIds);
+
+        return queryService.QueryAsync(query, HttpContext.RequestAborted)
+            .Select(record => new AdjustPlayerRecordViewModel
+            {
+                TransactionId = record.TransactionId,
+                IncludeInNetProfit = record.IncludeInNetProfit
+            });
+    }
 }
