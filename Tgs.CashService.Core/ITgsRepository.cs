@@ -21,4 +21,11 @@ public interface ITgsRepository
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes,
         CancellationToken cancellationToken = default);
+
+    ValueTask<decimal> QueryTransactionTotalAmountAsync(
+        Guid walletId,
+        string playerCode,
+        ValueRange<DateTime> queryRange,
+        IEnumerable<TransactionType> queryTypes,
+        CancellationToken cancellationToken = default);
 }

@@ -81,8 +81,20 @@ internal class TgsRepository : ITgsRepository
         return wallet?.PlayerCode;
     }
 
-    private IQueryable<TransactionData> MakeTransactionLogQuery(
+    public async ValueTask<decimal> QueryTransactionTotalAmountAsync(
         Guid walletId,
+        string playerCode,
+        ValueRange<DateTime> queryRange,
+        IEnumerable<TransactionType> queryTypes,
+        CancellationToken cancellationToken = default)
+        => await MakeTransactionLogQuery(
+            walletId,
+            playerCode,
+            queryRange,
+            queryTypes).SumAsync(t => t.Amount, cancellationToken);
+
+    private IQueryable<TransactionData> MakeTransactionLogQuery(
+            Guid walletId,
         string playerCode,
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes)

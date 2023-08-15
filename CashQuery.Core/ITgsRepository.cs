@@ -39,4 +39,8 @@ public interface ITgsRepository
     ValueTask<int> CountQueryAgentAdjustSummariesAsync(
         AdjustRecordQueryCondition condition,
         CancellationToken cancellation = default);
+
+    IAsyncEnumerable<PlayerAdjustRecord> QueryPlayerAdjustNetProfitAsync(
+        IEnumerable<Guid> transactionIds,
+        CancellationToken cancellationToken = default);
 }

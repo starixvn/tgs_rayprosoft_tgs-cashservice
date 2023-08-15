@@ -636,4 +636,30 @@ internal partial class CashServiceClient : ICashServiceClient
             .FirstAsync(cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
+
+    public async ValueTask<decimal?> QueryTransactionTotalAmountAsync(
+        Guid walletId,
+        DateTime from,
+        DateTime to,
+        IEnumerable<int> queryTransactionTypes,
+        CancellationToken cancellationToken = default)
+    {
+        var queryStrings = HttpUtility.ParseQueryString(string.Empty);
+
+        queryStrings.Add("from", from.ToString("o"));
+        queryStrings.Add("to", to.ToString("o"));
+
+        foreach (var queryType in queryTransactionTypes)
+            queryStrings.Add("type", queryType.ToString());
+
+        var response = await _httpClient
+            .GetAsync($"/api/transaction-log/totalamount/{walletId}?{queryStrings}", cancellationToken)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<decimal?>(contentJson);
+    }
 }

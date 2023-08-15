@@ -617,4 +617,91 @@ public class AdjustQueryTests
         // Assert
         Assert.Equivalent(expected, actual);
     }
+
+    [Fact]
+    public async Task 查詢玩家調帳記錄淨營利()
+    {
+        // Arrange
+        await using var web = CashQueryTestHost.Factory
+            .WithWebHostBuilder(hostBuilder => hostBuilder
+                .ConfigureLogging(logging => logging.AddXUnit(_testOutputHelper)));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashQueryClient(httpClient);
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        var transactionId1 = Guid.Parse("ce8a455e-7f01-0000-0001-0000f79e2257");
+        var transacationId2 = Guid.Parse("cf29d2e7-7f01-0000-0001-0000f79e2257");
+
+        var transactionIds = new Guid[]
+        {
+            transactionId1,
+            transacationId2
+        };
+
+        var playerRecords = new[]
+        {
+            new AdjustPlayerRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = Guid.NewGuid(),
+                Type = (short)AdjustType.CompanyAdjust,
+                PlayerCode = "test1",
+                Amount = 10M,
+                BucketAmount = 10M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.ToUniversalTime(),
+                AdjustmentType = 1,
+                TransactionId = transactionId1,
+                IncludeInNetProfit = true
+            },
+            new AdjustPlayerRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = Guid.NewGuid(),
+                Type = (short)AdjustType.CompanyAdjust,
+                PlayerCode = "test2",
+                Amount = 20M,
+                BucketAmount = 20M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.AddSeconds(1D).ToUniversalTime(),
+                AdjustmentType = 1,
+                TransactionId = transacationId2,
+                IncludeInNetProfit = false
+            },
+            new AdjustPlayerRecord
+            {
+                Id = Guid.NewGuid(),
+                BrandId = Guid.NewGuid(),
+                Type = (short)AdjustType.CompanyAdjust,
+                PlayerCode = "test1",
+                Amount = 30M,
+                BucketAmount = 30M,
+                CreatedByUsername = "system",
+                CreatedOn = DateTime.Now.AddSeconds(2D).ToUniversalTime(),
+                AdjustmentType = 1,
+                TransactionId = null,
+                IncludeInNetProfit = false
+            }
+        };
+
+        await dbContext.AdjustPlayerRecords.AddRangeAsync(playerRecords);
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var expected = new[]{
+            new PlayerAdjustRecord(transactionId1,true),
+            new PlayerAdjustRecord(transacationId2,false)
+        };
+
+        // Act
+        var actual = await sut.QueryPlayerAdjustIncludeInNetProfitRecordsAsync(transactionIds).ToArrayAsync();
+
+        // Assert
+        Assert.Equal(2, actual.Length);
+        Assert.True(actual[0].IncludeInNetProfit);
+        Assert.False(actual[1].IncludeInNetProfit);
+    }
 }
