@@ -26,18 +26,16 @@ internal class TransactionLogQueryService
                 query.Paging,
                 cancellationToken));
 
-    public ValueTask<int> GetAsync(TransactionLogQuery query, CancellationToken cancellationToken = default)
-        => _tgsRepository.GetPlayerCodeByWalletIdAsync(query.WalletId, cancellationToken)
-            .AsTask()
-            .ToAsyncEnumerable()
-            .Where(playerCode => !string.IsNullOrEmpty(playerCode))
-            .SelectMany(playerCode => _tgsRepository.CountTransactionLogsQueryAsync(
-                query.WalletId,
-                playerCode!,
-                query.QueryRange,
-                query.QueryTypes,
-                cancellationToken)
-                .AsTask()
-                .ToAsyncEnumerable())
-            .FirstAsync(cancellationToken: cancellationToken);
+    public async ValueTask<int> GetAsync(TransactionLogQuery query, CancellationToken cancellationToken = default)
+    {
+        var playerCode = await _tgsRepository.GetPlayerCodeByWalletIdAsync(
+            query.WalletId,
+            cancellationToken).ConfigureAwait(false);
+        return await _tgsRepository.CountTransactionLogsQueryAsync(
+            query.WalletId,
+            playerCode!,
+            query.QueryRange,
+            query.QueryTypes,
+            cancellationToken).ConfigureAwait(false);
+    }
 }

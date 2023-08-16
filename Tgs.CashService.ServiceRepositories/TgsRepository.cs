@@ -54,8 +54,12 @@ internal class TgsRepository : ITgsRepository
                     },
                 row.Amount,
                 row.Balance,
-                row.LockAmount,
-                row.LockedBalance,
+                row.RecordType is "G"
+                    ? 0M
+                    : row.LockAmount,
+                row.RecordType is "G"
+                    ? 0M
+                    : row.LockedBalance,
                 row.Description,
                 row.ExternalTransactionId));
     }
@@ -94,7 +98,7 @@ internal class TgsRepository : ITgsRepository
             queryTypes).SumAsync(t => t.Amount, cancellationToken);
 
     private IQueryable<TransactionData> MakeTransactionLogQuery(
-            Guid walletId,
+        Guid walletId,
         string playerCode,
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes)
@@ -126,9 +130,9 @@ internal class TgsRepository : ITgsRepository
                 Id = trx.Id,
                 RecordType = "G",
                 Amount = trx.Amount,
-                LockAmount = 0M,
+                LockAmount = trx.Amount,
                 Balance = trx.Balance,
-                LockedBalance = 0M,
+                LockedBalance = trx.Balance,
                 Type = trx.Type,
                 RecordedOn = trx.RecordedOn,
                 Description = null,
