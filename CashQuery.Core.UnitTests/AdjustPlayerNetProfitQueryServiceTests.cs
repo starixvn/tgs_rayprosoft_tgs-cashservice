@@ -14,8 +14,6 @@ public class AdjustPlayerNetProfitQueryServiceTests
 
         var sut = new AdjustPlayerNetProfitQueryService(fakeTgsRepository);
 
-        var currentDate = DateTime.Now;
-
         var transactionIds = new Guid[]
         {
             Guid.NewGuid(),

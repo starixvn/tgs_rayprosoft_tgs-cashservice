@@ -532,7 +532,7 @@ public class TransactionLogQueryTests
         var to = DateTime.Now.AddDays(1D);
 
         var dbContext = web.Services.GetRequiredService<TgsContext>();
-        
+
         var transactionLogs = new[] {
             new Transaction
             {
@@ -559,7 +559,7 @@ public class TransactionLogQueryTests
             ExternalCurrencyCode = "CNY"
         });
 
-        _ = await dbContext.SaveChangesAsync();        
+        _ = await dbContext.SaveChangesAsync();
 
         var actual = await sut.QueryTransactionTotalAmountAsync(
             walletId,
@@ -568,5 +568,94 @@ public class TransactionLogQueryTests
             Array.Empty<int>());
 
         Assert.AreEqual(100M, actual);
+    }
+
+    [TestMethod]
+    public async Task 查詢紀錄如果沒有符合的資料應該回傳空陣列並且TotalCount為0()
+    {
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services => services
+                .Replace(ServiceDescriptor.Singleton(sp =>
+                {
+                    var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                    _ = dbContextOptionsBuilder
+                        .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                        .ConfigureWarnings(x => x.Ignore(
+                            InMemoryEventId.TransactionIgnoredWarning));
+
+                    return new TgsContext(dbContextOptionsBuilder.Options);
+                }))));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var walletId = Guid.NewGuid();
+        var playerCode = "test1";
+        var from = DateTime.Now.AddDays(-1D);
+        var to = DateTime.Now.AddDays(1D);
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        _ = await dbContext.Wallets.AddAsync(new Wallet
+        {
+            Id = walletId,
+            PlayerCode = playerCode,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY"
+        });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var actual = await sut.QueryTransactionLogsAsync(
+            walletId,
+            from,
+            to,
+            Array.Empty<int>(),
+            new PagingConditions(1, 10));
+
+        Assert.AreEqual(0, actual.TotalCount);
+        Assert.AreEqual(1, actual.Page);
+        Assert.AreEqual(0, actual.Items.Count());
+    }
+
+    [TestMethod]
+    public async Task 如果查詢不到錢包資料則回傳空陣列()
+    {
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services => services
+                .Replace(ServiceDescriptor.Singleton(sp =>
+                {
+                    var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                    _ = dbContextOptionsBuilder
+                        .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                        .ConfigureWarnings(x => x.Ignore(
+                            InMemoryEventId.TransactionIgnoredWarning));
+
+                    return new TgsContext(dbContextOptionsBuilder.Options);
+                }))));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var walletId = Guid.NewGuid();
+        var from = DateTime.Now.AddDays(-1D);
+        var to = DateTime.Now.AddDays(1D);
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var actual = await sut.QueryTransactionLogsAsync(
+            walletId,
+            from,
+            to,
+            Array.Empty<int>(),
+            new PagingConditions(1, 10));
+
+        Assert.AreEqual(0, actual.TotalCount);
+        Assert.AreEqual(1, actual.Page);
+        Assert.AreEqual(0, actual.Items.Count());
     }
 }
