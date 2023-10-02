@@ -10,7 +10,7 @@ internal class AdjustTransferCommandService : IGetService<AdjustTransferCommand,
     public AdjustTransferCommandService(IWalletExchangeService walletExchangeService) => _walletExchangeService =
         walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
-    public async ValueTask<ExchangeResult> GetAsync(AdjustTransferCommand command,
+    public ValueTask<ExchangeResult> GetAsync(AdjustTransferCommand command,
         CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
@@ -24,8 +24,8 @@ internal class AdjustTransferCommandService : IGetService<AdjustTransferCommand,
             CreatedUser = command.CreatedByUserId
         };
 
-        return await _walletExchangeService
+        return _walletExchangeService
             .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+;
     }
 }

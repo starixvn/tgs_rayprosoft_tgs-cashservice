@@ -12,7 +12,8 @@ internal class DividendAllAgentRebateCommandService : IGetService<DividendAllAge
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(DividendAllAgentRebateCommand command,
+    public ValueTask<ExchangeResult> GetAsync(
+        DividendAllAgentRebateCommand command,
         CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
@@ -25,8 +26,8 @@ internal class DividendAllAgentRebateCommandService : IGetService<DividendAllAge
             ExternalId = command.ExternalId ?? string.Empty
         };
 
-        return await _walletExchangeService
+        return _walletExchangeService
             .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+;
     }
 }

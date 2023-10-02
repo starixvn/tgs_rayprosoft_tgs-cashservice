@@ -24,7 +24,9 @@ internal class WalletExchangeBackgroundService : BackgroundService
 
                 _walletExchanger.ScanExpiredQueues();
 
-                await Task.Delay(10000, stoppingToken);
+                await Task.Delay(
+                    10000,
+                    stoppingToken).ConfigureAwait(false);
             }
         }, stoppingToken);
     }

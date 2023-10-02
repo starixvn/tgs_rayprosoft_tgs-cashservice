@@ -74,7 +74,7 @@ internal class TgsRepository : ITgsRepository
             walletId,
             playerCode,
             queryRange,
-            queryTypes).CountAsync(cancellationToken);
+            queryTypes).CountAsync(cancellationToken).ConfigureAwait(false);
 
     public async ValueTask<string?> GetPlayerCodeByWalletIdAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
@@ -95,7 +95,7 @@ internal class TgsRepository : ITgsRepository
             walletId,
             playerCode,
             queryRange,
-            queryTypes).SumAsync(t => t.Amount, cancellationToken);
+            queryTypes).SumAsync(t => t.Amount, cancellationToken).ConfigureAwait(false);
 
     private IQueryable<TransactionData> MakeTransactionLogQuery(
         Guid walletId,

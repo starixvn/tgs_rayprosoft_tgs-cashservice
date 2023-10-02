@@ -39,4 +39,12 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\Users\Phoenix\source\repos\tgs-cashservice\Tgs.CashQueryService.IntegrationTests\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\Users\Phoenix\source\repos\tgs-cashservice\Tgs.CashQueryService.IntegrationTests\.editorconfig" />
+  </ItemGroup>
+
 </Project>

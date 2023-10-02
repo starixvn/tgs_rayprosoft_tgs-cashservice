@@ -12,7 +12,7 @@ internal class GameWinJackpotCommandService : IGetService<GameWinJackpotCommand,
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(
+    public ValueTask<ExchangeResult> GetAsync(
         GameWinJackpotCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -26,8 +26,8 @@ internal class GameWinJackpotCommandService : IGetService<GameWinJackpotCommand,
             ExternalId = command.ExternalId
         };
 
-        return await _walletExchangeService
+        return _walletExchangeService
             .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+;
     }
 }
