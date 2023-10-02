@@ -12,7 +12,7 @@ internal class GameRevisionCommandService : IGetService<GameRevisionCommand, Exc
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(GameRevisionCommand command, CancellationToken cancellationToken = default)
+    public ValueTask<ExchangeResult> GetAsync(GameRevisionCommand command, CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
         {
@@ -24,8 +24,8 @@ internal class GameRevisionCommandService : IGetService<GameRevisionCommand, Exc
             ExternalId = command.ExternalId
         };
 
-        return await _walletExchangeService
+        return _walletExchangeService
             .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+;
     }
 }

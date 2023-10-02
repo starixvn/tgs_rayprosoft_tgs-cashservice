@@ -1,8 +1,6 @@
 ﻿using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Npgsql;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -75,6 +73,7 @@ builder.Services
                 .AddEnvironmentVariableDetector())
             .AddSource("Tgs.*")
             .AddSource("TGS.*")
+            .AddSource("Valhalla.*")
             .AddNpgsql()
             .AddAspNetCoreInstrumentation()
             .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)

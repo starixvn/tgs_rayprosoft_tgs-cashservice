@@ -12,7 +12,7 @@ internal class GameDebitCommandService : IGetService<GameDebitCommand, ExchangeR
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(GameDebitCommand command, CancellationToken cancellationToken = default)
+    public ValueTask<ExchangeResult> GetAsync(GameDebitCommand command, CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
         {
@@ -24,8 +24,8 @@ internal class GameDebitCommandService : IGetService<GameDebitCommand, ExchangeR
             ExternalId = command.ExternalId
         };
 
-        return await _walletExchangeService
+        return _walletExchangeService
             .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+;
     }
 }

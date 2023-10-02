@@ -12,7 +12,8 @@ internal class AdjustResettledBetManualCommandService : IGetService<AdjustResett
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(AdjustResettledBetManualCommand command, CancellationToken cancellationToken = default)
+
+    public ValueTask<ExchangeResult> GetAsync(AdjustResettledBetManualCommand command, CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
         {
@@ -25,8 +26,8 @@ internal class AdjustResettledBetManualCommandService : IGetService<AdjustResett
             CreatedUser = command.CreatedByUserId
         };
 
-        return await _walletExchangeService
+        return _walletExchangeService
             .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+;
     }
 }

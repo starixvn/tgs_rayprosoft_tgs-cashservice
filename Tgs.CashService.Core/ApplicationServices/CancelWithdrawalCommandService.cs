@@ -12,7 +12,7 @@ internal class CancelWithdrawalCommandService : IGetService<CancelWithdrawalComm
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(CancelWithdrawalCommand command, CancellationToken cancellationToken = default)
+    public ValueTask<ExchangeResult> GetAsync(CancelWithdrawalCommand command, CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
         {
@@ -25,8 +25,8 @@ internal class CancelWithdrawalCommandService : IGetService<CancelWithdrawalComm
             CreatedUser = command.CreatedByUserId
         };
 
-        return await _walletExchangeService
+        return _walletExchangeService
             .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+;
     }
 }

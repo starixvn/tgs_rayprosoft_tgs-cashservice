@@ -1,5 +1,4 @@
 ﻿using NSubstitute;
-using NUnit.Framework;
 using Tgs.Cash.Protos;
 using Tgs.CashService.ApplicationServices;
 

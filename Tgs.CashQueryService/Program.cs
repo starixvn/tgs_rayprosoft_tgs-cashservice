@@ -67,6 +67,7 @@ builder.Services
             .SetResourceBuilder(ResourceBuilder.CreateDefault()
                 .AddEnvironmentVariableDetector())
             .AddSource("Tgs.*")
+            .AddSource("Valhalla.*")
             .AddAspNetCoreInstrumentation()
             .AddProfileViewExporter()
             .AddOtlpExporter())

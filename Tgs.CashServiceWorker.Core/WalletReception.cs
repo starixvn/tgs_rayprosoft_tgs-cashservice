@@ -105,27 +105,30 @@ internal class WalletReception : IDisposable
                 return;
             }
 
-            await using var scope = _serviceProvider.CreateAsyncScope();
-            var repository = scope.ServiceProvider.GetRequiredService<IWalletRepository>();
+            var scope = _serviceProvider.CreateAsyncScope();
+            await using (scope.ConfigureAwait(false))
+            {
+                var repository = scope.ServiceProvider.GetRequiredService<IWalletRepository>();
 
-            var wallet = await repository
-                .GetWalletAsync(exchangeTask.Request.WalletId, cancellationToken)
-                .ConfigureAwait(false)
-                ?? throw new InvalidOperationException("Can't found wallet.");
+                var wallet = await repository
+                    .GetWalletAsync(exchangeTask.Request.WalletId, cancellationToken)
+                    .ConfigureAwait(false)
+                    ?? throw new InvalidOperationException("Can't found wallet.");
 
-            var result = await repository.ExchangeAsync(
-                wallet.BrandId,
-                exchangeTask.Request.WalletId,
-                wallet.PlayerCode,
-                exchangeTask.Request.TransactionType,
-                exchangeTask.Request.Amount,
-                exchangeTask.Request.LockAmount,
-                exchangeTask.Request.Description,
-                exchangeTask.Request.ExternalId,
-                exchangeTask.Request.CreatedByUserId,
-                cancellationToken).ConfigureAwait(false);
+                var result = await repository.ExchangeAsync(
+                    wallet.BrandId,
+                    exchangeTask.Request.WalletId,
+                    wallet.PlayerCode,
+                    exchangeTask.Request.TransactionType,
+                    exchangeTask.Request.Amount,
+                    exchangeTask.Request.LockAmount,
+                    exchangeTask.Request.Description,
+                    exchangeTask.Request.ExternalId,
+                    exchangeTask.Request.CreatedByUserId,
+                    cancellationToken).ConfigureAwait(false);
 
-            exchangeTask.Promise.SetResult(result);
+                exchangeTask.Promise.SetResult(result);
+            }
         }
         catch (Exception ex)
         {

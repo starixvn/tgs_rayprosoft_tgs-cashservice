@@ -1,8 +1,8 @@
 ﻿using Google.Protobuf;
 using Tgs.Cash.Protos;
 using Tgs.CashServiceWorker.ApplicationServices;
-using Tgs.MessageQueue;
 using Tgs.ServiceUtility;
+using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker.MessageQueue;
 

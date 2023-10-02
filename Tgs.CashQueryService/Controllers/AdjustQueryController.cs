@@ -179,7 +179,7 @@ public class AdjustQueryController : ControllerBase
 
     [HttpGet("player/netprofit", Name = "QueryPlayerAdjustIncludeInNetProfitRecords")]
     public IAsyncEnumerable<AdjustPlayerRecordViewModel> QueryPlayerAdjustIncludeInNetProfitRecordsAsync(
-       [FromServices] IQueryService<AdjustPlayerNetProfitQuery, PlayerAdjustRecord> queryService,       
+       [FromServices] IQueryService<AdjustPlayerNetProfitQuery, PlayerAdjustRecord> queryService,
        [FromQuery(Name = "trans")] IEnumerable<Guid> transactionIds)
     {
         var query = new AdjustPlayerNetProfitQuery(transactionIds);

@@ -3,8 +3,8 @@ using StackExchange.Redis;
 using Tgs.Cash.Protos;
 using Tgs.CashService;
 using Tgs.CashServiceWorker.ApplicationServices;
-using Tgs.MessageQueue;
 using Tgs.ServiceUtility;
+using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker.MessageQueue;
 

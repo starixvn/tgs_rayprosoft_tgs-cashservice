@@ -24,6 +24,6 @@ internal class TransactionTotalAmountQueryService : IGetService<TransactionTotal
                 playerCode,
                 query.QueryRange,
                 query.QueryTypes,
-                cancellationToken);
+                cancellationToken).ConfigureAwait(false);
     }
 }

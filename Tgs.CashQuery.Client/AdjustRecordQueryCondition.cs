@@ -1,5 +1,4 @@
 ﻿using Tgs.Cash.Common;
-using Tgs.CashQueryService;
 
 namespace Tgs.CashQueryService.Client;
 public record AdjustRecordQueryCondition(

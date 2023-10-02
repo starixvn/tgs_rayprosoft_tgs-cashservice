@@ -606,7 +606,7 @@ internal partial class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<PagingResponse<TransactionLog>> QueryTransactionLogsAsync(
+    public ValueTask<PagingResponse<TransactionLog>> QueryTransactionLogsAsync(
         Guid walletId,
         DateTime from,
         DateTime to,
@@ -625,7 +625,7 @@ internal partial class CashServiceClient : ICashServiceClient
         queryStrings.Add("page", paging.Page.ToString());
         queryStrings.Add("rows", paging.Rows.ToString());
 
-        return await _httpClient.GetAsync($"/api/transaction-log/{walletId}?{queryStrings}", cancellationToken)
+        return _httpClient.GetAsync($"/api/transaction-log/{walletId}?{queryStrings}", cancellationToken)
             .ToAsyncEnumerable()
             .Do(response => response.EnsureSuccessStatusCode())
             .SelectMany(response => response.Content
@@ -634,7 +634,7 @@ internal partial class CashServiceClient : ICashServiceClient
             .Where(result => result is not null)
             .Select(result => result!)
             .FirstAsync(cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
+;
     }
 
     public async ValueTask<decimal?> QueryTransactionTotalAmountAsync(

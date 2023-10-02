@@ -12,7 +12,7 @@ internal class GameProviderDepositCommandService : IGetService<GameProviderDepos
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(GameProviderDepositCommand command, CancellationToken cancellationToken = default)
+    public ValueTask<ExchangeResult> GetAsync(GameProviderDepositCommand command, CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
         {
@@ -24,8 +24,8 @@ internal class GameProviderDepositCommandService : IGetService<GameProviderDepos
             ExternalId = command.ExternalId ?? string.Empty
         };
 
-        return await _walletExchangeService
+        return _walletExchangeService
             .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+;
     }
 }

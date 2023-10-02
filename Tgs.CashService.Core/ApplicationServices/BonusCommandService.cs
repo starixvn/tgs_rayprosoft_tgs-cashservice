@@ -13,7 +13,7 @@ internal class BonusCommandService : IGetService<BonusCommand, ExchangeResult>
         _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
     }
 
-    public async ValueTask<ExchangeResult> GetAsync(BonusCommand command, CancellationToken cancellationToken = default)
+    public ValueTask<ExchangeResult> GetAsync(BonusCommand command, CancellationToken cancellationToken = default)
     {
         var request = new WalletExchangeRequest
         {
@@ -25,8 +25,8 @@ internal class BonusCommandService : IGetService<BonusCommand, ExchangeResult>
             ExternalId = command.ExternalId ?? string.Empty
         };
 
-        return await _walletExchangeService
+        return _walletExchangeService
             .SendRequestAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+;
     }
 }

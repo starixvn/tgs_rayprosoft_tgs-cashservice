@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+ï»¿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -17,7 +17,7 @@ public class WalletRepositoryUnitTest
         var brandId = Guid.NewGuid();
         var walletId = Guid.NewGuid();
         var transactionType = TransactionType.WithdrawCommit;
-        var description = "´ú¸Õ";
+        var description = "test";
         var externalId = Guid.NewGuid().ToString("N");
         var createdByUserId = Guid.NewGuid();
 
@@ -89,7 +89,7 @@ public class WalletRepositoryUnitTest
         var brandId = Guid.NewGuid();
         var walletId = Guid.NewGuid();
         var transactionType = TransactionType.WithdrawCommit;
-        var description = "´ú¸Õ";
+        var description = "test";
         var externalId = Guid.NewGuid().ToString("N");
         var createdByUserId = Guid.NewGuid();
 

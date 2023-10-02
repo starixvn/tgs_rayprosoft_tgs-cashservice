@@ -1,5 +1,4 @@
 ﻿using NSubstitute;
-using NUnit.Framework;
 using Tgs.CashService.ApplicationServices;
 
 namespace Tgs.CashService.Core.UnitTests;

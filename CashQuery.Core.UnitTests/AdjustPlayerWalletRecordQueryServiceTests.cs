@@ -1,7 +1,6 @@
 ﻿using NSubstitute;
 using Tgs.CashQueryService;
 using Tgs.CashQueryService.ApplicationServices;
-using Xunit;
 
 namespace CashQuery.Core.UnitTests;
 

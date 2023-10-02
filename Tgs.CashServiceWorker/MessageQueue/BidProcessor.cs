@@ -1,7 +1,7 @@
 ﻿using Google.Protobuf;
 using StackExchange.Redis;
 using Tgs.Cash.Protos;
-using Tgs.MessageQueue;
+using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker.MessageQueue;
 
