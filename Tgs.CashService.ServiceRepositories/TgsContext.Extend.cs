@@ -1,0 +1,12 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tgs.CashService.Repositories.Entities;
+
+public partial class TgsContext : DbContext
+{
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder) 
+    {
+        _ = modelBuilder.Entity<TransactionData>()
+            .HasNoKey();
+    }
+}
