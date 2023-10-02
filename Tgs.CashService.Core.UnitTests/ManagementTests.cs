@@ -1,5 +1,4 @@
-using NSubstitute;
-using NUnit.Framework;
+嚜簑sing NSubstitute;
 using Tgs.Cash.Protos;
 using Tgs.CashService.ApplicationServices;
 
@@ -19,7 +18,7 @@ public class ManagementTests
             Guid.NewGuid(),
             100M,
             Guid.NewGuid().ToString("N"),
-            "測試調整",
+            "6B95C992-0B62-4EED-943F-64D6C7A21FF5",
             Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -45,7 +44,7 @@ public class ManagementTests
             Guid.NewGuid(),
             100,
             Guid.NewGuid().ToString("N"),
-            "測試紅利");
+            "6B95C992-0B62-4EED-943F-64D6C7A21FF5");
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
@@ -69,7 +68,7 @@ public class ManagementTests
             Guid.NewGuid(),
             100M,
             Guid.NewGuid().ToString("N"),
-            "測試反水");
+            "6B95C992-0B62-4EED-943F-64D6C7A21FF5");
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
@@ -93,7 +92,7 @@ public class ManagementTests
             Guid.NewGuid(),
             100,
             Guid.NewGuid().ToString("N"),
-            "測試其他",
+            "6B95C992-0B62-4EED-943F-64D6C7A21FF5",
             Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
@@ -118,7 +117,7 @@ public class ManagementTests
         var command = new UnsettledBetManualCommand(
             Guid.NewGuid(),
             100,
-            "測試Open Round Page",
+            "Open Round Page",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
 
@@ -144,7 +143,7 @@ public class ManagementTests
         var command = new AdjustResettledBetManualCommand(
             Guid.NewGuid(),
             100,
-            "測試Closed Round Page",
+            "Closed Round Page",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
 

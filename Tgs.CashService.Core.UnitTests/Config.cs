@@ -1,6 +1,4 @@
-﻿using NUnit.Framework;
-
-namespace Tgs.CashService.Core.UnitTests;
+﻿namespace Tgs.CashService.Core.UnitTests;
 
 [SetUpFixture]
 public class Config
