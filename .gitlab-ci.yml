@@ -66,7 +66,15 @@ deploy-service-dev:
     - main
   when: on_success
   script:
-    - deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
+    - |
+      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
+        {
+          "restart": {
+            "enabled": true,
+            "schedule": "0 23 * * *"
+          }
+        }
+      EOF
 
 deploy-worker-dev:
   extends: .deploy-template
@@ -85,10 +93,18 @@ deploy-worker-dev:
     - main
   when: on_success
   script:
-    - deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
+    - |
+      cat << EOF | deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
+        {
+          "restart": {
+            "enabled": true,
+            "schedule": "0 23 * * *"
+          }
+        }
+      EOF
 
 deploy-query-dev:
-  extends: .deploy-template 
+  extends: .deploy-template
   variables:
     namespace: dev
     kube_config: KubeConfig_Raypro_dev
@@ -121,7 +137,15 @@ deploy-service-staging:
   only:
     - main
   script:
-    - deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
+    - |
+      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
+        {
+          "restart": {
+            "enabled": true,
+            "schedule": "0 23 * * *"
+          }
+        }
+      EOF
 
 deploy-worker-staging:
   extends: .deploy-template
@@ -138,7 +162,15 @@ deploy-worker-staging:
   only:
     - main
   script:
-    - deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
+    - |
+      cat << EOF | deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
+        {
+          "restart": {
+            "enabled": true,
+            "schedule": "0 23 * * *"
+          }
+        }
+      EOF
 
 deploy-query-staging:
   extends: .deploy-template
@@ -173,7 +205,15 @@ deploy-service-prod:
     - main
   when: manual
   script:
-    - deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
+    - |
+      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
+        {
+          "restart": {
+            "enabled": true,
+            "schedule": "0 23 * * *"
+          }
+        }
+      EOF
 
 deploy-worker-prod:
   extends: .deploy-template
@@ -190,7 +230,15 @@ deploy-worker-prod:
   only:
     - main
   script:
-    - deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
+    - |
+      cat << EOF | deploy_k8s $TgsWorkerSettingKey $HelmTemplateWorkerFolderName $namespace
+        {
+          "restart": {
+            "enabled": true,
+            "schedule": "0 23 * * *"
+          }
+        }
+      EOF
 
 deploy-query-prod:
   extends: .deploy-template

@@ -88,3 +88,9 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+restart:
+  enabled: false
+  serviceAccount: caseservice-api-restarter
+  annotations: {}
+  schedule: 0 8 * * *
