@@ -34,6 +34,10 @@ push-nuget:
   script:
     - push_package "Tgs.CashService.Client"
     - push_package "Tgs.CashQuery.Client"
+  artifacts:
+    paths:
+      - Tgs.CashService.Client/bin/$BuildConfiguration/*.nupkg
+      - Tgs.CashQuery.Client/bin/$BuildConfiguration/*.nupkg
 
 push-docker-image:
   extends: .push-docker-image-template
