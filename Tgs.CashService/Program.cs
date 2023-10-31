@@ -1,7 +1,6 @@
-﻿using FluentdForward.OpenTelemetry.MessagePack;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
+﻿using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
+using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -44,11 +43,11 @@ builder.Services
 builder.Services
     .AddApiVersioning(options =>
     {
-        options.DefaultApiVersion = ApiVersion.Parse("1");
+        options.DefaultApiVersion = new ApiVersion(1, 0);
         options.AssumeDefaultVersionWhenUnspecified = true;
         options.ApiVersionReader = new HeaderApiVersionReader("API-VERSION");
     })
-    .AddVersionedApiExplorer(options =>
+    .AddApiExplorer(options =>
     {
         options.GroupNameFormat = "'v'VVV";
     });
@@ -124,7 +123,6 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseApiVersioning();
 app.UseSwaggerUI(c =>
 {
     foreach (var desc in app.Services.GetRequiredService<IApiVersionDescriptionProvider>().ApiVersionDescriptions)
