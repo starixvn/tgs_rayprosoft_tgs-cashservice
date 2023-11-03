@@ -662,4 +662,20 @@ internal partial class CashServiceClient : ICashServiceClient
 
         return JsonSerializer.Deserialize<decimal?>(contentJson);
     }
+
+    public ValueTask<Guid> CreateNewCashAsync(
+        string userId,
+        string currencyCode,
+        CancellationToken cancellationToken = default)
+        => _httpClient.PutAsJsonAsync(
+            "/wallet-mgr",
+            new NewCashRequest(userId, currencyCode),
+            _SerializerOptions,
+            cancellationToken)
+            .ToAsyncEnumerable()
+            .Do(response => response.EnsureSuccessStatusCode())
+            .SelectMany(response => response.Content
+                .ReadFromJsonAsync<Guid>(_SerializerOptions, cancellationToken)
+                .ToAsyncEnumerable())
+            .FirstAsync(cancellationToken: cancellationToken);
 }

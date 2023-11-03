@@ -170,4 +170,9 @@ public partial interface ICashServiceClient
         DateTime to,
         IEnumerable<int> queryTransactionTypes,
         CancellationToken cancellationToken = default);
+
+    ValueTask<Guid> CreateNewCashAsync(
+        string userId,
+        string currencyCode,
+        CancellationToken cancellation = default);
 }

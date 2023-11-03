@@ -97,6 +97,32 @@ internal class TgsRepository : ITgsRepository
             queryRange,
             queryTypes).SumAsync(t => t.Amount, cancellationToken).ConfigureAwait(false);
 
+    public async ValueTask CreateWalletAsync(
+        Guid walletId,
+        string userId,
+        string currencyCode,
+        CancellationToken cancellationToken = default)
+    {
+        var currentDate = DateTime.UtcNow;
+
+        var wallet = new Wallet
+        {
+            Id = walletId,
+            PlayerCode = userId,
+            CurrencyCode = currencyCode,
+            ExternalCurrencyCode = currencyCode,
+            Balance = 0,
+            CreatedOn = currentDate,
+            UpdatedOn = currentDate
+        };
+
+        _ = await _dbContext.Wallets.AddAsync(
+            wallet,
+            cancellationToken).ConfigureAwait(false);
+
+        _ = await _dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     private IQueryable<TransactionData> MakeTransactionLogQuery(
         Guid walletId,
         string playerCode,
