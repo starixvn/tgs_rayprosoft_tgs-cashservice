@@ -17,6 +17,6 @@ internal class DbScriptExecutor : IDbScriptExecutor
     {
         var connection = _tgsContext.Database.GetDbConnection();
 
-        return connection.QueryFirstOrDefaultAsync<T>(sql, parameters);
+        return connection.QueryFirstOrDefaultAsync<T>(sql, parameters)!;
     }
 }

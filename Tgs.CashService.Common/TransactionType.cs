@@ -90,6 +90,7 @@ public enum TransactionType
 
     /// <summary>
     /// 遊戲 10000~15999
+    /// 廢除
     /// </summary>
     //Game = 10000
 
@@ -101,10 +102,11 @@ public enum TransactionType
     GameRevision = 10400,
 
     // 下注11000~11999
+    // 廢除
     GameBet = 11000,
 
     // 結算 12000~12999
-
+    // 廢除
     GameSettle = 12000,
     GameSettleWin = 12100,
     GameSettleLose = 12200,
@@ -113,11 +115,11 @@ public enum TransactionType
     GameWinJackpot = 12500,
 
     // 取消 13000~13999
-
+    // 廢除
     GameCancel = 13000,
 
     // 鎖定相關 14000~14999
-
+    // 廢除
     GameLock = 14100,
     GameUnlock = 14200,
 
