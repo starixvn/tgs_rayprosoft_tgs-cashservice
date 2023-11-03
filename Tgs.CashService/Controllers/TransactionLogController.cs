@@ -6,10 +6,11 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.Controllers;
 
-[Route("api/transaction-log")]
+[Route("transaction-log")]
 [ApiController]
 public class TransactionLogController : ControllerBase
 {
+    [HttpGet("~/api/transaction-log/{walletId}", Name = "QueryTransactionLogsOld")]
     [HttpGet("{walletId}", Name = "QueryTransactionLogs")]
     public async Task<PagingResponseViewModel<TransactionLogViewModel>> QueryTransactionLogsAsync(
         [FromServices] IQueryService<TransactionLogQuery, TransactionLog> queryService,
@@ -60,7 +61,8 @@ public class TransactionLogController : ControllerBase
         };
     }
 
-    [HttpGet("totalamount/{walletId}", Name = "QueryTransactionTotalAmountAsync")]
+    [HttpGet("~/api/transaction-log/totalamount/{walletId}", Name = "QueryTransactionTotalAmountOld")]
+    [HttpGet("totalamount/{walletId}", Name = "QueryTransactionTotalAmount")]
     public ValueTask<decimal?> QueryTransactionTotalAmountAsync(
         [FromServices] IGetService<TransactionTotalAmountQuery, decimal?> getService,
         [FromQuery] TransactionLogQueryViewModel queryConditions,
