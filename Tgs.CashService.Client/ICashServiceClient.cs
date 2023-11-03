@@ -2,25 +2,7 @@
 
 public partial interface ICashServiceClient
 {
-    [Obsolete("舊版api")]
-    ValueTask<TransactionResponse> AdjustCompanyAsync(
-        Guid walletId,
-        decimal amount,
-        string? description,
-        string? externalId,
-        Guid createdByUserId,
-        CancellationToken cancellationToken = default);
-
     ValueTask<TransactionResponse> AdjustCompanyV2Async(
-        Guid walletId,
-        decimal amount,
-        string? description,
-        string? externalId,
-        Guid createdByUserId,
-        CancellationToken cancellationToken = default);
-
-    [Obsolete("舊版api")]
-    ValueTask<TransactionResponse> AdjustBonusAsync(
         Guid walletId,
         decimal amount,
         string? description,
