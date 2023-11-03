@@ -328,68 +328,6 @@ internal partial class CashServiceClient : ICashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> AdjustAgentAsync(
-        Guid walletId,
-        decimal amount,
-        string? description,
-        string? externalId,
-        Guid createdByUserId,
-        CancellationToken cancellationToken = default)
-    {
-        var request = new
-        {
-            Amount = amount,
-            Description = description,
-            ExternalId = externalId,
-            CreatedByUserId = createdByUserId
-        };
-
-        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-
-        var response = await _httpClient
-            .PutAsync($"/wallet/adjust/agent/{walletId}", requestContent, cancellationToken)
-            .ConfigureAwait(false);
-
-        _ = response.EnsureSuccessStatusCode();
-
-        var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-    }
-
-    public async ValueTask<TransactionResponse> AdjustSystemAsync(
-        Guid walletId,
-        decimal amount,
-        decimal? lockAmount,
-        string? description,
-        string? externalId,
-        Guid createdByUserId,
-        CancellationToken cancellationToken = default)
-    {
-        var request = new
-        {
-            Amount = amount,
-            LockAmount = lockAmount,
-            Description = description,
-            ExternalId = externalId,
-            CreatedByUserId = createdByUserId
-        };
-
-        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-
-        var response = await _httpClient
-            .PutAsync($"/wallet/adjust/system/{walletId}", requestContent, cancellationToken)
-            .ConfigureAwait(false);
-
-        _ = response.EnsureSuccessStatusCode();
-
-        var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
-    }
-
     public async ValueTask<TransactionResponse> AdjustTransferAsync(
         Guid walletId,
         decimal amount,
