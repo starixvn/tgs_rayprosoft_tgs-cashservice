@@ -8,32 +8,6 @@ namespace Tgs.CashService.Core.UnitTests;
 public class ManagementTests
 {
     [Test]
-    public async Task Can_Create_Adjust_Exchange()
-    {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
-
-        var sut = new AdjustCompanyCommandService(fakeWalletExchangeService);
-
-        var command = new AdjustCompanyCommand(
-            Guid.NewGuid(),
-            100M,
-            Guid.NewGuid().ToString("N"),
-            "6B95C992-0B62-4EED-943F-64D6C7A21FF5",
-            Guid.Parse("f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"));
-
-        _ = await sut.GetAsync(command).ConfigureAwait(false);
-
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.AdjustCompany.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
-    }
-
-    [Test]
     public async Task Can_Create_Bonus_Exchange()
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();

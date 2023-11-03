@@ -11,41 +11,6 @@ namespace Tgs.CashService.Controllers;
 [ApiController]
 public class WalletController : ControllerBase
 {
-    /// <summary>
-    ///     Adjusts the exchange asynchronous.
-    /// </summary>
-    /// <param name="service">The service.</param>
-    /// <param name="walletId"></param>
-    /// <param name="request">The view model.</param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     <b>Example</b><br />
-    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
-    ///     {
-    ///     "amount": 10,
-    ///     "description": "測試公司調帳",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    ///     "createdByUserId": "f76f8171-9d3b-ec11-bf5f-8c554ae8ab6b"
-    ///     }
-    /// </remarks>
-    [HttpPut("adjust/company/{walletId}", Name = "AdjustCompany")]
-    public async ValueTask<TransactionResultViewModel> AdjustCompanyAsync(
-        [FromServices] IGetService<AdjustCompanyCommand, ExchangeResult> service,
-        Guid walletId,
-        [FromBody] AdjustCompanyViewModel request)
-    {
-        var result = await service
-            .GetAsync(new AdjustCompanyCommand(
-                walletId,
-                request.Amount,
-                request.Description,
-                request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
-            .ConfigureAwait(false);
-
-        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
-    }
-
     [ApiVersion("2.0")]
     [HttpPut("adjust/company/{walletId}", Name = "AdjustCompanyV2")]
     public async ValueTask<TransactionResultViewModel> AdjustCompanyV2Async(
@@ -55,24 +20,6 @@ public class WalletController : ControllerBase
     {
         var result = await service
             .GetAsync(new AdjustCompanyV2Command(
-                walletId,
-                request.Amount,
-                request.Description,
-                request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
-            .ConfigureAwait(false);
-
-        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
-    }
-
-    [HttpPut("adjust/bonus/{walletId}", Name = "AdjustBonus")]
-    public async ValueTask<TransactionResultViewModel> AdjustBonusAsync(
-        [FromServices] IGetService<AdjustBonusCommand, ExchangeResult> service,
-        Guid walletId,
-        [FromBody] AdjustBonusViewModel request)
-    {
-        var result = await service
-            .GetAsync(new AdjustBonusCommand(
                 walletId,
                 request.Amount,
                 request.Description,
@@ -457,40 +404,6 @@ public class WalletController : ControllerBase
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
-    /// <summary>
-    ///     Agent adjust the account asynchronous.
-    /// </summary>
-    /// <param name="service">The service.</param>
-    /// <param name="walletId">The wallet identifier.</param>
-    /// <param name="viewModel">The view model.</param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     <b>Example</b><br />
-    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
-    ///     {
-    ///     "amount": 10,
-    ///     "description": "測試代理調帳",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///     }
-    /// </remarks>
-    [HttpPut("adjust/agent/{walletId}", Name = "AdjustAgent")]
-    public async ValueTask<TransactionResultViewModel> AdjustAgentAsync(
-        [FromServices] IGetService<AdjustAgentCommand, ExchangeResult> service,
-        Guid walletId,
-        [FromBody] AdjustAgentViewModel viewModel)
-    {
-        var result = await service
-            .GetAsync(new AdjustAgentCommand(
-                walletId,
-                viewModel.Amount,
-                viewModel.Description,
-                viewModel.ExternalId,
-                viewModel.CreatedByUserId), this.CreateCancellationToken())
-            .ConfigureAwait(false);
-
-        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
-    }
-
     [ApiVersion("2.0")]
     [HttpPut("adjust/agent/{walletId}", Name = "AdjustAgentV2")]
     public async ValueTask<TransactionResultViewModel> AdjustAgentV2Async(
@@ -502,41 +415,6 @@ public class WalletController : ControllerBase
             .GetAsync(new AdjustAgentV2Command(
                 walletId,
                 viewModel.Amount,
-                viewModel.Description,
-                viewModel.ExternalId,
-                viewModel.CreatedByUserId), this.CreateCancellationToken())
-            .ConfigureAwait(false);
-
-        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
-    }
-
-    /// <summary>
-    ///     System adjust the account asynchronous.
-    /// </summary>
-    /// <param name="service">The service.</param>
-    /// <param name="walletId">The wallet identifier.</param>
-    /// <param name="viewModel">The view model.</param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     <b>Example</b><br />
-    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
-    ///     {
-    ///     "amount": 10,
-    ///     "description": "測試系統調帳",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///     }
-    /// </remarks>
-    [HttpPut("adjust/system/{walletId}", Name = "AdjustSystem")]
-    public async ValueTask<TransactionResultViewModel> AdjustSystemAsync(
-        [FromServices] IGetService<AdjustSystemCommand, ExchangeResult> service,
-        Guid walletId,
-        [FromBody] AdjustSystemViewModel viewModel)
-    {
-        var result = await service
-            .GetAsync(new AdjustSystemCommand(
-                walletId,
-                viewModel.Amount,
-                viewModel.LockAmount ?? 0M,
                 viewModel.Description,
                 viewModel.ExternalId,
                 viewModel.CreatedByUserId), this.CreateCancellationToken())

@@ -4,30 +4,12 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class AdjustSystemCommandService : IGetService<AdjustSystemCommand, ExchangeResult>, IGetService<AdjustSystemV2Command, ExchangeResult>
+internal class AdjustSystemCommandService : IGetService<AdjustSystemV2Command, ExchangeResult>
 {
     private readonly IWalletExchangeService _walletExchangeService;
 
     public AdjustSystemCommandService(IWalletExchangeService walletExchangeService) => _walletExchangeService =
         walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
-
-    public ValueTask<ExchangeResult> GetAsync(AdjustSystemCommand command,
-        CancellationToken cancellationToken = default)
-    {
-        var request = new WalletExchangeRequest
-        {
-            WalletId = command.WalletId,
-            TransactionType = TransactionType.AdjustSystem.ToString(),
-            Amount = command.Amount,
-            LockAmount = command.LockAmount,
-            Description = command.Description ?? string.Empty,
-            ExternalId = command.ExternalId ?? string.Empty,
-            CreatedUser = command.CreatedByUserId
-        };
-
-        return _walletExchangeService
-            .SendRequestAsync(request, cancellationToken);
-    }
 
     public ValueTask<ExchangeResult> GetAsync(AdjustSystemV2Command command, CancellationToken cancellationToken = default)
     {
