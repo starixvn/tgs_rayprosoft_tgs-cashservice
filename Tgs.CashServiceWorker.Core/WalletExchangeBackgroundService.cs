@@ -13,7 +13,7 @@ internal class WalletExchangeBackgroundService : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _ = stoppingToken.Register(() => _walletExchanger.StopReceive());
+        _ = stoppingToken.Register(_walletExchanger.StopReceive);
 
         return Task.Run(async () =>
         {

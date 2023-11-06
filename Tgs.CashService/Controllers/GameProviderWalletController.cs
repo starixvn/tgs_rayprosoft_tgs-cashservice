@@ -31,12 +31,14 @@ public class GameProviderWalletController : ControllerBase
         Guid walletId,
         [FromBody] GameProviderDepositViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new GameProviderDepositCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), this.CreateCancellationToken())
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -64,12 +66,14 @@ public class GameProviderWalletController : ControllerBase
         Guid walletId,
         [FromBody] GameProviderFundInViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new GameProviderFundInCommand(
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
-                viewModel.ExternalId), this.CreateCancellationToken())
+                viewModel.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -97,12 +101,14 @@ public class GameProviderWalletController : ControllerBase
         Guid walletId,
         [FromBody] GameProviderFundOutViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new GameProviderFundOutCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), this.CreateCancellationToken())
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -130,12 +136,14 @@ public class GameProviderWalletController : ControllerBase
         Guid walletId,
         [FromBody] GameProviderFundOutViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new GameProviderFundRefundCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), this.CreateCancellationToken())
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -163,12 +171,14 @@ public class GameProviderWalletController : ControllerBase
         Guid walletId,
         [FromBody] GameProviderWithdrawalViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new GameProviderWithdrawalCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), this.CreateCancellationToken())
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);

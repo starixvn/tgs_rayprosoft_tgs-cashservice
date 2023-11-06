@@ -15,13 +15,15 @@ public class AgentWalletController : ControllerBase
         Guid walletId,
         [FromBody] DividendViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service.GetAsync(
             new DividendAgentCommand(
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId),
-            this.CreateCancellationToken()).ConfigureAwait(false);
+            cts.Token).ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
