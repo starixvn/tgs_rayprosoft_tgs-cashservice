@@ -16,6 +16,8 @@ public class TransferWalletController : ControllerBase
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var command = new TransferLockCommand(
             walletId,
             viewModel.Amount,
@@ -24,7 +26,7 @@ public class TransferWalletController : ControllerBase
             executor);
 
         var result = await exchangeService
-            .GetAsync(command, this.CreateCancellationToken())
+            .GetAsync(command, cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -37,6 +39,8 @@ public class TransferWalletController : ControllerBase
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var command = new ReceiveLockCommand(
             walletId,
             viewModel.Amount,
@@ -45,7 +49,7 @@ public class TransferWalletController : ControllerBase
             executor);
 
         var result = await exchangeService
-            .GetAsync(command, this.CreateCancellationToken())
+            .GetAsync(command, cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -58,6 +62,8 @@ public class TransferWalletController : ControllerBase
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var command = new TransferCommitCommand(
             walletId,
             viewModel.Amount,
@@ -66,7 +72,7 @@ public class TransferWalletController : ControllerBase
             executor);
 
         var result = await exchangeService
-            .GetAsync(command, this.CreateCancellationToken())
+            .GetAsync(command, cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -79,6 +85,8 @@ public class TransferWalletController : ControllerBase
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var command = new ReceiveCommitCommand(
             walletId,
             viewModel.Amount,
@@ -87,7 +95,7 @@ public class TransferWalletController : ControllerBase
             executor);
 
         var result = await exchangeService
-            .GetAsync(command, this.CreateCancellationToken())
+            .GetAsync(command, cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -100,6 +108,8 @@ public class TransferWalletController : ControllerBase
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var command = new TransferRollbackCommand(
             walletId,
             viewModel.Amount,
@@ -108,7 +118,7 @@ public class TransferWalletController : ControllerBase
             executor);
 
         var result = await exchangeService
-            .GetAsync(command, this.CreateCancellationToken())
+            .GetAsync(command, cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -121,6 +131,8 @@ public class TransferWalletController : ControllerBase
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var command = new ReceiveRollbackCommand(
             walletId,
             viewModel.Amount,
@@ -129,7 +141,7 @@ public class TransferWalletController : ControllerBase
             executor);
 
         var result = await exchangeService
-            .GetAsync(command, this.CreateCancellationToken())
+            .GetAsync(command, cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);

@@ -33,13 +33,15 @@ public class PaymentWalletController : ControllerBase
         Guid walletId,
         [FromBody] CancelWithdrawalViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new CancelWithdrawalCommand(
                 walletId,
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -51,13 +53,15 @@ public class PaymentWalletController : ControllerBase
         Guid walletId,
         [FromBody] CancelWithdrawalViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new RollbackWithdrawCommand(
                 walletId,
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -77,13 +81,15 @@ public class PaymentWalletController : ControllerBase
         Guid walletId,
         [FromBody] DepositViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new DepositCommand(
                 walletId,
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -102,13 +108,15 @@ public class PaymentWalletController : ControllerBase
         Guid walletId,
         [FromBody] DepositViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new DepositedCommand(
                 walletId,
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -137,12 +145,14 @@ public class PaymentWalletController : ControllerBase
         Guid walletId,
         [FromBody] WithdrawalViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new WithdrawalCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), this.CreateCancellationToken())
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -161,12 +171,14 @@ public class PaymentWalletController : ControllerBase
         Guid walletId,
         [FromBody] WithdrawalViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new WithdrawLockCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), this.CreateCancellationToken())
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -185,6 +197,8 @@ public class PaymentWalletController : ControllerBase
         Guid walletId,
         [FromBody] WithdrawCommitViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new CommitWithdrawCommand(
                 walletId,
@@ -192,7 +206,7 @@ public class PaymentWalletController : ControllerBase
                 request.ActualAmount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);

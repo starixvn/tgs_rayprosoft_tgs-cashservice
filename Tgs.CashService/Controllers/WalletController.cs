@@ -18,13 +18,15 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] AdjustCompanyViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new AdjustCompanyV2Command(
                 walletId,
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -37,13 +39,15 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] AdjustBonusViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new AdjustBonusV2Command(
                 walletId,
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -88,12 +92,14 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] BonusViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new BonusCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), this.CreateCancellationToken())
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -122,13 +128,15 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] UnsettledBetManualViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new UnsettledBetManualCommand(
                 walletId,
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -158,13 +166,15 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] AdjustResettledBetManualViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new AdjustResettledBetManualCommand(
                 walletId,
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -193,13 +203,15 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] OtherViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new OtherCommand(
                 walletId,
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -227,13 +239,15 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] PromotionViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new PromotionCommand(
                 walletId,
                 request.Amount,
                 request.Description,
                 request.ExternalId,
-                request.CreatedByUserId), this.CreateCancellationToken())
+                request.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -261,12 +275,14 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] PromotionVipLevelSeasonViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new PromotionVipLevelSeasonCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), this.CreateCancellationToken())
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -294,12 +310,14 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] PromotionVipLevelUpgradViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new PromotionVipLevelUpgradeCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), this.CreateCancellationToken())
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -327,12 +345,14 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] PromotionVipLevelSeasonViewModel request)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new PromotionVipLevelBirthdayCommand(
                 walletId,
                 request.Amount,
                 request.Description,
-                request.ExternalId), this.CreateCancellationToken())
+                request.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -360,12 +380,14 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] RebateViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new RebateCommand(
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
-                viewModel.ExternalId), this.CreateCancellationToken())
+                viewModel.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -393,12 +415,14 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] DividendViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new DividendAllAgentRebateCommand(
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
-                viewModel.ExternalId), this.CreateCancellationToken())
+                viewModel.ExternalId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -411,13 +435,15 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] AdjustAgentViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new AdjustAgentV2Command(
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,
-                viewModel.CreatedByUserId), this.CreateCancellationToken())
+                viewModel.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -437,6 +463,8 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] AdjustSystemViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new AdjustSystemV2Command(
                 walletId,
@@ -444,7 +472,7 @@ public class WalletController : ControllerBase
                 viewModel.LockAmount ?? 0M,
                 viewModel.Description,
                 viewModel.ExternalId,
-                viewModel.CreatedByUserId), this.CreateCancellationToken())
+                viewModel.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
@@ -472,13 +500,15 @@ public class WalletController : ControllerBase
         Guid walletId,
         [FromBody] AdjustTransferViewModel viewModel)
     {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
         var result = await service
             .GetAsync(new AdjustTransferCommand(
                 walletId,
                 viewModel.Amount,
                 viewModel.Description,
                 viewModel.ExternalId,
-                viewModel.CreatedByUserId), this.CreateCancellationToken())
+                viewModel.CreatedByUserId), cts.Token)
             .ConfigureAwait(false);
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
