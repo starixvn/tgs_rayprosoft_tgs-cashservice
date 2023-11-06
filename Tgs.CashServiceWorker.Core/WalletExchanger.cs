@@ -46,6 +46,8 @@ internal class WalletExchanger
             .Values
             .Select(reception => Task.Run(() => reception.StopReceive()))
             .ToArray());
+
+        _cancellationTokenSource.Dispose();
     }
 
     public void ScanExpiredQueues()

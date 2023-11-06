@@ -391,7 +391,7 @@ public class WalletController : ControllerBase
     public async ValueTask<TransactionResultViewModel> DividendAllAgentRebateAsync(
         [FromServices] IGetService<DividendAllAgentRebateCommand, ExchangeResult> service,
         Guid walletId,
-        [FromBody] RebateViewModel viewModel)
+        [FromBody] DividendViewModel viewModel)
     {
         var result = await service
             .GetAsync(new DividendAllAgentRebateCommand(

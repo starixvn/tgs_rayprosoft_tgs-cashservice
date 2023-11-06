@@ -27,7 +27,6 @@ internal class DividendAllAgentRebateCommandService : IGetService<DividendAllAge
         };
 
         return _walletExchangeService
-            .SendRequestAsync(request, cancellationToken)
-;
+            .SendRequestAsync(request, cancellationToken);
     }
 }
