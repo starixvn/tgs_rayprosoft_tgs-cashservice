@@ -3,6 +3,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
+[Obsolete("已淘汰")]
 internal class DepositCommandService : IGetService<DepositCommand, ExchangeResult>
 {
     private readonly IWalletExchangeService _walletExchangeService;
@@ -17,7 +18,7 @@ internal class DepositCommandService : IGetService<DepositCommand, ExchangeResul
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
-            TransactionType = TransactionType.Deposit.ToString(),
+            TransactionType = TransactionType.DepositOld.ToString(),
             Amount = command.Amount,
             LockAmount = 0M,
             Description = command.Description ?? string.Empty,

@@ -17,7 +17,7 @@ internal class DepositedCommandService : IGetService<DepositedCommand, ExchangeR
         var request = new WalletExchangeRequest
         {
             WalletId = command.WalletId,
-            TransactionType = TransactionType.Deposited.ToString(),
+            TransactionType = TransactionType.Deposit.ToString(),
             Amount = command.Amount,
             LockAmount = 0M,
             Description = command.Description ?? string.Empty,

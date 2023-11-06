@@ -11,6 +11,7 @@ namespace Tgs.CashService.IntegrationTests;
 public class PaymentTests
 {
     [TestMethod]
+    [Obsolete("已淘汰")]
     public async Task Deposit_Amount_To_Wallet()
     {
         var walletId = Guid.NewGuid();
@@ -37,7 +38,7 @@ public class PaymentTests
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
                         Arg.Any<string>(),
-                        Arg.Is(TransactionType.Deposit),
+                        Arg.Is(TransactionType.DepositOld),
                         Arg.Any<decimal>(),
                         Arg.Any<decimal>(),
                         Arg.Any<string>(),
@@ -117,7 +118,7 @@ public class PaymentTests
                         Arg.Any<Guid>(),
                         Arg.Is(walletId),
                         Arg.Any<string>(),
-                        Arg.Is(TransactionType.Deposited),
+                        Arg.Is(TransactionType.Deposit),
                         Arg.Any<decimal>(),
                         Arg.Any<decimal>(),
                         Arg.Any<string>(),
@@ -171,6 +172,7 @@ public class PaymentTests
     }
 
     [TestMethod]
+    [Obsolete("已淘汰")]
     public async Task Withdraw_Amount_From_Wallet()
     {
         var walletId = Guid.NewGuid();
@@ -250,6 +252,7 @@ public class PaymentTests
     }
 
     [TestMethod]
+    [Obsolete("已淘汰")]
     public async Task Cancel_Withdraw_From_Wallet()
     {
         var walletId = Guid.NewGuid();
