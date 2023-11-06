@@ -86,11 +86,11 @@ internal class WalletReception : IDisposable
                 if (_cancellationSource?.IsCancellationRequested == false)
                     _cancellationSource.Cancel();
 
+                _cancellationSource?.Dispose();
+
                 _exchangeTasks.CompleteAdding();
             }
 
-            // TODO: 釋出非受控資源 (非受控物件) 並覆寫完成項
-            // TODO: 將大型欄位設為 Null
             _disposedValue = true;
         }
     }
