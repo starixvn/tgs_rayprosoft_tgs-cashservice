@@ -8,6 +8,7 @@ namespace Tgs.CashService.Core.UnitTests;
 public class PaymentTests
 {
     [Test]
+    [Obsolete("已淘汰")]
     public async Task Can_Create_Deposit_Exchange()
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
@@ -26,7 +27,7 @@ public class PaymentTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Deposit.ToString()
+                    && request.TransactionType == TransactionType.DepositOld.ToString()
                     && request.Amount == command.Amount
                     && request.LockAmount == 0M
                     && request.Description == command.Description
@@ -53,7 +54,7 @@ public class PaymentTests
         _ = fakeWalletExchangeService.Received(1)
             .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
                 request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Deposited.ToString()
+                    && request.TransactionType == TransactionType.Deposit.ToString()
                     && request.Amount == command.Amount
                     && request.LockAmount == 0M
                     && request.Description == command.Description
@@ -62,6 +63,7 @@ public class PaymentTests
     }
 
     [Test]
+    [Obsolete("已淘汰")]
     public async Task Can_Create_Withdrawal_Exchange()
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
@@ -112,6 +114,7 @@ public class PaymentTests
     }
 
     [Test]
+    [Obsolete("已淘汰")]
     public async Task Can_Create_CancelWithdrawal_Exchange()
     {
         var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();

@@ -27,6 +27,7 @@ public class PaymentWalletController : ControllerBase
     ///     }
     /// </remarks>
     [HttpDelete("withdrawal/{walletId}", Name = "CancelWithdrawal")]
+    [Obsolete("已淘汰")]
     public async ValueTask<TransactionResultViewModel> CancelWithdrawalAsync(
         [FromServices] IGetService<CancelWithdrawalCommand, ExchangeResult> service,
         Guid walletId,
@@ -70,6 +71,7 @@ public class PaymentWalletController : ControllerBase
     /// <param name="request">The view model.</param>
     /// <returns></returns>
     [HttpPut("deposit/{walletId}", Name = "Deposit")]
+    [Obsolete("已淘汰")]
     public async ValueTask<TransactionResultViewModel> DepositAsync(
         [FromServices] IGetService<DepositCommand, ExchangeResult> service,
         Guid walletId,
@@ -129,6 +131,7 @@ public class PaymentWalletController : ControllerBase
     ///     }
     /// </remarks>
     [HttpPut("withdrawal/{walletId}", Name = "Withdrawal")]
+    [Obsolete("已淘汰")]
     public async ValueTask<TransactionResultViewModel> WithdrawalAsync(
         [FromServices] IGetService<WithdrawalCommand, ExchangeResult> service,
         Guid walletId,

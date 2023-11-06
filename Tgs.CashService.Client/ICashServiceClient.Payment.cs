@@ -2,6 +2,7 @@
 
 public partial interface ICashServiceClient
 {
+    [Obsolete("已淘汰")]
     ValueTask<TransactionResponse> CancelWithdrawalAsync(
         Guid walletId,
         decimal amount,
@@ -10,6 +11,7 @@ public partial interface ICashServiceClient
         Guid? createdByUserId,
         CancellationToken cancellationToken = default);
 
+    [Obsolete("已淘汰")]
     ValueTask<TransactionResponse> DepositAsync(
         Guid walletId,
         decimal amount,
@@ -26,6 +28,7 @@ public partial interface ICashServiceClient
         Guid? createdByUserId,
         CancellationToken cancellationToken = default);
 
+    [Obsolete("已淘汰")]
     ValueTask<TransactionResponse> WithdrawalAsync(
         Guid walletId,
         decimal amount,

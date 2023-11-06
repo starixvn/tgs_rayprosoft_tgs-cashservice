@@ -3,6 +3,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
+[Obsolete("已淘汰")]
 internal class WithdrawalCommandService : IGetService<WithdrawalCommand, ExchangeResult>
 {
     private readonly IWalletExchangeService _walletExchangeService;

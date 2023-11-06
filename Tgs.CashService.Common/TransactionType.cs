@@ -3,32 +3,28 @@
 public enum TransactionType
 {
     Unknown = -1,
-    Deposit = 0,
+    [Obsolete("已淘汰")]
+    DepositOld = 0,
+    [Obsolete("已淘汰")]
     Withdrawal = 1,
-
-    /// <summary>
-    /// Adjust = 公司調帳
-    /// </summary>
-    AdjustCompany = 2,
-
     Bonus = 3,
     Rebate = 4,
     Dividend = 5,
     Promotion = 6,
     GameProviderFundOut = 7,
     GameProviderFundIn = 8,
+    [Obsolete("已淘汰")]
     CancelWithdrawal = 9,
     GameProviderDeposit = 10,
     GameProviderWithdrawal = 11,
     UnsettledBetManual = 12,
-
     Other = 99,
 
     /// <summary>
     /// 存款 1000~1999
     /// </summary>
     //Deposit = 1000,
-    Deposited = 1100,
+    Deposit = 1100,
 
     /// <summary>
     /// 提款 2000~2999
@@ -68,8 +64,8 @@ public enum TransactionType
     /// 調帳 5000~5999
     /// </summary>
     //Adjust = 5000,
+    AdjustCompany = 2,
     AdjustAgent = 5100,
-
     AdjustSystem = 5200,
     AdjustTransfer = 5300,
     AdjustBonus = 5400,
@@ -81,7 +77,6 @@ public enum TransactionType
 
     // 轉帳 6000~6999
     Transfer = 6100,
-
     TransferCommit = 6200,
     TransferRollback = 6300,
     Receive = 6400,
