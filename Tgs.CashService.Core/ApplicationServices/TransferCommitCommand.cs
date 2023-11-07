@@ -4,4 +4,4 @@ public record TransferCommitCommand(
     decimal Amount,
     string? Description,
     Guid ExternalId,
-    Guid Executor);
+    Guid? Executor);

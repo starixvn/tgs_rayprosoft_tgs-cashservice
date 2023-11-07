@@ -4,4 +4,4 @@ public record ReceiveRollbackCommand(
     decimal Amount,
     string? Description,
     Guid ExternalId,
-    Guid Executor);
+    Guid? Executor);

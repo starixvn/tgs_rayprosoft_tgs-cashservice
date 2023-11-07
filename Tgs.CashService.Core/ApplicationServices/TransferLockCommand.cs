@@ -4,4 +4,4 @@ public record TransferLockCommand(
     decimal Amount,
     string? Description,
     Guid ExternalId,
-    Guid Executor);
+    Guid? Executor);

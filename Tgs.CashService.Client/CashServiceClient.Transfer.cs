@@ -12,7 +12,7 @@ internal partial class CashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default)
     {
         var request = new
@@ -24,7 +24,8 @@ internal partial class CashServiceClient
 
         var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
         requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-        requestContent.Headers.Add("Modifier", executor.ToString());
+        if (executor is not null)
+            requestContent.Headers.Add("Modifier", executor.Value.ToString());
 
         return _httpClient
             .PostAsync($"/wallet/transfer-lock/{walletId}", requestContent, cancellationToken)
@@ -43,7 +44,7 @@ internal partial class CashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default)
     {
         var request = new
@@ -55,7 +56,8 @@ internal partial class CashServiceClient
 
         var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
         requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-        requestContent.Headers.Add("Modifier", executor.ToString());
+        if (executor is not null)
+            requestContent.Headers.Add("Modifier", executor.Value.ToString());
 
         return _httpClient
             .PutAsync($"/wallet/transfer/{walletId}", requestContent, cancellationToken)
@@ -74,7 +76,7 @@ internal partial class CashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default)
     {
         var request = new
@@ -86,7 +88,8 @@ internal partial class CashServiceClient
 
         var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
         requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-        requestContent.Headers.Add("Modifier", executor.ToString());
+        if (executor is not null)
+            requestContent.Headers.Add("Modifier", executor.Value.ToString());
 
         using var requestMessage = new HttpRequestMessage(
             HttpMethod.Delete,
@@ -113,7 +116,7 @@ internal partial class CashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default)
     {
         var request = new
@@ -125,7 +128,8 @@ internal partial class CashServiceClient
 
         var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
         requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-        requestContent.Headers.Add("Modifier", executor.ToString());
+        if (executor is not null)
+            requestContent.Headers.Add("Modifier", executor.Value.ToString());
 
         return _httpClient
             .PostAsync($"/wallet/receive-lock/{walletId}", requestContent, cancellationToken)
@@ -144,7 +148,7 @@ internal partial class CashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default)
     {
         var request = new
@@ -156,7 +160,8 @@ internal partial class CashServiceClient
 
         var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
         requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-        requestContent.Headers.Add("Modifier", executor.ToString());
+        if (executor is not null)
+            requestContent.Headers.Add("Modifier", executor.Value.ToString());
 
         return _httpClient
             .PutAsync($"/wallet/receive/{walletId}", requestContent, cancellationToken)
@@ -175,7 +180,7 @@ internal partial class CashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default)
     {
         var request = new
@@ -187,7 +192,8 @@ internal partial class CashServiceClient
 
         var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
         requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-        requestContent.Headers.Add("Modifier", executor.ToString());
+        if (executor is not null)
+            requestContent.Headers.Add("Modifier", executor.Value.ToString());
 
         using var requestMessage = new HttpRequestMessage(
             HttpMethod.Delete,

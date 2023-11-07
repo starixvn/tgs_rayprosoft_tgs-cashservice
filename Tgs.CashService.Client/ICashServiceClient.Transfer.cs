@@ -7,7 +7,7 @@ public partial interface ICashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default);
 
     ValueTask<TransactionResponse> CommitTransferAsync(
@@ -15,7 +15,7 @@ public partial interface ICashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default);
 
     ValueTask<TransactionResponse> RollbackTransferAsync(
@@ -23,7 +23,7 @@ public partial interface ICashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default);
 
     ValueTask<TransactionResponse> LockReceiveAsync(
@@ -31,7 +31,7 @@ public partial interface ICashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default);
 
     ValueTask<TransactionResponse> CommitReceiveAsync(
@@ -39,7 +39,7 @@ public partial interface ICashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default);
 
     ValueTask<TransactionResponse> RollbackReceiveAsync(
@@ -47,6 +47,6 @@ public partial interface ICashServiceClient
         decimal amount,
         string? description,
         Guid externalId,
-        Guid executor,
+        Guid? executor,
         CancellationToken cancellationToken = default);
 }
