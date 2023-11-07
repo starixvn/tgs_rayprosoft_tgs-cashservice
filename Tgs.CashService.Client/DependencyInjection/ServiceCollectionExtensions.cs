@@ -19,4 +19,8 @@ public static class ServiceCollectionExtensions
                 httpClient.BaseAddress = options.BaseUrl;
             })
             .Services;
+
+    public static IHttpClientBuilder AddCashServiceClient(this IServiceCollection services)
+        => services
+            .AddHttpClient<ICashServiceClient, CashServiceClient>();
 }

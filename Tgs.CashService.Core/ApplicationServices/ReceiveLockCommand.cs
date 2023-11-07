@@ -4,4 +4,4 @@ public record ReceiveLockCommand(
     decimal Amount,
     string? Description,
     Guid ExternalId,
-    Guid Executor);
+    Guid? Executor);

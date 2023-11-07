@@ -12,7 +12,7 @@ public class TransferWalletController : ControllerBase
     [HttpPost("transfer-lock/{walletId}", Name = "TransferLock")]
     public async Task<TransactionResultViewModel> TransferLockAsync(
         [FromServices] IGetService<TransferLockCommand, ExchangeResult> exchangeService,
-        [FromHeader(Name = "Modifier")] Guid executor,
+        [FromHeader(Name = "Modifier")] Guid? executor,
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
@@ -35,7 +35,7 @@ public class TransferWalletController : ControllerBase
     [HttpPost("receive-lock/{walletId}", Name = "ReceiveLock")]
     public async Task<TransactionResultViewModel> ReceiveLockAsync(
         [FromServices] IGetService<ReceiveLockCommand, ExchangeResult> exchangeService,
-        [FromHeader(Name = "Modifier")] Guid executor,
+        [FromHeader(Name = "Modifier")] Guid? executor,
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
@@ -58,7 +58,7 @@ public class TransferWalletController : ControllerBase
     [HttpPut("transfer/{walletId}", Name = "TransferCommit")]
     public async Task<TransactionResultViewModel> CommitTransferAsync(
         [FromServices] IGetService<TransferCommitCommand, ExchangeResult> exchangeService,
-        [FromHeader(Name = "Modifier")] Guid executor,
+        [FromHeader(Name = "Modifier")] Guid? executor,
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
@@ -81,7 +81,7 @@ public class TransferWalletController : ControllerBase
     [HttpPut("receive/{walletId}", Name = "ReceiveCommit")]
     public async Task<TransactionResultViewModel> CommitReceiveAsync(
         [FromServices] IGetService<ReceiveCommitCommand, ExchangeResult> exchangeService,
-        [FromHeader(Name = "Modifier")] Guid executor,
+        [FromHeader(Name = "Modifier")] Guid? executor,
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
@@ -104,7 +104,7 @@ public class TransferWalletController : ControllerBase
     [HttpDelete("transfer/{walletId}", Name = "TransferRollback")]
     public async Task<TransactionResultViewModel> RollbackTransferAsync(
         [FromServices] IGetService<TransferRollbackCommand, ExchangeResult> exchangeService,
-        [FromHeader(Name = "Modifier")] Guid executor,
+        [FromHeader(Name = "Modifier")] Guid? executor,
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {
@@ -127,7 +127,7 @@ public class TransferWalletController : ControllerBase
     [HttpDelete("receive/{walletId}", Name = "ReceiveRollback")]
     public async Task<TransactionResultViewModel> RollbackReceiveAsync(
         [FromServices] IGetService<ReceiveRollbackCommand, ExchangeResult> exchangeService,
-        [FromHeader(Name = "Modifier")] Guid executor,
+        [FromHeader(Name = "Modifier")] Guid? executor,
         Guid walletId,
         [FromBody] TransferViewModel viewModel)
     {

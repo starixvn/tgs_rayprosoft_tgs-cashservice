@@ -4,4 +4,4 @@ public record ReceiveCommitCommand(
     decimal Amount,
     string? Description,
     Guid ExternalId,
-    Guid Executor);
+    Guid? Executor);
