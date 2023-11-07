@@ -34,6 +34,7 @@ var agentsQuery = dbContext.Agents
 
 var rows = 10;
 var agents = Array.Empty<Agent>();
+var transferDescription = "agent wallet transfer.";
 
 while ((agents = await agentsQuery
     .Take(rows)
@@ -67,7 +68,7 @@ while ((agents = await agentsQuery
                 Amount = -agentBalance,
                 Balance = 0M,
                 Type = (short)TransactionType.AdjustCompany,
-                Description = "agent wallet transfer.",
+                Description = transferDescription,
                 RecordedOn = updatedOn
             })
             .ConfigureAwait(false);
@@ -82,6 +83,18 @@ while ((agents = await agentsQuery
 
         _ = await dbContext.SaveChangesAsync().ConfigureAwait(false);
 
-        //cashServiceClient.LockReceiveAsync(walletId, agentBalance, "agent wallet transfer.", )
+        _ = await cashServiceClient.LockReceiveAsync(
+            walletId,
+            agentBalance,
+            transferDescription,
+            Guid.Empty,
+            null).ConfigureAwait(false);
+
+        _ = await cashServiceClient.CommitReceiveAsync(
+            walletId,
+            agentBalance,
+            transferDescription,
+            Guid.Empty,
+            null).ConfigureAwait(false);
     }
 }

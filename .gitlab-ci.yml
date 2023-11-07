@@ -7,12 +7,14 @@ variables:
   ServiceImageName: pgtgs/cashservice-api
   WorkerImageName: pgtgs/cashservice-worker
   QueryImageName: pgtgs/cashservice-query
+  AgentWalletTransferImageName: pgtgs/agent-wallet-transfer
   TgsServiceSettingKey: cashservice-api
   TgsWorkerSettingKey: cashservice-worker
   TgsQuerySettingKey: cash-query
   HelmTemplateServiceFolderName: cashservice-api
   HelmTemplateWorkerFolderName: cashservice-worker
   HelmTemplateQueryFolderName: cashservice-query
+  HelmTemplateAgentWalletTransferFolderName: agent-wallet-transfer
   BuildCacheKey: Tgs.CashService.$CI_PIPELINE_IID
 
 stages:
@@ -46,12 +48,25 @@ push-docker-image:
     - push_docker "Tgs.CashServiceWorker/Tgs.CashServiceWorker.csproj" $WorkerImageName $Tag
     - push_docker "Tgs.CashQueryService/Tgs.CashQueryService.csproj" $QueryImageName $Tag
 
+push-tool-docker-image:
+  extends: .push-docker-image-template
+  script:
+    - push_docker "AgentWalletTransferTool/AgentWalletTransferTool.csproj" $AgentWalletTransferImageName $Tag
+  when: manual
+
 push-k8s-template:
   extends: .push-k8s-template
   script:
     - push_k8s_template $HelmTemplateServiceFolderName $ServiceImageName $Tag
     - push_k8s_template $HelmTemplateWorkerFolderName $WorkerImageName $Tag
     - push_k8s_template $HelmTemplateQueryFolderName $QueryImageName $Tag
+
+push-tool-k8s-template:
+  extends: .push-k8s-template
+  script:
+    - push_k8s_template $HelmTemplateAgentWalletTransferFolderName $AgentWalletTransferImageName $Tag
+  needs:
+    - push-tool-docker-image
 
 deploy-service-dev:
   extends: .deploy-template
@@ -71,7 +86,7 @@ deploy-service-dev:
   when: on_success
   script:
     - |
-      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
+      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateAgentWalletTransferFolderName $namespace
         {
           "restart": {
             "enabled": true,
@@ -125,6 +140,38 @@ deploy-query-dev:
   when: on_success
   script:
     - deploy_k8s $TgsQuerySettingKey $HelmTemplateQueryFolderName $namespace
+
+deploy-transfer-job-dev:
+  extends: .deploy-template
+  variables:
+    namespace: dev
+    kube_config: KubeConfig_Raypro_dev
+  environment:
+    name: transfer-job-dev
+  stage: deploy-dev
+  needs:
+    - push-tool-docker-image
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
+        {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
 
 deploy-service-staging:
   extends: .deploy-template
@@ -193,6 +240,38 @@ deploy-query-staging:
   script:
     - deploy_k8s $TgsQuerySettingKey $HelmTemplateQueryFolderName $namespace
 
+deploy-transfer-job-staging:
+  extends: .deploy-template
+  variables:
+    namespace: dev
+    kube_config: KubeConfig_Raypro_staging
+  environment:
+    name: transfer-job-staging
+  stage: deploy-staging
+  needs:
+    - deploy-transfer-job-dev
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
+        {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
+
 deploy-service-prod:
   extends: .deploy-template
   variables:
@@ -260,3 +339,35 @@ deploy-query-prod:
     - main
   script:
     - deploy_k8s $TgsQuerySettingKey $HelmTemplateQueryFolderName $namespace
+
+deploy-transfer-job-prod:
+  extends: .deploy-template
+  variables:
+    namespace: dev
+    kube_config: KubeConfig_Raypro_prod
+  environment:
+    name: transfer-job-prod
+  stage: deploy-staging
+  needs:
+    - deploy-transfer-job-staging
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
+        {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
