@@ -73,7 +73,7 @@ while ((agents = await agentsQuery
             })
             .ConfigureAwait(false);
 
-        var postBalance = dbContext.UpdateAgentWalletBalanceAsync(
+        var postBalance = dbContext.UpdateAgentWalletBalance(
             agent.Id,
             agent.DefaultWalletId,
             -agentBalance,
