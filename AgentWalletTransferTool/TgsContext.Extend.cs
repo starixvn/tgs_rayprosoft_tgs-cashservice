@@ -8,18 +8,18 @@ namespace AgentWalletTransferTool.Entities;
 
 partial class TgsContext
 {
-    public decimal UpdateAgentWalletBalance(
+    public Task<decimal> UpdateAgentWalletBalanceAsync(
         Guid agentId,
         Guid walletId,
         decimal amount,
         DateTime updatedOn)
     {
-        return 0M;
+        return Task.FromResult(0M);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDbFunction(() => this.UpdateAgentWalletBalance(default, default, default, default))
+        modelBuilder.HasDbFunction(() => this.UpdateAgentWalletBalanceAsync(default, default, default, default))
             .HasSchema("dbo")
             .HasName("agent_wallet_update_wallet_balance");
     }
