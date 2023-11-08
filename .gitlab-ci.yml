@@ -347,7 +347,7 @@ deploy-transfer-job-prod:
     kube_config: KubeConfig_Raypro_prod
   environment:
     name: transfer-job-prod
-  stage: deploy-staging
+  stage: deploy-prod
   needs:
     - deploy-transfer-job-staging
     - job: push-tool-k8s-template
