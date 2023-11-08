@@ -14,17 +14,19 @@ public class WalletManagementTests
     {
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services => services
-                .AddFakeNatsMessageQueue()));
+                .AddFakeNatsMessageQueue()
+                .AddHttpClientLoggingHandler()));
 
-        var httpClient = web.CreateClient();
+        var httpClient = web.CreateDefaultClient(web.Services.ResolveLoggingHandler<CashServiceClient>());
 
         var sut = new CashServiceClient(httpClient);
         var dbContext = web.Services.GetRequiredService<TgsContext>();
 
         var userId = "test1";
         var currencyCode = "CNY";
+        var brandId = Guid.NewGuid();
 
-        var actual = await sut.CreateNewCashAsync(userId, currencyCode);
+        var actual = await sut.CreateNewCashAsync(brandId, userId, currencyCode, CashType.Agent);
         var insertedRow = await dbContext.Wallets.FirstOrDefaultAsync();
 
         Assert.IsNotNull(insertedRow);
@@ -33,5 +35,7 @@ public class WalletManagementTests
         Assert.AreEqual(currencyCode, insertedRow.CurrencyCode);
         Assert.AreEqual(0M, insertedRow.Balance);
         Assert.AreEqual(0M, insertedRow.LockedBalance);
+        Assert.AreEqual(brandId, insertedRow.BrandId);
+        Assert.AreEqual(nameof(CashType.Agent), insertedRow.CashType);
     }
 }

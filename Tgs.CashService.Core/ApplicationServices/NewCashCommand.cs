@@ -1,2 +1,6 @@
 ﻿namespace Tgs.CashService.ApplicationServices;
-public record NewCashCommand(string UserId, string CurrencyCode);
+public record NewCashCommand(
+    Guid BrandId,
+    string UserId,
+    CashType Type,
+    string CurrencyCode);

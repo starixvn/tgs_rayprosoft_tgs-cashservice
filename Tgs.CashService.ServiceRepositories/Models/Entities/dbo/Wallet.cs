@@ -9,19 +9,23 @@ public partial class Wallet
 {
     public Guid Id { get; set; }
 
-    public string PlayerCode { get; set; } = null!;
-
-    public string CurrencyCode { get; set; } = null!;
-
-    public string ExternalCurrencyCode { get; set; } = null!;
-
     public decimal Balance { get; set; }
 
     public DateTime CreatedOn { get; set; }
 
-    public DateTime UpdatedOn { get; set; }
+    public string CurrencyCode { get; set; } = null!;
+
+    public string? ExternalCurrencyCode { get; set; }
 
     public decimal LockedBalance { get; set; }
+
+    public string PlayerCode { get; set; } = null!;
+
+    public DateTime UpdatedOn { get; set; }
+
+    public Guid? BrandId { get; set; }
+
+    public string CashType { get; set; } = null!;
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

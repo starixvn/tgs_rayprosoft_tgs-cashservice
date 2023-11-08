@@ -135,7 +135,9 @@ public partial interface ICashServiceClient
         CancellationToken cancellationToken = default);
 
     ValueTask<Guid> CreateNewCashAsync(
+        Guid brandId,
         string userId,
         string currencyCode,
-        CancellationToken cancellation = default);
+        CashType type = CashType.Player,
+        CancellationToken cancellationToken = default);
 }

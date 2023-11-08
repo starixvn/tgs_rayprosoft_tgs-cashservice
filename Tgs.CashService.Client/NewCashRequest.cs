@@ -1,2 +1,6 @@
 ﻿namespace Tgs.CashService.Client;
-record NewCashRequest(string UserId, string CurrencyCode);
+record NewCashRequest(
+    Guid BrandId,
+    string UserId,
+    string CurrencyCode,
+    CashType Type);
