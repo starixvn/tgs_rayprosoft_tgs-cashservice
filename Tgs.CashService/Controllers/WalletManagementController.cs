@@ -14,7 +14,11 @@ public class WalletManagementController : ControllerBase
         [FromServices] IGetService<NewCashCommand, Guid> createService,
         [FromBody] NewCashReqeustViewModel viewModel)
     {
-        var command = new NewCashCommand(viewModel.UserId, viewModel.CurrencyCode);
+        var command = new NewCashCommand(
+            viewModel.BrandId,
+            viewModel.UserId,
+            viewModel.Type,
+            viewModel.CurrencyCode);
 
         return createService.GetAsync(command, HttpContext.RequestAborted);
     }

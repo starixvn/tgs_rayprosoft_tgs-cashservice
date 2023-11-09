@@ -25,7 +25,9 @@ internal class TestCashApplication : WebApplicationFactory<Program>
         _webHostConfigure?.Invoke(builder);
 
         _ = builder
-            .ConfigureLogging(logging => logging.ClearProviders().AddConsole())
+            .ConfigureLogging(logging => logging
+                .ClearProviders()
+                .AddConsole())
             .ConfigureServices(services => services
                 .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
                     sp => new ConfigureNamedOptions<OtlpExporterOptions>(

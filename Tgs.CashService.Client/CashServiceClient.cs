@@ -542,12 +542,14 @@ internal partial class CashServiceClient : ICashServiceClient
     }
 
     public ValueTask<Guid> CreateNewCashAsync(
+        Guid brandId,
         string userId,
         string currencyCode,
+        CashType type = CashType.Player,
         CancellationToken cancellationToken = default)
         => _httpClient.PutAsJsonAsync(
             "/wallet-mgr",
-            new NewCashRequest(userId, currencyCode),
+            new NewCashRequest(brandId, userId, currencyCode, type),
             _SerializerOptions,
             cancellationToken)
             .ToAsyncEnumerable()

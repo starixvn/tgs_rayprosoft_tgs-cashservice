@@ -51,8 +51,10 @@ while ((agents = await agentsQuery
             continue;
 
         var walletId = await cashServiceClient.CreateNewCashAsync(
+            agent.BrandId,
             agent.Id.ToString(),
-            agentWallet.CurrencyCode).ConfigureAwait(false);
+            agentWallet.CurrencyCode,
+            CashType.Agent).ConfigureAwait(false);
 
         var transactionId = await serialNumberGenerator.GenerateAsync().ConfigureAwait(false);
         var updatedOn = DateTime.UtcNow;

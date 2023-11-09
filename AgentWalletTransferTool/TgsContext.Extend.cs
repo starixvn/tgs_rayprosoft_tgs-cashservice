@@ -13,13 +13,11 @@ partial class TgsContext
         Guid walletId,
         decimal amount,
         DateTime updatedOn)
-    {
-        return Task.FromResult(0M);
-    }
+        => Task.Run(() => TgsDbFunctions.UpdateAgentWalletBalance(agentId, walletId, amount, updatedOn));
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDbFunction(() => this.UpdateAgentWalletBalanceAsync(default, default, default, default))
+        modelBuilder.HasDbFunction(() => TgsDbFunctions.UpdateAgentWalletBalance(default, default, default, default))
             .HasSchema("dbo")
             .HasName("agent_wallet_update_wallet_balance");
     }

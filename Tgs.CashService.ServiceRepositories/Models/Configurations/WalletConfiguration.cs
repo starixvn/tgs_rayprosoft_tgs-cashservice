@@ -19,14 +19,16 @@ namespace Tgs.CashService.Repositories.Entities.Configurations
 
             entity.HasIndex(e => e.CurrencyCode, "ix_wallets_currency_code");
 
-            entity.HasIndex(e => e.PlayerCode, "ix_wallets_player_code");
-
             entity.Property(e => e.Id)
             .ValueGeneratedNever()
             .HasColumnName("id");
             entity.Property(e => e.Balance)
             .HasPrecision(18, 6)
             .HasColumnName("balance");
+            entity.Property(e => e.BrandId).HasColumnName("brand_id");
+            entity.Property(e => e.CashType)
+            .HasDefaultValueSql("'Player'::text")
+            .HasColumnName("cash_type");
             entity.Property(e => e.CreatedOn).HasColumnName("created_on");
             entity.Property(e => e.CurrencyCode)
             .HasMaxLength(16)
@@ -37,9 +39,7 @@ namespace Tgs.CashService.Repositories.Entities.Configurations
             entity.Property(e => e.LockedBalance)
             .HasPrecision(18, 6)
             .HasColumnName("locked_balance");
-            entity.Property(e => e.PlayerCode)
-            .HasMaxLength(16)
-            .HasColumnName("player_code");
+            entity.Property(e => e.PlayerCode).HasColumnName("player_code");
             entity.Property(e => e.UpdatedOn).HasColumnName("updated_on");
 
             OnConfigurePartial(entity);

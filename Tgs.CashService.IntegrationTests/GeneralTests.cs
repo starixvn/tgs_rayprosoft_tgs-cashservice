@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using Tgs.Cash.Protos;
 using Tgs.CashService.Client;
 using Tgs.CashServiceWorker;
 

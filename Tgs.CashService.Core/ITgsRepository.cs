@@ -15,7 +15,9 @@ public interface ITgsRepository
 
     ValueTask CreateWalletAsync(
         Guid walletId,
+        Guid brandId,
         string userId,
+        CashType type,
         string currencyCode,
         CancellationToken cancellationToken = default);
     ValueTask<string?> GetPlayerCodeByWalletIdAsync(Guid walletId, CancellationToken cancellationToken = default);

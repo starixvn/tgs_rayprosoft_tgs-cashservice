@@ -61,7 +61,8 @@ public class TransactionLogQueryTests
             Id = walletId,
             PlayerCode = playerCode,
             CurrencyCode = "CNY",
-            ExternalCurrencyCode = "CNY"
+            ExternalCurrencyCode = "CNY",
+            CashType = nameof(CashType.Player)
         });
 
         _ = await dbContext.SaveChangesAsync();
@@ -168,7 +169,8 @@ public class TransactionLogQueryTests
             Id = walletId,
             PlayerCode = playerCode,
             CurrencyCode = "CNY",
-            ExternalCurrencyCode = "CNY"
+            ExternalCurrencyCode = "CNY",
+            CashType = nameof(CashType.Player)
         });
 
         _ = await dbContext.SaveChangesAsync();
@@ -276,7 +278,8 @@ public class TransactionLogQueryTests
             Id = walletId,
             PlayerCode = playerCode,
             CurrencyCode = "CNY",
-            ExternalCurrencyCode = "CNY"
+            ExternalCurrencyCode = "CNY",
+            CashType = nameof(CashType.Player)
         });
 
         _ = await dbContext.SaveChangesAsync();
@@ -385,7 +388,8 @@ public class TransactionLogQueryTests
             Id = walletId,
             PlayerCode = playerCode,
             CurrencyCode = "CNY",
-            ExternalCurrencyCode = "CNY"
+            ExternalCurrencyCode = "CNY",
+            CashType = nameof(CashType.Player)
         });
 
         _ = await dbContext.SaveChangesAsync();
@@ -476,7 +480,8 @@ public class TransactionLogQueryTests
             Id = walletId,
             PlayerCode = playerCode,
             CurrencyCode = "CNY",
-            ExternalCurrencyCode = "CNY"
+            ExternalCurrencyCode = "CNY",
+            CashType = nameof(CashType.Player)
         });
 
         _ = await dbContext.SaveChangesAsync();
@@ -556,7 +561,8 @@ public class TransactionLogQueryTests
             Id = walletId,
             PlayerCode = playerCode,
             CurrencyCode = "CNY",
-            ExternalCurrencyCode = "CNY"
+            ExternalCurrencyCode = "CNY",
+            CashType = nameof(CashType.Player)
         });
 
         _ = await dbContext.SaveChangesAsync();
@@ -602,7 +608,8 @@ public class TransactionLogQueryTests
             Id = walletId,
             PlayerCode = playerCode,
             CurrencyCode = "CNY",
-            ExternalCurrencyCode = "CNY"
+            ExternalCurrencyCode = "CNY",
+            CashType = nameof(CashType.Player)
         });
 
         _ = await dbContext.SaveChangesAsync();

@@ -12,14 +12,16 @@ public class NewCashCommandServiceTests
 
         var sut = new NewCashCommandService(fakeTgsRepository);
 
-        var command = new NewCashCommand("test1", "CNY");
+        var command = new NewCashCommand(Guid.NewGuid(), "test1", CashType.Player, "CNY");
 
         var actual = await sut.GetAsync(command);
 
         _ = fakeTgsRepository.Received(1)
             .CreateWalletAsync(
                 Arg.Is(actual),
+                Arg.Is(command.BrandId),
                 Arg.Is(command.UserId),
+                Arg.Is(command.Type),
                 Arg.Is(command.CurrencyCode));
     }
 }

@@ -17,7 +17,9 @@ internal class NewCashCommandService : IGetService<NewCashCommand, Guid>
 
         await _tgsRepository.CreateWalletAsync(
             walletId,
+            command.BrandId,
             command.UserId,
+            command.Type,
             command.CurrencyCode,
             cancellationToken).ConfigureAwait(false);
 

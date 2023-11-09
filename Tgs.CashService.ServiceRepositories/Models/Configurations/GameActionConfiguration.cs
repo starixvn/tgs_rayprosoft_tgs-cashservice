@@ -17,10 +17,6 @@ namespace Tgs.CashService.Repositories.Entities.Configurations
 
             entity.ToTable("game_actions", "bet");
 
-            entity.HasIndex(e => e.ExternalGameActionGroupId, "ix_game_actions_external_game_action_group_id");
-
-            entity.HasIndex(e => e.ExternalTransactionId, "ix_game_actions_external_transaction_id");
-
             entity.HasIndex(e => e.GameActionBatchId, "ix_game_actions_game_action_batch_id");
 
             entity.HasIndex(e => e.PlayerCode, "ix_game_actions_player_code");
@@ -81,7 +77,6 @@ namespace Tgs.CashService.Repositories.Entities.Configurations
 
             entity.HasOne(d => d.ReferencedGameAction).WithMany(p => p.InverseReferencedGameAction)
             .HasForeignKey(d => d.ReferencedGameActionId)
-            .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("fk_game_actions_referenced_game_action_id");
 
             OnConfigurePartial(entity);
