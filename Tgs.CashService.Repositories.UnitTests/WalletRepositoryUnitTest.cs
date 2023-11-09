@@ -35,7 +35,8 @@ public class WalletRepositoryUnitTest
             Balance = 0M,
             CurrencyCode = "CNY",
             ExternalCurrencyCode = "CNY",
-            PlayerCode = "tester"
+            PlayerCode = "tester",
+            CashType = nameof(CashType.Player)
         });
 
         _ = await dbContext.SaveChangesAsync();
@@ -107,7 +108,8 @@ public class WalletRepositoryUnitTest
             Balance = 0M,
             CurrencyCode = "CNY",
             ExternalCurrencyCode = "CNY",
-            PlayerCode = "tester"
+            PlayerCode = "tester",
+            CashType = nameof(CashType.Player)
         });
 
         _ = await dbContext.SaveChangesAsync();
@@ -169,7 +171,8 @@ public class WalletRepositoryUnitTest
             Balance = balance,
             CurrencyCode = "CNY",
             ExternalCurrencyCode = "CNY",
-            PlayerCode = "tester"
+            PlayerCode = "tester",
+            CashType = nameof(CashType.Player)
         });
 
         _ = await dbContext.SaveChangesAsync();
@@ -186,5 +189,102 @@ public class WalletRepositoryUnitTest
         var actual = await sut.GetBalanceAsync(walletId);
 
         Assert.AreEqual(balance, actual);
+    }
+
+    [Test]
+    public async Task 取得錢包資料_如果BrandId欄位是Null_會從玩家資料表查詢()
+    {
+        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+        _ = dbContextOptionsBuilder
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(x => x.Ignore(
+                InMemoryEventId.TransactionIgnoredWarning));
+
+        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
+
+        var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+
+        var sut = new WalletRepository(
+            dbContext,
+            fakeDbScriptExecutor,
+            fakeSerialNumberGenerator,
+            NullLogger<WalletRepository>.Instance);
+
+        var walletId = Guid.NewGuid();
+        var playerCode = "tester";
+        var brandId = Guid.NewGuid();
+
+        _ = await dbContext.WalletItems.AddAsync(new WalletItem
+        {
+            Id = walletId,
+            Balance = 0M,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY",
+            PlayerCode = playerCode,
+            CashType = nameof(CashType.Player)
+        });
+
+        _ = await dbContext.Players.AddAsync(new Player
+        {
+            PlayerCode = playerCode,
+            BrandId = brandId,
+            DefaultWalletCurrencyCode = "CNY",
+            Password = Array.Empty<byte>(),
+            Salt = Array.Empty<byte>(),
+            Username = "abcd",
+            WithdrawPassword = Array.Empty<byte>(),
+            WithdrawSalt = Array.Empty<byte>()
+        });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var actual = await sut.GetWalletAsync(walletId);
+
+        Assert.IsNotNull(actual);
+        Assert.AreEqual(brandId, actual.BrandId);
+    }
+
+    [Test]
+    public async Task 取得錢包資料_如果BrandId有值_會直接使用其值不會再從玩家資料表查詢()
+    {
+        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+        _ = dbContextOptionsBuilder
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(x => x.Ignore(
+                InMemoryEventId.TransactionIgnoredWarning));
+
+        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
+
+        var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+
+        var sut = new WalletRepository(
+            dbContext,
+            fakeDbScriptExecutor,
+            fakeSerialNumberGenerator,
+            NullLogger<WalletRepository>.Instance);
+
+        var walletId = Guid.NewGuid();
+        var playerCode = "tester";
+        var brandId = Guid.NewGuid();
+
+        _ = await dbContext.WalletItems.AddAsync(new WalletItem
+        {
+            Id = walletId,
+            Balance = 0M,
+            CurrencyCode = "CNY",
+            ExternalCurrencyCode = "CNY",
+            PlayerCode = playerCode,
+            BrandId = brandId,
+            CashType = nameof(CashType.Agent)
+        });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var actual = await sut.GetWalletAsync(walletId);
+
+        Assert.IsNotNull(actual);
+        Assert.AreEqual(brandId, actual.BrandId);
     }
 }

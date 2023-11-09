@@ -62,8 +62,6 @@ builder.Services
         .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");
-builder.Services
-    .AddHealthChecks();
 
 builder.Services
     .AddOpenTelemetry()
@@ -87,21 +85,16 @@ builder.Services
         .AddOtlpExporter())
     .Services
     .AddProfileViewer()
-    .Configure<AspNetCoreInstrumentationOptions>(options =>
-    {
-        options.Filter = httpContext =>
-        {
-            return !httpContext.Request.Path.HasValue
-                || !httpContext.Request.Path.StartsWithSegments("/swagger")
-                && !httpContext.Request.Path.StartsWithSegments("/healthz")
-                && !httpContext.Request.Path.StartsWithSegments("/metrics")
-                && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-                && !new[] { "html", "ico", "png", "jpg" }.Any(
-                    ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
-        };
-    });
-
-builder.Services
+    .Configure<AspNetCoreInstrumentationOptions>(options => options.Filter =
+        httpContext => !httpContext.Request.Path.HasValue
+            || !httpContext.Request.Path.StartsWithSegments("/swagger")
+            && !httpContext.Request.Path.StartsWithSegments("/healthz")
+            && !httpContext.Request.Path.StartsWithSegments("/metrics")
+            && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+            && !new[] { "html", "ico", "png", "jpg" }.Any(
+                ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
+    .AddHealthChecks()
+    .Services
     .AddInterceptionService()
     .AddServiceUtiltiyInterceptors();
 

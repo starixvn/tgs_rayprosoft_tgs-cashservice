@@ -164,16 +164,34 @@ internal class WalletRepository : IWalletRepository
 
     public async ValueTask<Wallet?> GetWalletAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
-        var wallet = await (from w in _context.WalletItems.AsQueryable()
-                            join p in _context.Players on w.PlayerCode equals p.PlayerCode
-                            where w.Id == walletId
-                            select new Wallet
-                            {
-                                Id = w.Id,
-                                PlayerCode = w.PlayerCode,
-                                BrandId = p.BrandId
-                            }).FirstOrDefaultAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        var wallet = await _context.WalletItems.FindAsync(
+            new object?[] { walletId },
+            cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        return wallet;
+        if (wallet is null)
+            return null;
+
+        if (wallet.BrandId is null)
+        {
+            var player = await _context.Players.FindAsync(
+                new object?[] { wallet.PlayerCode },
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            return player is null
+                ? null
+                : new Wallet
+                {
+                    Id = wallet.Id,
+                    BrandId = player.BrandId,
+                    PlayerCode = player.PlayerCode
+                };
+        }
+
+        return new Wallet
+        {
+            Id = wallet.Id,
+            BrandId = wallet.BrandId.Value,
+            PlayerCode = wallet.PlayerCode
+        };
     }
 }

@@ -1,13 +1,13 @@
 ﻿[
-	{
-		"SchemaName": "dbo",
-		"Tables": [
-			{
-				"Columns": [],
-				"Name": "wallets",
-				"NewName": "WalletItem"
-			}
-		],
-		"UseSchemaName": false
-	}
+   {
+      "SchemaName": "dbo",
+      "Tables": [
+         {
+            "Columns": [ ],
+            "Name": "wallets",
+            "NewName": "WalletItem"
+         }
+      ],
+      "UseSchemaName": false
+   }
 ]
