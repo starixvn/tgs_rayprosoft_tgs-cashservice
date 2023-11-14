@@ -95,7 +95,9 @@ internal class TgsRepository : ITgsRepository
             walletId,
             playerCode,
             queryRange,
-            queryTypes).SumAsync(t => t.Amount, cancellationToken).ConfigureAwait(false);
+            queryTypes)
+            .SumAsync(t => t.Amount, cancellationToken)
+            .ConfigureAwait(false);
 
     public async ValueTask CreateWalletAsync(
         Guid walletId,

@@ -26,4 +26,6 @@ public partial class WalletItem
     public Guid? BrandId { get; set; }
 
     public string CashType { get; set; } = null!;
+
+    public Guid? SnapshotId { get; set; }
 }

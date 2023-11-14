@@ -27,5 +27,7 @@ public partial class Wallet
 
     public string CashType { get; set; } = null!;
 
+    public Guid? SnapshotId { get; set; }
+
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

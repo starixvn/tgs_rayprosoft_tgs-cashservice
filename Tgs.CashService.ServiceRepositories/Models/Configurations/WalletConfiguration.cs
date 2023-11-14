@@ -40,6 +40,7 @@ namespace Tgs.CashService.Repositories.Entities.Configurations
             .HasPrecision(18, 6)
             .HasColumnName("locked_balance");
             entity.Property(e => e.PlayerCode).HasColumnName("player_code");
+            entity.Property(e => e.SnapshotId).HasColumnName("snapshot_id");
             entity.Property(e => e.UpdatedOn).HasColumnName("updated_on");
 
             OnConfigurePartial(entity);
