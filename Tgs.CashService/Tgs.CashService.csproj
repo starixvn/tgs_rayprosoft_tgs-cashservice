@@ -37,8 +37,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\AgentWalletTransferTool\AgentWalletTransferTool.csproj" />
 		<ProjectReference Include="..\Tgs.CashService.Core\Tgs.CashService.Core.csproj" />
-		<ProjectReference Include="..\Tgs.CashService.ServiceRepositories\Tgs.CashService.ServiceRepositories.csproj" />
+		<ProjectReference Include="..\Tgs.CashService.Repositories\Tgs.CashService.Repositories.csproj" />
 	</ItemGroup>
 
 </Project>
