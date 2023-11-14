@@ -3,18 +3,23 @@
 public enum TransactionType
 {
     Unknown = -1,
+
     [Obsolete("已淘汰")]
     DepositOld = 0,
+
     [Obsolete("已淘汰")]
     Withdrawal = 1,
+
     Bonus = 3,
     Rebate = 4,
     Dividend = 5,
     Promotion = 6,
     GameProviderFundOut = 7,
     GameProviderFundIn = 8,
+
     [Obsolete("已淘汰")]
     CancelWithdrawal = 9,
+
     GameProviderDeposit = 10,
     GameProviderWithdrawal = 11,
     UnsettledBetManual = 12,
@@ -59,6 +64,7 @@ public enum TransactionType
     /// The dividend all agent rebate
     /// </summary>
     DividendAllAgentRebate = 4100,
+
     AgentDividend = 4200,
 
     /// <summary>
@@ -66,6 +72,7 @@ public enum TransactionType
     /// </summary>
     //Adjust = 5000,
     AdjustCompany = 2,
+
     AdjustAgent = 5100,
     AdjustSystem = 5200,
     AdjustTransfer = 5300,
@@ -78,6 +85,7 @@ public enum TransactionType
 
     // 轉帳 6000~6999
     Transfer = 6100,
+
     TransferCommit = 6200,
     TransferRollback = 6300,
     Receive = 6400,
@@ -104,6 +112,7 @@ public enum TransactionType
     // 結算 12000~12999
     // 廢除
     GameSettle = 12000,
+
     GameSettleWin = 12100,
     GameSettleLose = 12200,
     GameSettleFree = 12300,
@@ -117,6 +126,7 @@ public enum TransactionType
     // 鎖定相關 14000~14999
     // 廢除
     GameLock = 14100,
+
     GameUnlock = 14200,
 
     // 遊戲供應 15000~15999

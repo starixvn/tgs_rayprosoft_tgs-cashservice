@@ -1,10 +1,10 @@
-{
-  "profiles": {
-    "AgentWalletTransferTool": {
-      "commandName": "Project"
-    },
-    "Docker": {
-      "commandName": "Docker"
-    }
-  }
+﻿{
+	"profiles": {
+		"AgentWalletTransferTool": {
+			"commandName": "Project"
+		},
+		"Docker": {
+			"commandName": "Docker"
+		}
+	}
 }
