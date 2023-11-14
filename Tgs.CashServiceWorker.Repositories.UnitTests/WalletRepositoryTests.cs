@@ -2,17 +2,17 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using NUnit.Framework;
+using Tgs.CashService;
+using Tgs.CashService.Repositories;
 using Tgs.SerialNumberGenerator;
 using TGS.GameProviders.Repositories.Entities;
 
-namespace Tgs.CashService.Repositories.UnitTests;
+namespace Tgs.CashServiceWorker.Repositories.UnitTests;
 
-[TestFixture]
-public class WalletRepositoryUnitTest
+public class WalletRepositoryTests
 {
-    [Test]
-    public async Task Exchange()
+    [Fact]
+    public async Task 錢包操作資料庫動作()
     {
         var brandId = Guid.NewGuid();
         var walletId = Guid.NewGuid();
@@ -75,17 +75,17 @@ public class WalletRepositoryUnitTest
 
         var transLog = await dbContext.Transactions.FirstAsync();
 
-        Assert.AreEqual(200M, actual.Balance);
-        Assert.AreEqual(20M, actual.LockedBalance);
+        Assert.Equal(200M, actual.Balance);
+        Assert.Equal(20M, actual.LockedBalance);
 
-        Assert.AreEqual(200M, transLog.Balance);
-        Assert.AreEqual(20M, transLog.LockedBalance);
-        Assert.AreEqual(100M, transLog.Amount);
-        Assert.AreEqual(-80M, transLog.LockAmount);
+        Assert.Equal(200M, transLog.Balance);
+        Assert.Equal(20M, transLog.LockedBalance);
+        Assert.Equal(100M, transLog.Amount);
+        Assert.Equal(-80M, transLog.LockAmount);
     }
 
-    [Test]
-    public async Task Exchange_If_PostLockedBalance_Less_Then_Zero_Will_Fail()
+    [Fact]
+    public async Task 錢包操作後_如果PostBalance餘額小於0_操作會失敗()
     {
         var brandId = Guid.NewGuid();
         var walletId = Guid.NewGuid();
@@ -148,11 +148,11 @@ public class WalletRepositoryUnitTest
 
         var transLog = await dbContext.Transactions.FirstOrDefaultAsync();
 
-        Assert.IsNull(transLog);
+        Assert.Null(transLog);
     }
 
-    [Test]
-    public async Task GetBalance()
+    [Fact]
+    public async Task 取得錢包餘額()
     {
         var walletId = Guid.NewGuid();
         var balance = 0M;
@@ -188,10 +188,10 @@ public class WalletRepositoryUnitTest
 
         var actual = await sut.GetBalanceAsync(walletId);
 
-        Assert.AreEqual(balance, actual);
+        Assert.Equal(balance, actual);
     }
 
-    [Test]
+    [Fact]
     public async Task 取得錢包資料_如果BrandId欄位是Null_會從玩家資料表查詢()
     {
         var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
@@ -241,11 +241,11 @@ public class WalletRepositoryUnitTest
 
         var actual = await sut.GetWalletAsync(walletId);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(brandId, actual.BrandId);
+        Assert.NotNull(actual);
+        Assert.Equal(brandId, actual.BrandId);
     }
 
-    [Test]
+    [Fact]
     public async Task 取得錢包資料_如果BrandId有值_會直接使用其值不會再從玩家資料表查詢()
     {
         var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
@@ -284,7 +284,7 @@ public class WalletRepositoryUnitTest
 
         var actual = await sut.GetWalletAsync(walletId);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(brandId, actual.BrandId);
+        Assert.NotNull(actual);
+        Assert.Equal(brandId, actual.BrandId);
     }
 }

@@ -4,7 +4,6 @@
 [*.cs]
 
 
-# CA2012: ���T�ϥ� ValueTasks
 dotnet_diagnostic.CA2012.severity = silent
 
 # CA2007: 請考慮對等候的工作呼叫 ConfigureAwait

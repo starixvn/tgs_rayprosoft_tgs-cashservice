@@ -11,8 +11,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Tgs.CashService.Repositories\Tgs.CashService.Repositories.csproj" />
 		<ProjectReference Include="..\Tgs.CashServiceWorker.Core\Tgs.CashServiceWorker.Core.csproj" />
+		<ProjectReference Include="..\Tgs.CashServiceWorker.Repositories\Tgs.CashServiceWorker.Repositories.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

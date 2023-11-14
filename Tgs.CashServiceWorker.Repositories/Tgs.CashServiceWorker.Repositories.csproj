@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Tgs.CashServiceWorker.Repositories</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+        <PackageReference Include="AsyncMethodNameFixer" Version="2.3.0" />
+        <PackageReference Include="Dapper" Version="2.1.21" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.13" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.13" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+        <PackageReference Include="Polly" Version="8.1.0" />
+        <PackageReference Include="Tgs.SerialNumberGenerator" Version="1.0.1" />
+    </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tgs.CashServiceWorker.Core\Tgs.CashServiceWorker.Core.csproj" />
+  </ItemGroup>
+
+</Project>
