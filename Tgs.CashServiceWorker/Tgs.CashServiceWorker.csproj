@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>2d3c92bb-9452-4666-ba78-5f01447c67da</UserSecretsId>
@@ -28,7 +28,7 @@
 		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.5.1" />
 		<PackageReference Include="PhoenixToolkits.MessageQueue" Version="1.0.3" />
 		<PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="1.0.6" />
-		<PackageReference Include="ProfileViewer.OpenTelemetry.Exporter" Version="0.2.1" />
+		<PackageReference Include="ProfileViewer.OpenTelemetry.Exporter" Version="0.3.0" />
 		<PackageReference Include="Tgs.Interceptors" Version="0.2.1" />
 	</ItemGroup>
 

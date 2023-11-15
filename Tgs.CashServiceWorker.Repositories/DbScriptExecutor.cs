@@ -4,14 +4,9 @@ using TGS.GameProviders.Repositories.Entities;
 
 namespace Tgs.CashService.Repositories;
 
-internal class DbScriptExecutor : IDbScriptExecutor
+internal class DbScriptExecutor(TgsContext tgsContext) : IDbScriptExecutor
 {
-    private readonly TgsContext _tgsContext;
-
-    public DbScriptExecutor(TgsContext tgsContext)
-    {
-        _tgsContext = tgsContext ?? throw new ArgumentNullException(nameof(tgsContext));
-    }
+    private readonly TgsContext _tgsContext = tgsContext ?? throw new ArgumentNullException(nameof(tgsContext));
 
     public Task<T> QueryFirstOrDefaultAsync<T>(string sql, object? parameters)
     {

@@ -71,7 +71,7 @@ public class WalletRepositoryTests
            -80M,
            description,
            externalId,
-           createdByUserId).ConfigureAwait(false);
+           createdByUserId);
 
         var transLog = await dbContext.Transactions.FirstAsync();
 
@@ -230,11 +230,11 @@ public class WalletRepositoryTests
             PlayerCode = playerCode,
             BrandId = brandId,
             DefaultWalletCurrencyCode = "CNY",
-            Password = Array.Empty<byte>(),
-            Salt = Array.Empty<byte>(),
+            Password = [],
+            Salt = [],
             Username = "abcd",
-            WithdrawPassword = Array.Empty<byte>(),
-            WithdrawSalt = Array.Empty<byte>()
+            WithdrawPassword = [],
+            WithdrawSalt = []
         });
 
         _ = await dbContext.SaveChangesAsync();

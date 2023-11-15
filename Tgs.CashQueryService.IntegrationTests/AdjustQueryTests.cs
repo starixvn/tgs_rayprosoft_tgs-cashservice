@@ -7,14 +7,9 @@ using Xunit.Abstractions;
 
 namespace Tgs.CashQueryService.IntegrationTests;
 
-public class AdjustQueryTests
+public class AdjustQueryTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public AdjustQueryTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper ?? throw new ArgumentNullException(nameof(testOutputHelper));
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper ?? throw new ArgumentNullException(nameof(testOutputHelper));
 
     [Fact]
     public async Task 查詢玩家調帳記錄列表()

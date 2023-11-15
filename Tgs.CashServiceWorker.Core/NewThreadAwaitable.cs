@@ -26,8 +26,7 @@ public readonly struct NewThreadAwaitable
 
         private static void QueueContinuation(Action continuation, bool flowContext)
         {
-            if (continuation is null)
-                throw new ArgumentNullException(nameof(continuation));
+            ArgumentNullException.ThrowIfNull(continuation);
 
             // If we're targeting the default scheduler, queue to the thread pool, so that we go into the global
             // queue.  As we're going into the global queue, we might as well use QUWI, which for the global queue is

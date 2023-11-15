@@ -2,16 +2,11 @@
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class TransactionLogQueryService
-    : IQueryService<TransactionLogQuery, TransactionLog>
+internal class TransactionLogQueryService(ITgsRepository tgsRepository)
+        : IQueryService<TransactionLogQuery, TransactionLog>
     , IGetService<TransactionLogQuery, int>
 {
-    private readonly ITgsRepository _tgsRepository;
-
-    public TransactionLogQueryService(ITgsRepository tgsRepository)
-    {
-        _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-    }
+    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
     public IAsyncEnumerable<TransactionLog> QueryAsync(TransactionLogQuery query, CancellationToken cancellationToken = default)
         => _tgsRepository.GetPlayerCodeByWalletIdAsync(query.WalletId, cancellationToken)

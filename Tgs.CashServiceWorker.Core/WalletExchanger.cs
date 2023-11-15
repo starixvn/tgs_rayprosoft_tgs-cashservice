@@ -6,19 +6,13 @@ using Tgs.CashService;
 
 namespace Tgs.CashServiceWorker;
 
-internal class WalletExchanger : IDisposable
+internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime) : IDisposable
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     private readonly ConcurrentDictionary<Guid, WalletReception> _exchangeQueuePool = new();
-    private readonly CancellationTokenSource _cancellationTokenSource;
+    private readonly CancellationTokenSource _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(hostApplicationLifetime.ApplicationStopping);
 
     private bool _disposedValue;
-
-    public WalletExchanger(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime)
-    {
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(hostApplicationLifetime.ApplicationStopping);
-    }
 
     public async ValueTask<ExchangeResult> RequestAsync(ExchangeRequest request, CancellationToken cancellationToken = default)
     {

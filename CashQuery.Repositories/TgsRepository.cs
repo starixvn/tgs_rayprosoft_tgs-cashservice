@@ -5,14 +5,9 @@ using Tgs.CashQueryService;
 
 namespace Tgs.CashQuery.Repositories;
 
-public class TgsRepository : ITgsRepository
+public class TgsRepository(TgsContext dbContext) : ITgsRepository
 {
-    private readonly TgsContext _dbContext;
-
-    public TgsRepository(TgsContext dbContext)
-    {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-    }
+    private readonly TgsContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
     public IAsyncEnumerable<AdjustRecord> QueryPlayerAdjustRecordsAsync(
         Guid brandId,

@@ -6,14 +6,11 @@ using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker.MessageQueue;
 
-public class GetBalanceProcessor : IMessageProcessor
+public class GetBalanceProcessor(IGetService<GetBalanceQuery, decimal> getBalanceService) 
+    : IMessageProcessor
 {
-    private readonly IGetService<GetBalanceQuery, decimal> _getBalanceService;
-
-    public GetBalanceProcessor(IGetService<GetBalanceQuery, decimal> getBalanceService)
-    {
-        _getBalanceService = getBalanceService ?? throw new ArgumentNullException(nameof(getBalanceService));
-    }
+    private readonly IGetService<GetBalanceQuery, decimal> _getBalanceService = getBalanceService 
+        ?? throw new ArgumentNullException(nameof(getBalanceService));
 
     public async ValueTask<ReadOnlyMemory<byte>> HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
     {

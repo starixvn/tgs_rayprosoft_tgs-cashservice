@@ -9,24 +9,17 @@ using TGS.GameProviders.Repositories.Entities;
 
 namespace Tgs.CashService.Repositories;
 
-internal class WalletRepository : IWalletRepository
+internal class WalletRepository(
+    TgsContext context,
+    IDbScriptExecutor dbScriptExecutor,
+    ISerialNumberGenerator serialNumberGenerator,
+    ILogger<WalletRepository> logger)
+    : IWalletRepository
 {
-    private readonly TgsContext _context;
-    private readonly IDbScriptExecutor _dbScriptExecutor;
-    private readonly ISerialNumberGenerator _serialNumberGenerator;
-    private readonly ILogger<WalletRepository> _logger;
-
-    public WalletRepository(
-        TgsContext context,
-        IDbScriptExecutor dbScriptExecutor,
-        ISerialNumberGenerator serialNumberGenerator,
-        ILogger<WalletRepository> logger)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _dbScriptExecutor = dbScriptExecutor ?? throw new ArgumentNullException(nameof(dbScriptExecutor));
-        _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly TgsContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly IDbScriptExecutor _dbScriptExecutor = dbScriptExecutor ?? throw new ArgumentNullException(nameof(dbScriptExecutor));
+    private readonly ISerialNumberGenerator _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
+    private readonly ILogger<WalletRepository> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async ValueTask<ExchangeResult> ExchangeAsync(
         Guid brandId,
@@ -165,7 +158,7 @@ internal class WalletRepository : IWalletRepository
     public async ValueTask<Wallet?> GetWalletAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
         var wallet = await _context.WalletItems.FindAsync(
-            new object?[] { walletId },
+            [walletId],
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
         if (wallet is null)
@@ -174,7 +167,7 @@ internal class WalletRepository : IWalletRepository
         if (wallet.BrandId is null)
         {
             var player = await _context.Players.FindAsync(
-                new object?[] { wallet.PlayerCode },
+                [wallet.PlayerCode],
                 cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return player is null

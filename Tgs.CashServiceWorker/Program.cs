@@ -63,6 +63,7 @@ builder.Services
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");
 
+var instrumentationExtenionFilters = new[] { "html", "ico", "png", "jpg" };
 builder.Services
     .AddOpenTelemetry()
     .WithTracing(
@@ -91,7 +92,7 @@ builder.Services
             && !httpContext.Request.Path.StartsWithSegments("/healthz")
             && !httpContext.Request.Path.StartsWithSegments("/metrics")
             && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-            && !new[] { "html", "ico", "png", "jpg" }.Any(
+            && !instrumentationExtenionFilters.Any(
                 ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
     .AddHealthChecks()
     .Services

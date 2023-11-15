@@ -2,22 +2,15 @@
 
 namespace Tgs.CashServiceWorker;
 
-internal class WalletExchangeBackgroundService : BackgroundService
+internal class WalletExchangeBackgroundService(WalletExchanger walletExchanger) : BackgroundService
 {
-    private readonly WalletExchanger _walletExchanger;
-
-    public WalletExchangeBackgroundService(WalletExchanger walletExchanger)
-    {
-        _walletExchanger = walletExchanger;
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await NewThreadAwaitable.Default;
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            _walletExchanger.ScanExpiredQueues();
+            walletExchanger.ScanExpiredQueues();
 
             await Task.Delay(
                 10000,

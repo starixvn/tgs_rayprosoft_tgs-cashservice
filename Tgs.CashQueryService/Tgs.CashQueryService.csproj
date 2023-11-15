@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>83bec509-2e56-43e7-ae75-142883f6eb70</UserSecretsId>
@@ -18,7 +18,7 @@
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.6.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.5.1" />
-		<PackageReference Include="ProfileViewer.OpenTelemetry.Exporter" Version="0.2.1" />
+		<PackageReference Include="ProfileViewer.OpenTelemetry.Exporter" Version="0.3.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="Tgs.WebApi.Toolkits.Swashbuckle" Version="0.3.1" />
 	</ItemGroup>

@@ -4,10 +4,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Tgs.CashServiceWorker;
 
-internal class WalletReception : IDisposable
+internal class WalletReception(
+    Guid walletId,
+    IServiceProvider serviceProvider,
+    ILogger<WalletReception> logger,
+    CancellationToken cancellationToken) : IDisposable
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<WalletReception> _logger;
+    private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+    private readonly ILogger<WalletReception> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     private readonly Channel<ExchangeTask> _exchangeTasks = Channel.CreateUnbounded<ExchangeTask>(
         new UnboundedChannelOptions
@@ -15,7 +19,7 @@ internal class WalletReception : IDisposable
             SingleReader = true
         });
 
-    private readonly CancellationTokenSource _cancellationSource;
+    private readonly CancellationTokenSource _cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
     private Task? _backgroundTask;
     private bool _disposedValue;
 
@@ -23,19 +27,7 @@ internal class WalletReception : IDisposable
 
     public DateTime Expired { get; set; } = DateTime.Now.AddMinutes(1).AddSeconds(20);
 
-    public Guid WalletId { get; }
-
-    public WalletReception(
-        Guid walletId,
-        IServiceProvider serviceProvider,
-        ILogger<WalletReception> logger,
-        CancellationToken cancellationToken)
-    {
-        WalletId = walletId;
-        _cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    public Guid WalletId { get; } = walletId;
 
     public ValueTask EnqueueAsync(ExchangeTask exchangeTask, CancellationToken cancellationToken = default)
         => _exchangeTasks.Writer.WriteAsync(exchangeTask, cancellationToken);
