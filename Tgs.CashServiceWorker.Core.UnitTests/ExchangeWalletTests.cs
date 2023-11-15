@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -19,8 +20,9 @@ public class ExchangeWalletTests
         _ = services
             .AddSingleton<ILogger<WalletReception>>(NullLogger<WalletReception>.Instance)
             .AddSingleton(fakeWalletRepository);
+        var fakeHostApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
 
-        var exchanger = new WalletExchanger(services.BuildServiceProvider());
+        var exchanger = new WalletExchanger(services.BuildServiceProvider(), fakeHostApplicationLifetime);
         var sut = new ExchangeWalletCommandService(exchanger);
 
         var command = new ExchangeWalletCommand(
@@ -84,8 +86,9 @@ public class ExchangeWalletTests
         _ = services
             .AddSingleton<ILogger<WalletReception>>(NullLogger<WalletReception>.Instance)
             .AddSingleton(fakeWalletRepository);
+        var fakeHostApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
 
-        var exchanger = new WalletExchanger(services.BuildServiceProvider());
+        var exchanger = new WalletExchanger(services.BuildServiceProvider(), fakeHostApplicationLifetime);
         var sut = new ExchangeWalletCommandService(exchanger);
 
         var command = new ExchangeWalletCommand(

@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Threading.Channels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -8,9 +8,15 @@ internal class WalletReception : IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<WalletReception> _logger;
-    private readonly BlockingCollection<ExchangeTask> _exchangeTasks = new();
+
+    private readonly Channel<ExchangeTask> _exchangeTasks = Channel.CreateUnbounded<ExchangeTask>(
+        new UnboundedChannelOptions
+        {
+            SingleReader = true
+        });
+
+    private readonly CancellationTokenSource _cancellationSource;
     private Task? _backgroundTask;
-    private CancellationTokenSource? _cancellationSource;
     private bool _disposedValue;
 
     public bool IsStartReceive { get; private set; } = false;
@@ -19,55 +25,32 @@ internal class WalletReception : IDisposable
 
     public Guid WalletId { get; }
 
-    public WalletReception(Guid walletId, IServiceProvider serviceProvider, ILogger<WalletReception> logger)
+    public WalletReception(
+        Guid walletId,
+        IServiceProvider serviceProvider,
+        ILogger<WalletReception> logger,
+        CancellationToken cancellationToken)
     {
         WalletId = walletId;
+        _cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public void Enqueue(ExchangeTask exchangeTask)
-        => _exchangeTasks.Add(exchangeTask);
+    public ValueTask EnqueueAsync(ExchangeTask exchangeTask, CancellationToken cancellationToken = default)
+        => _exchangeTasks.Writer.WriteAsync(exchangeTask, cancellationToken);
 
-    public void StartReceive(CancellationToken cancellationToken)
+    public ValueTask StartReceiveAsync(CancellationToken cancellationToken = default)
     {
         if (IsStartReceive)
-            return;
+            return ValueTask.CompletedTask;
 
         IsStartReceive = true;
+        _ = _cancellationSource.Token.Register(() => _exchangeTasks.Writer.Complete());
+        _backgroundTask = ProcessExchangeLoopAsync(cancellationToken);
+        _ = _cancellationSource.Token.Register(_backgroundTask.Wait);
 
-        _cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-        _ = _cancellationSource.Token.Register(() => _exchangeTasks.CompleteAdding());
-
-        _backgroundTask = Task.Run(async () =>
-        {
-            foreach (var exchangeTask in _exchangeTasks.GetConsumingEnumerable(_cancellationSource.Token))
-            {
-                Expired = DateTime.Now.AddMinutes(1).AddSeconds(20);
-
-                await HandleExchangeAsync(
-                    exchangeTask,
-                    _cancellationSource.Token).ConfigureAwait(false);
-            }
-        }, cancellationToken);
-    }
-
-    public void StopReceive()
-    {
-        if (_cancellationSource?.IsCancellationRequested == false)
-            _cancellationSource?.Cancel();
-
-        try
-        {
-            if (_exchangeTasks.TryGetNonEnumeratedCount(out var count)
-                && count > 0
-                && _backgroundTask?.IsCompleted == false)
-                _backgroundTask?.Wait();
-        }
-        catch (AggregateException ex) when (ex.InnerException is TaskCanceledException)
-        {
-        }
+        return ValueTask.CompletedTask;
     }
 
     public void Dispose()
@@ -87,11 +70,34 @@ internal class WalletReception : IDisposable
                     _cancellationSource.Cancel();
 
                 _cancellationSource?.Dispose();
-
-                _exchangeTasks.CompleteAdding();
             }
 
             _disposedValue = true;
+        }
+    }
+
+    private async Task ProcessExchangeLoopAsync(CancellationToken cancellationToken)
+    {
+        await NewThreadAwaitable.Default;
+
+        var reader = _exchangeTasks.Reader;
+        while (await reader
+            .WaitToReadAsync(cancellationToken)
+            .ConfigureAwait(false))
+        {
+            if (reader.TryRead(out var exchangeTask))
+                try
+                {
+                    Expired = DateTime.Now.AddMinutes(1).AddSeconds(20);
+
+                    await HandleExchangeAsync(
+                        exchangeTask,
+                        _cancellationSource!.Token).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Process command occur errors.");
+                }
         }
     }
 

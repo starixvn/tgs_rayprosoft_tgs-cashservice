@@ -1,53 +1,51 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService;
 
 namespace Tgs.CashServiceWorker;
 
-internal class WalletExchanger
+internal class WalletExchanger : IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ConcurrentDictionary<Guid, WalletReception> _exchangeQueuePool = new();
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private readonly CancellationTokenSource _cancellationTokenSource;
 
-    public WalletExchanger(IServiceProvider serviceProvider)
+    private bool _disposedValue;
+
+    public WalletExchanger(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(hostApplicationLifetime.ApplicationStopping);
     }
 
-    public Task<ExchangeResult> RequestAsync(ExchangeRequest request)
+    public async ValueTask<ExchangeResult> RequestAsync(ExchangeRequest request, CancellationToken cancellationToken = default)
     {
         if (_cancellationTokenSource.IsCancellationRequested)
             throw new TaskCanceledException();
+
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         var queue = _exchangeQueuePool.GetOrAdd(
             request.WalletId,
             _ => new WalletReception(
                 request.WalletId,
                 _serviceProvider,
-                _serviceProvider.GetRequiredService<ILogger<WalletReception>>()));
+                _serviceProvider.GetRequiredService<ILogger<WalletReception>>(),
+                _cancellationTokenSource.Token));
 
         if (!queue.IsStartReceive)
-            queue.StartReceive(_cancellationTokenSource.Token);
+            await queue.StartReceiveAsync(
+                _cancellationTokenSource.Token).ConfigureAwait(false);
 
         var exchangeTask = new ExchangeTask(request, new TaskCompletionSource<ExchangeResult>());
-        queue.Enqueue(exchangeTask);
 
-        return exchangeTask.Promise.Task;
-    }
+        await using var tokenRegistration = cts.Token.Register(
+            () => exchangeTask.Promise.TrySetCanceled()).ConfigureAwait(false);
+        await queue.EnqueueAsync(exchangeTask, cts.Token).ConfigureAwait(false);
 
-    public void StopReceive()
-    {
-        if (!_cancellationTokenSource.IsCancellationRequested)
-            _cancellationTokenSource.Cancel();
-
-        Task.WaitAll(_exchangeQueuePool
-            .Values
-            .Select(reception => Task.Run(() => reception.StopReceive()))
-            .ToArray());
-
-        _cancellationTokenSource.Dispose();
+        return await exchangeTask.Promise.Task.ConfigureAwait(false);
     }
 
     public void ScanExpiredQueues()
@@ -60,12 +58,38 @@ internal class WalletExchanger
             .Select(reception => Task.Run(() =>
             {
                 if (_exchangeQueuePool.TryRemove(reception.WalletId, out _))
-                {
-                    reception.StopReceive();
-
                     reception.Dispose();
-                }
             }))
             .ToArray());
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _cancellationTokenSource.Cancel();
+
+                var allValues = _exchangeQueuePool.Values;
+                _exchangeQueuePool.Clear();
+
+                Task.WaitAll(allValues
+                    .Select(reception => Task.Run(() =>
+                    {
+                        if (_exchangeQueuePool.TryRemove(reception.WalletId, out _))
+                            reception.Dispose();
+                    }))
+                    .ToArray());
+            }
+
+            _disposedValue = true;
+        }
     }
 }

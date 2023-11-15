@@ -11,23 +11,17 @@ internal class WalletExchangeBackgroundService : BackgroundService
         _walletExchanger = walletExchanger;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _ = stoppingToken.Register(_walletExchanger.StopReceive);
+        await NewThreadAwaitable.Default;
 
-        return Task.Run(async () =>
+        while (!stoppingToken.IsCancellationRequested)
         {
-            while (true)
-            {
-                if (stoppingToken.IsCancellationRequested)
-                    break;
+            _walletExchanger.ScanExpiredQueues();
 
-                _walletExchanger.ScanExpiredQueues();
-
-                await Task.Delay(
-                    10000,
-                    stoppingToken).ConfigureAwait(false);
-            }
-        }, stoppingToken);
+            await Task.Delay(
+                10000,
+                stoppingToken).ConfigureAwait(false);
+        }
     }
 }
