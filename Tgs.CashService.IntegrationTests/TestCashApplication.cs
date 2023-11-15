@@ -11,18 +11,12 @@ using Tgs.CashService.Repositories.Entities;
 
 namespace Tgs.CashService.IntegrationTests;
 
-internal class TestCashApplication : WebApplicationFactory<Program>
+internal class TestCashApplication(Action<IWebHostBuilder>? webHostConfigure = null) 
+    : WebApplicationFactory<Program>
 {
-    private readonly Action<IWebHostBuilder>? _webHostConfigure;
-
-    public TestCashApplication(Action<IWebHostBuilder>? webHostConfigure = null)
-    {
-        _webHostConfigure = webHostConfigure;
-    }
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        _webHostConfigure?.Invoke(builder);
+        webHostConfigure?.Invoke(builder);
 
         _ = builder
             .ConfigureLogging(logging => logging

@@ -5,14 +5,10 @@ using Tgs.Paging;
 
 namespace Tgs.CashService.Repositories;
 
-internal class TgsRepository : ITgsRepository
+internal class TgsRepository(TgsContext dbContext)
+    : ITgsRepository
 {
-    private readonly TgsContext _dbContext;
-
-    public TgsRepository(TgsContext dbContext)
-    {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-    }
+    private readonly TgsContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
     public IAsyncEnumerable<TransactionLog> QueryTransactionLogsAsync(
         Guid walletId,
@@ -79,7 +75,7 @@ internal class TgsRepository : ITgsRepository
     public async ValueTask<string?> GetPlayerCodeByWalletIdAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
         var wallet = await _dbContext.Wallets.FindAsync(
-            new object?[] { walletId },
+            [walletId],
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return wallet?.PlayerCode;

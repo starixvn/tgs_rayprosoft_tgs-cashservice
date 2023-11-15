@@ -4,12 +4,11 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class AdjustAgentCommandService : IGetService<AdjustAgentV2Command, ExchangeResult>
+internal class AdjustAgentCommandService(IWalletExchangeService walletExchangeService)
+    : IGetService<AdjustAgentV2Command, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService;
-
-    public AdjustAgentCommandService(IWalletExchangeService walletExchangeService) => _walletExchangeService =
-        walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
+        ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public ValueTask<ExchangeResult> GetAsync(AdjustAgentV2Command command, CancellationToken cancellationToken = default)
     {

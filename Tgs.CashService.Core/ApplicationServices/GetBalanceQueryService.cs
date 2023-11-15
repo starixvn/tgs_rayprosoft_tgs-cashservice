@@ -2,14 +2,11 @@
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class GetBalanceQueryService : IGetService<GetBalanceQuery, decimal>
+internal class GetBalanceQueryService(IWalletExchangeService walletExchangeService)
+    : IGetService<GetBalanceQuery, decimal>
 {
-    private readonly IWalletExchangeService _walletExchangeService;
-
-    public GetBalanceQueryService(IWalletExchangeService walletExchangeService)
-    {
-        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
-    }
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
+        ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public async ValueTask<decimal> GetAsync(GetBalanceQuery query, CancellationToken cancellationToken = default)
     {

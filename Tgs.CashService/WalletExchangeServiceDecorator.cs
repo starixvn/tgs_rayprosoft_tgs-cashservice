@@ -4,16 +4,16 @@ using Tgs.Cash.Protos;
 
 namespace Tgs.CashService;
 
-public class WalletExchangeServiceDecorator : IWalletExchangeService
+public class WalletExchangeServiceDecorator(
+    IWalletExchangeService walletExchangeService,
+    ILogger<WalletExchangeServiceDecorator> logger)
+    : IWalletExchangeService
 {
-    private readonly IWalletExchangeService _walletExchangeService;
-    private readonly ILogger<WalletExchangeServiceDecorator> _logger;
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
+        ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
-    public WalletExchangeServiceDecorator(IWalletExchangeService walletExchangeService, ILogger<WalletExchangeServiceDecorator> logger)
-    {
-        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly ILogger<WalletExchangeServiceDecorator> _logger = logger
+        ?? throw new ArgumentNullException(nameof(logger));
 
     public async ValueTask<ExchangeResult> SendRequestAsync(WalletExchangeRequest request, CancellationToken cancellationToken = default)
         => await Policy.Handle<NATSNoRespondersException>()
