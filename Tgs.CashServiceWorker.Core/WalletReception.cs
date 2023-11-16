@@ -1,12 +1,15 @@
 ﻿using System.Threading.Channels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Tgs.CashService;
+using Tgs.SerialNumberGenerator;
 
 namespace Tgs.CashServiceWorker;
 
 internal class WalletReception(
     Guid walletId,
     IServiceProvider serviceProvider,
+    ISerialNumberGenerator serialNumberGenerator,
     ILogger<WalletReception> logger,
     CancellationToken cancellationToken) : IDisposable
 {
@@ -22,6 +25,10 @@ internal class WalletReception(
     private readonly CancellationTokenSource _cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
     private Task? _backgroundTask;
     private bool _disposedValue;
+    private decimal _balance;
+    private decimal _lockedBalance;
+    private Guid? _brandId;
+    private string? _userId;
 
     public bool IsStartReceive { get; private set; } = false;
 
@@ -32,17 +39,31 @@ internal class WalletReception(
     public ValueTask EnqueueAsync(ExchangeTask exchangeTask, CancellationToken cancellationToken = default)
         => _exchangeTasks.Writer.WriteAsync(exchangeTask, cancellationToken);
 
-    public ValueTask StartReceiveAsync(CancellationToken cancellationToken = default)
+    public async ValueTask StartReceiveAsync(CancellationToken cancellationToken = default)
     {
         if (IsStartReceive)
-            return ValueTask.CompletedTask;
+            return;
+
+        var scope = _serviceProvider.CreateAsyncScope();
+        await using (scope.ConfigureAwait(false))
+        {
+            var repository = scope.ServiceProvider.GetRequiredService<IWalletRepository>();
+
+            var wallet = await repository
+                .GetWalletAsync(WalletId, cancellationToken)
+                .ConfigureAwait(false)
+                ?? throw new InvalidOperationException("Can't found wallet.");
+
+            _brandId = wallet.BrandId;
+            _userId = wallet.UserId;
+            _balance = wallet.Balance;
+            _lockedBalance = wallet.LockedBalance;
+        }
 
         IsStartReceive = true;
         _ = _cancellationSource.Token.Register(() => _exchangeTasks.Writer.Complete());
         _backgroundTask = ProcessExchangeLoopAsync(cancellationToken);
         _ = _cancellationSource.Token.Register(_backgroundTask.Wait);
-
-        return ValueTask.CompletedTask;
     }
 
     public void Dispose()
@@ -108,24 +129,43 @@ internal class WalletReception(
             {
                 var repository = scope.ServiceProvider.GetRequiredService<IWalletRepository>();
 
-                var wallet = await repository
-                    .GetWalletAsync(exchangeTask.Request.WalletId, cancellationToken)
-                    .ConfigureAwait(false)
-                    ?? throw new InvalidOperationException("Can't found wallet.");
+                var currentTime = DateTime.UtcNow;
+                var transactionId = await serialNumberGenerator
+                    .GenerateAsync(cancellationToken)
+                    .ConfigureAwait(false);
 
-                var result = await repository.ExchangeAsync(
-                    wallet.BrandId,
-                    exchangeTask.Request.WalletId,
-                    wallet.PlayerCode,
-                    exchangeTask.Request.TransactionType,
+                _lockedBalance += exchangeTask.Request.LockAmount;
+                if (_lockedBalance < 0M)
+                {
+                    _lockedBalance -= exchangeTask.Request.LockAmount;
+
+                    throw new WalletExchangeFailException();
+                }
+                _balance += exchangeTask.Request.Amount;
+
+                var record = new TransactionRecord(
+                    transactionId,
+                    WalletId,
+                    _brandId!.Value,
+                    _userId!,
                     exchangeTask.Request.Amount,
                     exchangeTask.Request.LockAmount,
+                    _balance,
+                    _lockedBalance,
+                    exchangeTask.Request.TransactionType,
                     exchangeTask.Request.Description,
+                    currentTime,
                     exchangeTask.Request.ExternalId,
-                    exchangeTask.Request.CreatedByUserId,
+                    exchangeTask.Request.CreatedByUserId);
+
+                await repository.WriteTransactionRecordAsync(
+                    record,
                     cancellationToken).ConfigureAwait(false);
 
-                exchangeTask.Promise.SetResult(result);
+                exchangeTask.Promise.SetResult(new ExchangeResult(
+                    transactionId,
+                    _balance,
+                    _lockedBalance));
             }
         }
         catch (Exception ex)

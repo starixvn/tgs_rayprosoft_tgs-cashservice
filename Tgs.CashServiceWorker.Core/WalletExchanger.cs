@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService;
+using Tgs.SerialNumberGenerator;
 
 namespace Tgs.CashServiceWorker;
 
@@ -26,6 +27,7 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
             _ => new WalletReception(
                 request.WalletId,
                 _serviceProvider,
+                _serviceProvider.GetRequiredService<ISerialNumberGenerator>(),
                 _serviceProvider.GetRequiredService<ILogger<WalletReception>>(),
                 _cancellationTokenSource.Token));
 

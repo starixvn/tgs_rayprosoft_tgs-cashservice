@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
+using StackExchange.Redis;
 using Tgs.CashService;
 using Tgs.CashService.Repositories;
 using Tgs.SerialNumberGenerator;
@@ -43,9 +44,11 @@ public class WalletRepositoryTests
 
         var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
         var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
 
         var sut = new WalletRepository(
             dbContext,
+            fakeRedisDatabase,
             fakeDbScriptExecutor,
             fakeSerialNumberGenerator,
             NullLogger<WalletRepository>.Instance);
@@ -116,9 +119,11 @@ public class WalletRepositoryTests
 
         var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
         var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
 
         var sut = new WalletRepository(
             dbContext,
+            fakeRedisDatabase,
             fakeDbScriptExecutor,
             fakeSerialNumberGenerator,
             NullLogger<WalletRepository>.Instance);
@@ -179,9 +184,11 @@ public class WalletRepositoryTests
 
         var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
         var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
 
         var sut = new WalletRepository(
             dbContext,
+            fakeRedisDatabase,
             fakeDbScriptExecutor,
             fakeSerialNumberGenerator,
             NullLogger<WalletRepository>.Instance);
@@ -204,9 +211,11 @@ public class WalletRepositoryTests
 
         var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
         var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
 
         var sut = new WalletRepository(
             dbContext,
+            fakeRedisDatabase,
             fakeDbScriptExecutor,
             fakeSerialNumberGenerator,
             NullLogger<WalletRepository>.Instance);
@@ -258,9 +267,11 @@ public class WalletRepositoryTests
 
         var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
         var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
 
         var sut = new WalletRepository(
             dbContext,
+            fakeRedisDatabase,
             fakeDbScriptExecutor,
             fakeSerialNumberGenerator,
             NullLogger<WalletRepository>.Instance);

@@ -6,6 +6,8 @@ using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService;
 using Tgs.CashServiceWorker.ApplicationServices;
+using Tgs.SerialNumberGenerator;
+using ExpectedObjects;
 
 namespace Tgs.CashServiceWorker.Core.UnitTests;
 
@@ -17,9 +19,13 @@ public class ExchangeWalletTests
         var services = new ServiceCollection();
 
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+
         _ = services
             .AddSingleton<ILogger<WalletReception>>(NullLogger<WalletReception>.Instance)
-            .AddSingleton(fakeWalletRepository);
+            .AddSingleton(fakeWalletRepository)
+            .AddSingleton(fakeSerialNumberGenerator);
+
         var fakeHostApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
 
         var exchanger = new WalletExchanger(services.BuildServiceProvider(), fakeHostApplicationLifetime);
@@ -34,30 +40,43 @@ public class ExchangeWalletTests
             null,
             null);
 
+        var brandId = Guid.NewGuid();
+        var userId = "Player1";
         _ = fakeWalletRepository.GetWalletAsync(Arg.Is(command.WalletId), Arg.Any<CancellationToken>())
-            .Returns(new Wallet
-            {
-                Id = command.WalletId,
-                BrandId = Guid.NewGuid(),
-                PlayerCode = "Player1"
-            });
-
-        _ = fakeWalletRepository.ExchangeAsync(
-                Arg.Any<Guid>(),
-                Arg.Is(command.WalletId),
-                Arg.Any<string>(),
-                Arg.Is(command.TransactionType),
-                Arg.Is(command.Amount),
-                Arg.Is(0M),
-                Arg.Is(command.Description),
-                Arg.Is(command.ExternalId),
-                Arg.Is(command.CreatedByUserId),
-                Arg.Any<CancellationToken>())
-            .Returns(new ExchangeResult(Guid.NewGuid(), 12345M, 0M));
+            .Returns(new Wallet(
+                command.WalletId,
+                brandId,
+                userId,
+                0M,
+                0M,
+                Guid.NewGuid()));
 
         var actual = await sut.GetAsync(command);
 
-        Assert.AreEqual(12345M, actual.Balance);
+        var expectedRecord = new TransactionRecord(
+            actual.TransactionId,
+            command.WalletId,
+            brandId,
+            userId,
+            command.Amount,
+            command.LockAmount,
+            100M,
+            0M,
+            command.TransactionType,
+            command.Description,
+            DateTime.UtcNow,
+            command.ExternalId,
+            command.CreatedByUserId).ToExpectedObject(ctx => ctx
+                .Ignore(o => o.RecordedOn)
+                .IgnoreEqualsOverride());
+
+        Assert.AreEqual(100M, actual.Balance);
+        Assert.AreEqual(0M, actual.LockedBalance);
+
+        _ = fakeWalletRepository.Received(1)
+            .WriteTransactionRecordAsync(
+                Arg.Is<TransactionRecord>(record => expectedRecord.Matches(record)),
+                Arg.Any<CancellationToken>());
     }
 
     [Test]

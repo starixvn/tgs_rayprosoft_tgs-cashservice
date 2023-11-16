@@ -11,7 +11,6 @@ public static class RepositoryConfigurationExtensions
         this IServiceCollection services,
         Action<IServiceProvider, DbContextOptionsBuilder> efConfigure)
         => services
-            .AddSerialNumberGenerator()
             .AddDbContext<TgsContext>(efConfigure)
             .AddTransient<IWalletRepository, WalletRepository>()
             .AddTransient<IDbScriptExecutor, DbScriptExecutor>();

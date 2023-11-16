@@ -1,8 +1,11 @@
 ﻿using System.Data;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using Polly;
+using StackExchange.Redis;
 using Tgs.CashServiceWorker;
 using Tgs.SerialNumberGenerator;
 using TGS.GameProviders.Repositories.Entities;
@@ -10,16 +13,22 @@ using TGS.GameProviders.Repositories.Entities;
 namespace Tgs.CashService.Repositories;
 
 internal class WalletRepository(
-    TgsContext context,
+    TgsContext dbContext,
+    IDatabase redisDatabase,
     IDbScriptExecutor dbScriptExecutor,
     ISerialNumberGenerator serialNumberGenerator,
     ILogger<WalletRepository> logger)
     : IWalletRepository
 {
-    private readonly TgsContext _context = context ?? throw new ArgumentNullException(nameof(context));
-    private readonly IDbScriptExecutor _dbScriptExecutor = dbScriptExecutor ?? throw new ArgumentNullException(nameof(dbScriptExecutor));
-    private readonly ISerialNumberGenerator _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
-    private readonly ILogger<WalletRepository> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private static readonly JsonSerializerOptions _SerializerOptions = new(JsonSerializerDefaults.Web)
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+        WriteIndented = false,
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        }
+    };
 
     public async ValueTask<ExchangeResult> ExchangeAsync(
         Guid brandId,
@@ -34,7 +43,7 @@ internal class WalletRepository(
         CancellationToken cancellationToken = default)
     {
         var updatedOn = DateTime.UtcNow;
-        var transactionId = await _serialNumberGenerator
+        var transactionId = await serialNumberGenerator
             .GenerateAsync(cancellationToken)
             .ConfigureAwait(false);
 
@@ -44,10 +53,10 @@ internal class WalletRepository(
             {
                 var wait = Random.Shared.Next(100, 1000);
 
-                _logger.LogWarning("Exchange retry occur: {count}", count);
+                logger.LogWarning("Exchange retry occur: {count}", count);
                 return TimeSpan.FromMilliseconds(wait);
             })
-            .ExecuteAsync(() => _dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
+            .ExecuteAsync(() => dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
                 """
                     UPDATE dbo.wallets AS C
                     SET
@@ -84,10 +93,10 @@ internal class WalletRepository(
                 {
                     var wait = Random.Shared.Next(100, 1000);
 
-                    _logger.LogWarning("Exchange retry occur: {count}", count);
+                    logger.LogWarning("Exchange retry occur: {count}", count);
                     return TimeSpan.FromMilliseconds(wait);
                 })
-                .ExecuteAsync(() => _dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
+                .ExecuteAsync(() => dbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(
                     """
                         UPDATE dbo.wallets AS C
                         SET
@@ -118,7 +127,7 @@ internal class WalletRepository(
             throw new WalletExchangeFailException();
         }
 
-        _ = await _context.Transactions
+        _ = await dbContext.Transactions
             .AddAsync(new()
             {
                 Id = transactionId,
@@ -137,7 +146,7 @@ internal class WalletRepository(
             }, cancellationToken)
             .ConfigureAwait(false);
 
-        _ = await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return new ExchangeResult(
             transactionId,
@@ -147,7 +156,7 @@ internal class WalletRepository(
 
     public async ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
-        var playerWallet = await _context.WalletItems
+        var playerWallet = await dbContext.WalletItems
             .Where(x => x.Id == walletId)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken)
             .ConfigureAwait(false);
@@ -157,7 +166,7 @@ internal class WalletRepository(
 
     public async ValueTask<Wallet?> GetWalletAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
-        var wallet = await _context.WalletItems.FindAsync(
+        var wallet = await dbContext.WalletItems.FindAsync(
             [walletId],
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -166,25 +175,36 @@ internal class WalletRepository(
 
         if (wallet.BrandId is null)
         {
-            var player = await _context.Players.FindAsync(
+            var player = await dbContext.Players.FindAsync(
                 [wallet.PlayerCode],
                 cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return player is null
                 ? null
-                : new Wallet
-                {
-                    Id = wallet.Id,
-                    BrandId = player.BrandId,
-                    PlayerCode = player.PlayerCode
-                };
+                : new Wallet(
+                    wallet.Id,
+                    player.BrandId,
+                    player.PlayerCode,
+                    wallet.Balance,
+                    wallet.LockedBalance,
+                    wallet.SnapshotId);
         }
 
-        return new Wallet
-        {
-            Id = wallet.Id,
-            BrandId = wallet.BrandId.Value,
-            PlayerCode = wallet.PlayerCode
-        };
+        return new Wallet(
+            wallet.Id,
+            wallet.BrandId!.Value,
+            wallet.PlayerCode,
+            wallet.Balance,
+            wallet.LockedBalance,
+            wallet.SnapshotId);
+    }
+
+    public async ValueTask WriteTransactionRecordAsync(TransactionRecord record, CancellationToken cancellationToken = default)
+    {
+        var key = new RedisKey($"Tgs:Transactions:{record.WalletId}");
+
+        _ = await redisDatabase.ListRightPushAsync(
+            key,
+            JsonSerializer.Serialize(record, _SerializerOptions)).ConfigureAwait(false);
     }
 }
