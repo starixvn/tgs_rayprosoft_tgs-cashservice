@@ -7,13 +7,14 @@
 		<LangVersion>11</LangVersion>
 		<RootNamespace>Tgs.CashQueryService.Client</RootNamespace>
 		<PackageId>Tgs.CashQuery.Client</PackageId>
-		<Version>0.0.8</Version>
+		<Version>0.0.9</Version>
 		<Authors>Raypro</Authors>
 		<Description>Tgs CashService query client
 </Description>
 		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-cashservice</PackageProjectUrl>
 		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-cashservice.git</RepositoryUrl>
 		<PackageTags>Tgs Cash</PackageTags>
+		<SqlQueryToolsConnectionString />
 	</PropertyGroup>
 
 	<ItemGroup>
