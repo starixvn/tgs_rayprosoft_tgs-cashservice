@@ -1,0 +1,2 @@
+﻿namespace Tgs.CashServiceCommitter.ApplicationServices;
+public record BookkeepingWalletTransactionLogsCommand(Guid WalletId);

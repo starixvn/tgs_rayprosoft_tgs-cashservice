@@ -37,3 +37,7 @@ message BalanceRequest {
 message BalanceResponse {
 	phoenix.protobuf.DecimalValue balance = 1;
 }
+
+message CommitExchangeRequest {
+	phoenix.protobuf.GuidValue wallet_id = 1;
+}

@@ -1,6 +1,4 @@
-﻿using Tgs.CashService;
-
-namespace Tgs.CashServiceWorker;
+﻿namespace Tgs.CashService;
 public record TransactionRecord(
     Guid Id,
     Guid WalletId,

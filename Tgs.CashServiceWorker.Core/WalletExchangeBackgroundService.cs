@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Tgs.CashService;
 
 namespace Tgs.CashServiceWorker;
 

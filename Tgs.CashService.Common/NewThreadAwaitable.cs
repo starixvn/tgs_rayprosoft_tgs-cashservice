@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using static System.Runtime.CompilerServices.YieldAwaitable;
 
-namespace Tgs.CashServiceWorker;
+namespace Tgs.CashService;
 
 public readonly struct NewThreadAwaitable
 {

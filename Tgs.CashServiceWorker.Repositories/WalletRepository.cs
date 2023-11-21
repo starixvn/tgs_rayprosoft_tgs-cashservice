@@ -9,6 +9,7 @@ using StackExchange.Redis;
 using Tgs.CashServiceWorker;
 using Tgs.SerialNumberGenerator;
 using TGS.GameProviders.Repositories.Entities;
+using Tgs.CashService;
 
 namespace Tgs.CashService.Repositories;
 
