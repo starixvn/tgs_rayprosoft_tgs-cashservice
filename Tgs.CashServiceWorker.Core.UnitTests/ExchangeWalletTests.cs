@@ -120,17 +120,5 @@ public class ExchangeWalletTests
             null);
 
         _ = Assert.ThrowsAsync<InvalidOperationException>(async () => await sut.GetAsync(command));
-
-        _ = fakeWalletRepository.DidNotReceive()
-            .ExchangeAsync(
-                Arg.Any<Guid>(),
-                Arg.Any<Guid>(),
-                Arg.Any<string>(),
-                Arg.Any<TransactionType>(),
-                Arg.Any<decimal>(),
-                Arg.Any<decimal>(),
-                Arg.Any<string>(),
-                Arg.Any<string>(),
-                Arg.Any<Guid?>());
     }
 }

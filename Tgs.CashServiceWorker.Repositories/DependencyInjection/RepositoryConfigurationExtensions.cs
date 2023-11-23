@@ -12,6 +12,5 @@ public static class RepositoryConfigurationExtensions
         Action<IServiceProvider, DbContextOptionsBuilder> efConfigure)
         => services
             .AddDbContext<TgsContext>(efConfigure)
-            .AddTransient<IWalletRepository, WalletRepository>()
-            .AddTransient<IDbScriptExecutor, DbScriptExecutor>();
+            .AddTransient<IWalletRepository, WalletRepository>();
 }

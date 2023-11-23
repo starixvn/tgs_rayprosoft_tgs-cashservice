@@ -1,161 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using StackExchange.Redis;
 using Tgs.CashService;
 using Tgs.CashService.Repositories;
-using Tgs.SerialNumberGenerator;
 using TGS.GameProviders.Repositories.Entities;
 
 namespace Tgs.CashServiceWorker.Repositories.UnitTests;
 
 public class WalletRepositoryTests
 {
-    [Fact]
-    public async Task 錢包操作資料庫動作()
-    {
-        var brandId = Guid.NewGuid();
-        var walletId = Guid.NewGuid();
-        var transactionType = TransactionType.WithdrawCommit;
-        var description = "test";
-        var externalId = Guid.NewGuid().ToString("N");
-        var createdByUserId = Guid.NewGuid();
-
-        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
-        _ = dbContextOptionsBuilder
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(x => x.Ignore(
-                InMemoryEventId.TransactionIgnoredWarning));
-
-        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
-
-        _ = dbContext.WalletItems.Add(new WalletItem
-        {
-            Id = walletId,
-            Balance = 0M,
-            CurrencyCode = "CNY",
-            ExternalCurrencyCode = "CNY",
-            PlayerCode = "tester",
-            CashType = nameof(CashType.Player)
-        });
-
-        _ = await dbContext.SaveChangesAsync();
-
-        var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
-        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
-        var fakeRedisDatabase = Substitute.For<IDatabase>();
-
-        var sut = new WalletRepository(
-            dbContext,
-            fakeRedisDatabase,
-            fakeDbScriptExecutor,
-            fakeSerialNumberGenerator,
-            NullLogger<WalletRepository>.Instance);
-
-        _ = fakeDbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(Arg.Any<string>(), Arg.Any<object>())
-            .Returns(new WalletBalanceReturn
-            {
-                OriginBalance = 100M,
-                OriginLockedBalance = 100M,
-                PostBalance = 200M,
-                PostLockedBalance = 20M
-            });
-
-        _ = fakeSerialNumberGenerator.GenerateAsync()
-            .Returns(Guid.NewGuid());
-
-        var actual = await sut.ExchangeAsync(
-           brandId,
-           walletId,
-           "tester",
-           transactionType,
-           100M,
-           -80M,
-           description,
-           externalId,
-           createdByUserId);
-
-        var transLog = await dbContext.Transactions.FirstAsync();
-
-        Assert.Equal(200M, actual.Balance);
-        Assert.Equal(20M, actual.LockedBalance);
-
-        Assert.Equal(200M, transLog.Balance);
-        Assert.Equal(20M, transLog.LockedBalance);
-        Assert.Equal(100M, transLog.Amount);
-        Assert.Equal(-80M, transLog.LockAmount);
-    }
-
-    [Fact]
-    public async Task 錢包操作後_如果PostBalance餘額小於0_操作會失敗()
-    {
-        var brandId = Guid.NewGuid();
-        var walletId = Guid.NewGuid();
-        var transactionType = TransactionType.WithdrawCommit;
-        var description = "test";
-        var externalId = Guid.NewGuid().ToString("N");
-        var createdByUserId = Guid.NewGuid();
-
-        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
-        _ = dbContextOptionsBuilder
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(x => x.Ignore(
-                InMemoryEventId.TransactionIgnoredWarning));
-
-        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
-
-        _ = dbContext.WalletItems.Add(new WalletItem
-        {
-            Id = walletId,
-            Balance = 0M,
-            CurrencyCode = "CNY",
-            ExternalCurrencyCode = "CNY",
-            PlayerCode = "tester",
-            CashType = nameof(CashType.Player)
-        });
-
-        _ = await dbContext.SaveChangesAsync();
-
-        var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
-        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
-        var fakeRedisDatabase = Substitute.For<IDatabase>();
-
-        var sut = new WalletRepository(
-            dbContext,
-            fakeRedisDatabase,
-            fakeDbScriptExecutor,
-            fakeSerialNumberGenerator,
-            NullLogger<WalletRepository>.Instance);
-
-        _ = fakeDbScriptExecutor.QueryFirstOrDefaultAsync<WalletBalanceReturn>(Arg.Any<string>(), Arg.Any<object>())
-            .Returns(new WalletBalanceReturn
-            {
-                OriginBalance = 100M,
-                OriginLockedBalance = 100M,
-                PostBalance = 200M,
-                PostLockedBalance = -20M
-            });
-
-        _ = fakeSerialNumberGenerator.GenerateAsync()
-            .Returns(Guid.NewGuid());
-
-        _ = Assert.ThrowsAsync<WalletExchangeFailException>(async () => await sut.ExchangeAsync(
-           brandId,
-           walletId,
-           "tester",
-           transactionType,
-           100M,
-           -80M,
-           description,
-           externalId,
-           createdByUserId));
-
-        var transLog = await dbContext.Transactions.FirstOrDefaultAsync();
-
-        Assert.Null(transLog);
-    }
-
     [Fact]
     public async Task 取得錢包餘額()
     {
@@ -182,16 +36,11 @@ public class WalletRepositoryTests
 
         _ = await dbContext.SaveChangesAsync();
 
-        var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
-        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
         var fakeRedisDatabase = Substitute.For<IDatabase>();
 
         var sut = new WalletRepository(
             dbContext,
-            fakeRedisDatabase,
-            fakeDbScriptExecutor,
-            fakeSerialNumberGenerator,
-            NullLogger<WalletRepository>.Instance);
+            fakeRedisDatabase);
 
         var actual = await sut.GetBalanceAsync(walletId);
 
@@ -199,7 +48,7 @@ public class WalletRepositoryTests
     }
 
     [Fact]
-    public async Task 取得錢包資料_如果BrandId欄位是Null_會從玩家資料表查詢()
+    public async Task 取得錢包資料_如果BrandId欄位是Null_會從玩家資料表查詢_並且更新BrandId欄位()
     {
         var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
         _ = dbContextOptionsBuilder
@@ -209,16 +58,11 @@ public class WalletRepositoryTests
 
         var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
 
-        var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
-        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
         var fakeRedisDatabase = Substitute.For<IDatabase>();
 
         var sut = new WalletRepository(
             dbContext,
-            fakeRedisDatabase,
-            fakeDbScriptExecutor,
-            fakeSerialNumberGenerator,
-            NullLogger<WalletRepository>.Instance);
+            fakeRedisDatabase);
 
         var walletId = Guid.NewGuid();
         var playerCode = "tester";
@@ -249,9 +93,11 @@ public class WalletRepositoryTests
         _ = await dbContext.SaveChangesAsync();
 
         var actual = await sut.GetWalletAsync(walletId);
+        var row = await dbContext.WalletItems.FindAsync(walletId);
 
         Assert.NotNull(actual);
         Assert.Equal(brandId, actual.BrandId);
+        Assert.Equal(brandId, row?.BrandId);
     }
 
     [Fact]
@@ -265,16 +111,11 @@ public class WalletRepositoryTests
 
         var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
 
-        var fakeDbScriptExecutor = Substitute.For<IDbScriptExecutor>();
-        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
         var fakeRedisDatabase = Substitute.For<IDatabase>();
 
         var sut = new WalletRepository(
             dbContext,
-            fakeRedisDatabase,
-            fakeDbScriptExecutor,
-            fakeSerialNumberGenerator,
-            NullLogger<WalletRepository>.Instance);
+            fakeRedisDatabase);
 
         var walletId = Guid.NewGuid();
         var playerCode = "tester";
