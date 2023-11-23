@@ -79,7 +79,7 @@ internal class CashCommitterDispatcher(
                         .Concat())
                     .Merge();
             })
-            .ToTask();
+            .ToTask(stoppingToken);
         var updateWalletTask = Observable.Using(
             () => Disposable.Empty,
             res =>
@@ -139,7 +139,7 @@ internal class CashCommitterDispatcher(
                         .Concat())
                     .Merge();
             })
-            .ToTask();
+            .ToTask(stoppingToken);
 
         return Task.WhenAll(walletChangedTask, updateWalletTask);
     }

@@ -2,7 +2,7 @@
 
 namespace Tgs.CashServiceCommitter;
 
-public interface ITranscationLogRepository
+public interface ITransactionLogRepository
 {
     IAsyncEnumerable<TransactionRecord> GetWaitingBookkeepLogsAsync(Guid walletId, CancellationToken cancellationToken = default);
 

@@ -7,7 +7,7 @@ using Valhalla.Messages;
 namespace Tgs.CashServiceCommitter.ApplicationServices;
 
 internal class BookkeepingWalletTransactionLogsCommandService(
-    ITranscationLogRepository transcationLogRepository,
+    ITransactionLogRepository transcationLogRepository,
     ITgsRepository tgsRepository,
     IEventBus eventBus,
     ILogger<BookkeepingWalletTransactionLogsCommandService> logger)

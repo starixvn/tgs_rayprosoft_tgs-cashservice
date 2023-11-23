@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Tgs.CashServiceCommitter</RootNamespace>
+    <SqlQueryToolsConnectionString />
   </PropertyGroup>
 
   <ItemGroup>

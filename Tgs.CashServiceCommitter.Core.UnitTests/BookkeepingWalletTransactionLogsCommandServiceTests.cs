@@ -12,7 +12,7 @@ public class BookkeepingWalletTransactionLogsCommandServiceTests
     public async Task 寫入交易記錄到資料庫()
     {
         // Arrange
-        var fakeTranscationLogRepository = Substitute.For<ITranscationLogRepository>();
+        var fakeTranscationLogRepository = Substitute.For<ITransactionLogRepository>();
         var fakeTgsRepository = Substitute.For<ITgsRepository>();
         var fakeEventBus = Substitute.For<IEventBus>();
 
@@ -66,7 +66,7 @@ public class BookkeepingWalletTransactionLogsCommandServiceTests
     public async Task 寫入交易記錄到資料庫時_如果批次發生錯誤_會用Migrate方式再試()
     {
         // Arrange
-        var fakeTranscationLogRepository = Substitute.For<ITranscationLogRepository>();
+        var fakeTranscationLogRepository = Substitute.For<ITransactionLogRepository>();
         var fakeTgsRepository = Substitute.For<ITgsRepository>();
         var fakeEventBus = Substitute.For<IEventBus>();
 
