@@ -26,7 +26,7 @@ internal class CashCommitterDispatcher(
             {
                 var wallets = new ConcurrentDictionary<Guid, Guid>();
 
-                return eventBus.GetEventSource<WalletChangedEvent>(CommitterConsts.WalletChangedEventName)!.Observable
+                return eventBus.GetEventObserable<WalletChangedEvent>(CommitterConsts.WalletChangedEventName)!
                     .GroupByUntil(
                         evt => evt.WalletId,
                         g =>
@@ -86,7 +86,7 @@ internal class CashCommitterDispatcher(
             {
                 var wallets = new ConcurrentDictionary<Guid, Guid>();
 
-                return eventBus.GetEventSource<WalletUpdateEvent>(CommitterConsts.WalletUpdateEventName)!.Observable
+                return eventBus.GetEventObserable<WalletUpdateEvent>(CommitterConsts.WalletUpdateEventName)!
                     .GroupByUntil(
                         evt => evt.WalletId,
                         g =>

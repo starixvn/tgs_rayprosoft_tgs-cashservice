@@ -6,8 +6,8 @@ namespace Tgs.CashServiceCommitter.MessageQueue;
 
 public class BookkeepHandler(IEventBus eventBus) : IMessageHandler
 {
-    private readonly IEventSource<WalletChangedEvent> _walletChangedEventSource =
-        eventBus.GetEventSource<WalletChangedEvent>(CommitterConsts.WalletChangedEventName)!;
+    private readonly IEventPublisher<WalletChangedEvent> _walletChangedEventSource =
+        eventBus.GetEventPublisher<WalletChangedEvent>(CommitterConsts.WalletChangedEventName)!;
 
     public async ValueTask HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
     {

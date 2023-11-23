@@ -44,10 +44,10 @@ public class BookkeepingWalletTransactionLogsCommandServiceTests
                 }.ToAsyncEnumerable(),
                 AsyncEnumerable.Empty<TransactionRecord>());
 
-        var fakeWalletUpdateEventSource = Substitute.For<IEventSource<WalletUpdateEvent>>();
+        var fakeWalletUpdatePublisher = Substitute.For<IEventPublisher<WalletUpdateEvent>>();
 
-        _ = fakeEventBus.GetEventSource<WalletUpdateEvent>(Arg.Is(CommitterConsts.WalletUpdateEventName))
-            .Returns(fakeWalletUpdateEventSource);
+        _ = fakeEventBus.GetEventPublisher<WalletUpdateEvent>(Arg.Is(CommitterConsts.WalletUpdateEventName))
+            .Returns(fakeWalletUpdatePublisher);
 
         // Act
         await sut.ExecuteAsync(command);
@@ -58,7 +58,7 @@ public class BookkeepingWalletTransactionLogsCommandServiceTests
                 Arg.Is<IEnumerable<TransactionRecord>>(records => records.Count() == 1));
         _ = fakeTranscationLogRepository.Received(1)
             .RemoveBookkeepLogsAsync(Arg.Is(command.WalletId), Arg.Is(1));
-        _ = fakeWalletUpdateEventSource.Received(1)
+        _ = fakeWalletUpdatePublisher.Received(1)
             .PublishAsync(Arg.Is(new WalletUpdateEvent(command.WalletId)));
     }
 
@@ -101,10 +101,10 @@ public class BookkeepingWalletTransactionLogsCommandServiceTests
         _ = fakeTgsRepository.InsertTransactionLogsAsync(Arg.Any<IEnumerable<TransactionRecord>>())
             .Throws<Exception>();
 
-        var fakeWalletUpdateEventSource = Substitute.For<IEventSource<WalletUpdateEvent>>();
+        var fakeWalletUpdateEventPublisher = Substitute.For<IEventPublisher<WalletUpdateEvent>>();
 
-        _ = fakeEventBus.GetEventSource<WalletUpdateEvent>(Arg.Is(CommitterConsts.WalletUpdateEventName))
-            .Returns(fakeWalletUpdateEventSource);
+        _ = fakeEventBus.GetEventPublisher<WalletUpdateEvent>(Arg.Is(CommitterConsts.WalletUpdateEventName))
+            .Returns(fakeWalletUpdateEventPublisher);
 
         // Act
         await sut.ExecuteAsync(command);
@@ -114,7 +114,7 @@ public class BookkeepingWalletTransactionLogsCommandServiceTests
             .MigrateTransactionLogsAsync(Arg.Any<IEnumerable<TransactionRecord>>());
         _ = fakeTranscationLogRepository.Received(1)
             .RemoveBookkeepLogsAsync(Arg.Is(command.WalletId), Arg.Is(1));
-        _ = fakeWalletUpdateEventSource.Received(1)
+        _ = fakeWalletUpdateEventPublisher.Received(1)
             .PublishAsync(Arg.Is(new WalletUpdateEvent(command.WalletId)));
     }
 }

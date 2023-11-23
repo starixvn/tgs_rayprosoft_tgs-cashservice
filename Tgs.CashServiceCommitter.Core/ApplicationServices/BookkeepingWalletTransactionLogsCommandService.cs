@@ -47,7 +47,7 @@ internal class BookkeepingWalletTransactionLogsCommandService(
                 cancellationToken).ConfigureAwait(false);
         }
 
-        _ = await eventBus.GetEventSource<WalletUpdateEvent>(CommitterConsts.WalletUpdateEventName)
+        _ = await eventBus.GetEventPublisher<WalletUpdateEvent>(CommitterConsts.WalletUpdateEventName)
             !.PublishAsync(
                 new WalletUpdateEvent(command.WalletId),
                 cancellationToken)
