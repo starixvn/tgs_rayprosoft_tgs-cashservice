@@ -23,6 +23,7 @@ public enum TransactionType
     GameProviderDeposit = 10,
     GameProviderWithdrawal = 11,
     UnsettledBetManual = 12,
+    Snapshot = 100,
     Other = 99,
 
     /// <summary>

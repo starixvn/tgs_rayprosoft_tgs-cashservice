@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService;
-using Tgs.SerialNumberGenerator;
+using Tgs.CashServiceWorker.ExchangeCommands;
 
 namespace Tgs.CashServiceWorker;
 
@@ -22,26 +22,37 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
 
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        var queue = _exchangeQueuePool.GetOrAdd(
-            request.WalletId,
-            _ => new WalletReception(
-                request.WalletId,
-                _serviceProvider,
-                _serviceProvider.GetRequiredService<ISerialNumberGenerator>(),
-                _serviceProvider.GetRequiredService<ILogger<WalletReception>>(),
-                _cancellationTokenSource.Token));
+        var queue = await GetWalletReceptionAsync(
+            request.WalletId).ConfigureAwait(false);
 
-        if (!queue.IsStartReceive)
-            await queue.StartReceiveAsync(
-                _cancellationTokenSource.Token).ConfigureAwait(false);
-
-        var exchangeTask = new ExchangeTask(request, new TaskCompletionSource<ExchangeResult>());
-
+        var command = new TradeCommand(request);
         await using var tokenRegistration = cts.Token.Register(
-            () => exchangeTask.Promise.TrySetCanceled()).ConfigureAwait(false);
-        await queue.EnqueueAsync(exchangeTask, cts.Token).ConfigureAwait(false);
+            command.Cancel).ConfigureAwait(false);
+        await queue.EnqueueAsync(
+            command,
+            cts.Token).ConfigureAwait(false);
 
-        return await exchangeTask.Promise.Task.ConfigureAwait(false);
+        return await command.GetExchangeResultAsync().ConfigureAwait(false);
+    }
+
+    public async ValueTask<WalletView> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
+    {
+        if (_cancellationTokenSource.IsCancellationRequested)
+            throw new TaskCanceledException();
+
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+        var queue = await GetWalletReceptionAsync(
+            walletId).ConfigureAwait(false);
+
+        var command = new ReadCommand();
+        await using var tokenRegistration = cts.Token.Register(
+            command.Cancel).ConfigureAwait(false);
+        await queue.EnqueueAsync(
+            command,
+            cts.Token).ConfigureAwait(false);
+
+        return await command.GetBalanceResultAsync().ConfigureAwait(false);
     }
 
     public void ScanExpiredQueues()
@@ -87,5 +98,22 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
 
             _disposedValue = true;
         }
+    }
+
+    private async ValueTask<WalletReception> GetWalletReceptionAsync(Guid walletId)
+    {
+        var queue = _exchangeQueuePool.GetOrAdd(
+            walletId,
+            _ => new WalletReception(
+                walletId,
+                _serviceProvider,
+                _serviceProvider.GetRequiredService<ILogger<WalletReception>>(),
+                _cancellationTokenSource.Token));
+
+        if (!queue.IsStartReceive)
+            await queue.StartReceiveAsync(
+                _cancellationTokenSource.Token).ConfigureAwait(false);
+
+        return queue;
     }
 }

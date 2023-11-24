@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService;
+using Tgs.CashServiceWorker.ExchangeCommands;
 using Tgs.SerialNumberGenerator;
 
 namespace Tgs.CashServiceWorker;
@@ -9,14 +10,15 @@ namespace Tgs.CashServiceWorker;
 internal class WalletReception(
     Guid walletId,
     IServiceProvider serviceProvider,
-    ISerialNumberGenerator serialNumberGenerator,
     ILogger<WalletReception> logger,
-    CancellationToken cancellationToken) : IDisposable
+    CancellationToken cancellationToken)
+    : IWalletExchangeContext
+    , IDisposable
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     private readonly ILogger<WalletReception> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-    private readonly Channel<ExchangeTask> _exchangeTasks = Channel.CreateUnbounded<ExchangeTask>(
+    private readonly Channel<IExchangeCommand> _exchangeTasks = Channel.CreateUnbounded<IExchangeCommand>(
         new UnboundedChannelOptions
         {
             SingleReader = true
@@ -36,14 +38,31 @@ internal class WalletReception(
 
     public Guid WalletId { get; } = walletId;
 
-    public ValueTask EnqueueAsync(ExchangeTask exchangeTask, CancellationToken cancellationToken = default)
-        => _exchangeTasks.Writer.WriteAsync(exchangeTask, cancellationToken);
+    Guid IWalletExchangeContext.BrandId => _brandId!.Value;
+
+    string IWalletExchangeContext.UserId => _userId!;
+
+    decimal IWalletExchangeContext.Balance
+    {
+        get => _balance;
+        set => _balance = value;
+    }
+
+    decimal IWalletExchangeContext.LockedBalance
+    {
+        get => _lockedBalance;
+        set => _lockedBalance = value;
+    }
+
+    public ValueTask EnqueueAsync(IExchangeCommand command, CancellationToken cancellationToken = default)
+        => _exchangeTasks.Writer.WriteAsync(command, cancellationToken);
 
     public async ValueTask StartReceiveAsync(CancellationToken cancellationToken = default)
     {
         if (IsStartReceive)
             return;
 
+        var isSnapshotWallet = false; ;
         var scope = _serviceProvider.CreateAsyncScope();
         await using (scope.ConfigureAwait(false))
         {
@@ -54,16 +73,42 @@ internal class WalletReception(
                 .ConfigureAwait(false)
                 ?? throw new InvalidOperationException("Can't found wallet.");
 
+            var newestRecord = await repository.GetNewestRecordAsync(
+                WalletId,
+                wallet.SnapshotId,
+                cancellationToken).ConfigureAwait(false);
+
+            if (newestRecord is not null)
+                wallet = wallet with
+                {
+                    Balance = newestRecord.Balance,
+                    LockedBalance = newestRecord.LockedBalance,
+                    SnapshotId = newestRecord.Id
+                };
+
             _brandId = wallet.BrandId;
             _userId = wallet.UserId;
             _balance = wallet.Balance;
             _lockedBalance = wallet.LockedBalance;
+
+            if (wallet.SnapshotId is null)
+                isSnapshotWallet = true;
         }
 
         IsStartReceive = true;
         _ = _cancellationSource.Token.Register(() => _exchangeTasks.Writer.Complete());
         _backgroundTask = ProcessExchangeLoopAsync(cancellationToken);
         _ = _cancellationSource.Token.Register(_backgroundTask.Wait);
+
+        if (isSnapshotWallet)
+        {
+            var command = new SnapshotCommand();
+            await EnqueueAsync(
+                command,
+                cancellationToken).ConfigureAwait(false);
+
+            _ = await command.GetExchangeResultAsync().ConfigureAwait(false);
+        }
     }
 
     public void Dispose()
@@ -98,13 +143,13 @@ internal class WalletReception(
             .WaitToReadAsync(cancellationToken)
             .ConfigureAwait(false))
         {
-            if (reader.TryRead(out var exchangeTask))
+            if (reader.TryRead(out var command))
                 try
                 {
                     Expired = DateTime.Now.AddMinutes(1).AddSeconds(20);
 
                     await HandleExchangeAsync(
-                        exchangeTask,
+                        command,
                         _cancellationSource!.Token).ConfigureAwait(false);
                 }
                 catch (Exception ex)
@@ -114,70 +159,34 @@ internal class WalletReception(
         }
     }
 
-    private async Task HandleExchangeAsync(ExchangeTask exchangeTask, CancellationToken cancellationToken)
+    private async Task HandleExchangeAsync(IExchangeCommand command, CancellationToken cancellationToken)
     {
         try
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                _ = exchangeTask.Promise.TrySetCanceled(cancellationToken);
+                command.Cancel();
                 return;
             }
 
             var scope = _serviceProvider.CreateAsyncScope();
             await using (scope.ConfigureAwait(false))
             {
-                var repository = scope.ServiceProvider.GetRequiredService<IWalletRepository>();
-
-                var currentTime = DateTime.UtcNow;
-                var transactionId = await serialNumberGenerator
-                    .GenerateAsync(cancellationToken)
-                    .ConfigureAwait(false);
-
-                _lockedBalance += exchangeTask.Request.LockAmount;
-                if (_lockedBalance < 0M)
-                {
-                    _lockedBalance -= exchangeTask.Request.LockAmount;
-
-                    throw new WalletExchangeFailException();
-                }
-                _balance += exchangeTask.Request.Amount;
-
-                var record = new TransactionRecord(
-                    transactionId,
-                    WalletId,
-                    _brandId!.Value,
-                    _userId!,
-                    exchangeTask.Request.Amount,
-                    exchangeTask.Request.LockAmount,
-                    _balance,
-                    _lockedBalance,
-                    exchangeTask.Request.TransactionType,
-                    exchangeTask.Request.Description,
-                    currentTime,
-                    exchangeTask.Request.ExternalId,
-                    exchangeTask.Request.CreatedByUserId);
-
-                await repository.WriteTransactionRecordAsync(
-                    record,
+                await command.ExecuteAsync(
+                    this,
+                    scope.ServiceProvider,
                     cancellationToken).ConfigureAwait(false);
-
-                exchangeTask.Promise.SetResult(new ExchangeResult(
-                    transactionId,
-                    _balance,
-                    _lockedBalance));
             }
         }
         catch (Exception ex)
         {
-            _logger.Log(
-                LogLevel.Error,
+            _logger.LogError(
                 new EventId(0),
-                exchangeTask.Request,
                 ex,
-                (state, _) => $"Process wallet({state.WalletId}) exchange occur error.");
+                "Process wallet({walletId}) exchange occur error.",
+                WalletId);
 
-            exchangeTask.Promise.SetException(ex);
+            command.Fail(ex);
         }
     }
 }

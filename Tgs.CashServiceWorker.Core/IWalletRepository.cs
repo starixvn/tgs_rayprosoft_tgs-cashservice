@@ -9,4 +9,6 @@ public interface IWalletRepository
     ValueTask<Wallet?> GetWalletAsync(Guid walletId, CancellationToken cancellationToken = default);
 
     ValueTask WriteTransactionRecordAsync(TransactionRecord record, CancellationToken cancellationToken = default);
+
+    ValueTask<TransactionRecord?> GetNewestRecordAsync(Guid walletId, Guid? snapshotId, CancellationToken cancellationToken = default);
 }

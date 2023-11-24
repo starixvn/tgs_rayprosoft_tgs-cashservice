@@ -82,14 +82,33 @@ public class ExchangeWalletTests
     [Test]
     public async Task Get_Balance()
     {
-        var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var services = new ServiceCollection();
 
-        var sut = new GetBalanceQueryService(fakeWalletRepository);
+        var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+
+        _ = services
+            .AddSingleton<ILogger<WalletReception>>(NullLogger<WalletReception>.Instance)
+            .AddSingleton(fakeWalletRepository)
+            .AddSingleton(fakeSerialNumberGenerator);
+
+        var fakeHostApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
+
+        var exchanger = new WalletExchanger(services.BuildServiceProvider(), fakeHostApplicationLifetime);
+        var sut = new GetBalanceQueryService(exchanger);
 
         var query = new GetBalanceQuery(Guid.NewGuid());
 
-        _ = fakeWalletRepository.GetBalanceAsync(Arg.Is(query.WalletId))
-            .Returns(1000M);
+        _ = fakeWalletRepository.GetWalletAsync(
+            Arg.Is(query.WalletId),
+            Arg.Any<CancellationToken>())
+            .Returns(new Wallet(
+                query.WalletId,
+                Guid.NewGuid(),
+                "test1",
+                1000M,
+                0M,
+                Guid.NewGuid()));
 
         var actual = await sut.GetAsync(query);
 

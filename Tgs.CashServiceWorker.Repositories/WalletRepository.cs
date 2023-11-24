@@ -13,6 +13,8 @@ internal class WalletRepository(
     IDatabase redisDatabase)
     : IWalletRepository
 {
+    private static readonly DateTime _MigrateDate = DateTime.Parse("2023-11-20").ToUniversalTime();
+
     private static readonly JsonSerializerOptions _SerializerOptions = new(JsonSerializerDefaults.Web)
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
@@ -80,5 +82,44 @@ internal class WalletRepository(
         _ = await redisDatabase.ListRightPushAsync(
             key,
             JsonSerializer.Serialize(record, _SerializerOptions)).ConfigureAwait(false);
+    }
+
+    public async ValueTask<TransactionRecord?> GetNewestRecordAsync(Guid walletId, Guid? snapshotId, CancellationToken cancellationToken = default)
+    {
+        var key = new RedisKey($"Tgs:Transactions:{walletId}");
+
+        var value = await redisDatabase.ListGetByIndexAsync(
+            key,
+            -1).ConfigureAwait(false);
+
+        if (value.HasValue)
+            return JsonSerializer.Deserialize<TransactionRecord>((string)value!, _SerializerOptions);
+
+        if (snapshotId is null)
+            return null;
+
+        var newestRecord = dbContext.Transactions
+           .Where(row => row.Id > snapshotId 
+            && row.WalletId == walletId 
+            && row.RecordedOn > _MigrateDate)
+           .OrderByDescending(row => row.Id)
+           .FirstOrDefault();
+
+        return newestRecord is null
+            ? null
+            : new TransactionRecord(
+                newestRecord.Id,
+                newestRecord.WalletId,
+                newestRecord.BrandId,
+                newestRecord.PlayerCode,
+                newestRecord.Amount,
+                newestRecord.LockAmount,
+                newestRecord.Balance,
+                newestRecord.LockedBalance,
+                (TransactionType)newestRecord.Type,
+                newestRecord.Description,
+                newestRecord.RecordedOn,
+                newestRecord.ExternalTransactionId,
+                newestRecord.CreatedByUserId);
     }
 }
