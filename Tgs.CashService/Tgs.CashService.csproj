@@ -7,7 +7,7 @@
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<DisableImplicitAspNetCoreAnalyzers>true</DisableImplicitAspNetCoreAnalyzers>
-		<ContainerImageName>cash/service</ContainerImageName>
+		<ContainerRepository>cash/service</ContainerRepository>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
