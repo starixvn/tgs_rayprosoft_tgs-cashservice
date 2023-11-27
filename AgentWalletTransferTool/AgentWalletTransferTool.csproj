@@ -6,8 +6,7 @@
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
 	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	<DockerfileBuildArguments>--build-arg "BuildConfiguration=$(Configuration)"</DockerfileBuildArguments>
-	<DockerfileTag Condition="$(DockerfileTag) == ''">cash/agent-wallet-transfer</DockerfileTag>
+	<ContainerImageName>cash/agent-wallet-transfer</ContainerImageName>
   </PropertyGroup>
 
   <ItemGroup>
