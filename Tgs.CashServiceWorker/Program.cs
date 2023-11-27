@@ -37,8 +37,10 @@ builder.Services
     .AddSingleton(sp => ActivatorUtilities.CreateInstance<RedisConnectionManager>(
         sp,
         builder.Configuration.GetConnectionString("Redis")!))
-    .AddDbRepository((_, dbBuilder) => dbBuilder
-        .UseNpgsql("name=Tgs"))
+    .AddDbRepository(
+        (_, dbBuilder) => dbBuilder
+            .UseNpgsql("name=Tgs"),
+        sp => sp.GetRequiredService<RedisConnectionManager>().Database)
     .AddCashServiceWorker();
 
 builder.Services

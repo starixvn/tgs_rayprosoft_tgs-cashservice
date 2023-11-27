@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using Tgs.CashService.Repositories;
 using Tgs.CashServiceWorker;
 using TGS.GameProviders.Repositories.Entities;
@@ -9,8 +10,11 @@ public static class RepositoryConfigurationExtensions
 {
     public static IServiceCollection AddDbRepository(
         this IServiceCollection services,
-        Action<IServiceProvider, DbContextOptionsBuilder> efConfigure)
+        Action<IServiceProvider, DbContextOptionsBuilder> efConfigure,
+        Func<IServiceProvider, IDatabase> redisResolve)
         => services
             .AddDbContext<TgsContext>(efConfigure)
-            .AddTransient<IWalletRepository, WalletRepository>();
+            .AddTransient<IWalletRepository>(sp => new WalletRepository(
+                sp.GetRequiredService<TgsContext>(),
+                redisResolve(sp)));
 }
