@@ -31,4 +31,9 @@
     <ProjectReference Include="..\Tgs.CashServiceWorker.Core\Tgs.CashServiceWorker.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="NSubstitute" />
+    <Using Include="NUnit.Framework" />
+  </ItemGroup>
+
 </Project>

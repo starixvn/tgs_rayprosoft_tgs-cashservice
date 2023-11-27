@@ -12,7 +12,10 @@ internal class ReadCommand : IExchangeCommand
     public void Fail(Exception ex)
         => _promise.TrySetException(ex);
 
-    public ValueTask ExecuteAsync(IWalletExchangeContext context, IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+    public ValueTask ExecuteAsync(
+        IWalletExchangeContext context,
+        IServiceProvider serviceProvider,
+        CancellationToken cancellationToken = default)
     {
         _promise.SetResult(new WalletView(
             context.Balance,
