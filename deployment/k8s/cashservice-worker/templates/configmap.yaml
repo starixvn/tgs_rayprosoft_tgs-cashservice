@@ -3,16 +3,6 @@ kind: ConfigMap
 metadata:
   name: configmap-{{ include "cashservice-worker.fullname" . }}
 data:
-  monitor.settings.json: |
-    {
-        "LogLevel": {
-          "Default": "Warning",
-          "Microsoft": "Warning",
-          "Microsoft.Diagnostics": "Warning",
-          "Microsoft.Hosting.Lifetime": "Information"
-        }
-      }
-    }
   otel-collector-config.yaml: |
     receivers:
       otlp:
