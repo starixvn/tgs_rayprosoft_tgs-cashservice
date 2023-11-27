@@ -38,9 +38,7 @@ namespace Tgs.CashQuery.Repositories.Entities.Configurations
             entity.Property(e => e.PlayerCode).HasColumnName("player_code");
             entity.Property(e => e.Remark).HasColumnName("remark");
             entity.Property(e => e.TransactionId).HasColumnName("transaction_id");
-            entity.Property(e => e.TransactionRecordedOn)
-            .HasDefaultValueSql("'-infinity'::timestamp with time zone")
-            .HasColumnName("transaction_recorded_on");
+            entity.Property(e => e.TransactionRecordedOn).HasColumnName("transaction_recorded_on");
             entity.Property(e => e.TransferTarget).HasColumnName("transfer_target");
             entity.Property(e => e.TransferType).HasColumnName("transfer_type");
             entity.Property(e => e.Type).HasColumnName("type");

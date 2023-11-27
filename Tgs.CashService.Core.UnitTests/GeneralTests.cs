@@ -1,4 +1,5 @@
 ﻿using NSubstitute;
+using NUnit.Framework.Legacy;
 using Tgs.CashService.ApplicationServices;
 
 namespace Tgs.CashService.Core.UnitTests;
@@ -20,6 +21,6 @@ public class GeneralTests
 
         var actual = await sut.GetAsync(query);
 
-        Assert.AreEqual(1000M, actual);
+        ClassicAssert.AreEqual(1000M, actual);
     }
 }

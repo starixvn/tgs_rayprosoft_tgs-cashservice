@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tgs.CashService.Client;
 using Tgs.CashService.Repositories.Entities;
 

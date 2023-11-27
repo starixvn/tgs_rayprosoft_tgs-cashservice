@@ -1,53 +1,58 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService;
+using Tgs.CashServiceWorker.ExchangeCommands;
 
 namespace Tgs.CashServiceWorker;
 
-internal class WalletExchanger
+internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime) : IDisposable
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     private readonly ConcurrentDictionary<Guid, WalletReception> _exchangeQueuePool = new();
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private readonly CancellationTokenSource _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(hostApplicationLifetime.ApplicationStopping);
 
-    public WalletExchanger(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-    }
+    private bool _disposedValue;
 
-    public Task<ExchangeResult> RequestAsync(ExchangeRequest request)
+    public async ValueTask<ExchangeResult> RequestAsync(ExchangeRequest request, CancellationToken cancellationToken = default)
     {
         if (_cancellationTokenSource.IsCancellationRequested)
             throw new TaskCanceledException();
 
-        var queue = _exchangeQueuePool.GetOrAdd(
-            request.WalletId,
-            _ => new WalletReception(
-                request.WalletId,
-                _serviceProvider,
-                _serviceProvider.GetRequiredService<ILogger<WalletReception>>()));
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        if (!queue.IsStartReceive)
-            queue.StartReceive(_cancellationTokenSource.Token);
+        var queue = await GetWalletReceptionAsync(
+            request.WalletId).ConfigureAwait(false);
 
-        var exchangeTask = new ExchangeTask(request, new TaskCompletionSource<ExchangeResult>());
-        queue.Enqueue(exchangeTask);
+        var command = new TradeCommand(request);
+        await using var tokenRegistration = cts.Token.Register(
+            command.Cancel).ConfigureAwait(false);
+        await queue.EnqueueAsync(
+            command,
+            cts.Token).ConfigureAwait(false);
 
-        return exchangeTask.Promise.Task;
+        return await command.GetExchangeResultAsync().ConfigureAwait(false);
     }
 
-    public void StopReceive()
+    public async ValueTask<WalletView> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
-        if (!_cancellationTokenSource.IsCancellationRequested)
-            _cancellationTokenSource.Cancel();
+        if (_cancellationTokenSource.IsCancellationRequested)
+            throw new TaskCanceledException();
 
-        Task.WaitAll(_exchangeQueuePool
-            .Values
-            .Select(reception => Task.Run(() => reception.StopReceive()))
-            .ToArray());
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        _cancellationTokenSource.Dispose();
+        var queue = await GetWalletReceptionAsync(
+            walletId).ConfigureAwait(false);
+
+        var command = new ReadCommand();
+        await using var tokenRegistration = cts.Token.Register(
+            command.Cancel).ConfigureAwait(false);
+        await queue.EnqueueAsync(
+            command,
+            cts.Token).ConfigureAwait(false);
+
+        return await command.GetBalanceResultAsync().ConfigureAwait(false);
     }
 
     public void ScanExpiredQueues()
@@ -60,12 +65,55 @@ internal class WalletExchanger
             .Select(reception => Task.Run(() =>
             {
                 if (_exchangeQueuePool.TryRemove(reception.WalletId, out _))
-                {
-                    reception.StopReceive();
-
                     reception.Dispose();
-                }
             }))
             .ToArray());
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _cancellationTokenSource.Cancel();
+
+                var allValues = _exchangeQueuePool.Values;
+                _exchangeQueuePool.Clear();
+
+                Task.WaitAll(allValues
+                    .Select(reception => Task.Run(() =>
+                    {
+                        if (_exchangeQueuePool.TryRemove(reception.WalletId, out _))
+                            reception.Dispose();
+                    }))
+                    .ToArray());
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    private async ValueTask<WalletReception> GetWalletReceptionAsync(Guid walletId)
+    {
+        var queue = _exchangeQueuePool.GetOrAdd(
+            walletId,
+            _ => new WalletReception(
+                walletId,
+                _serviceProvider,
+                _serviceProvider.GetRequiredService<ILogger<WalletReception>>(),
+                _cancellationTokenSource.Token));
+
+        if (!queue.IsStartReceive)
+            await queue.StartReceiveAsync(
+                _cancellationTokenSource.Token).ConfigureAwait(false);
+
+        return queue;
     }
 }

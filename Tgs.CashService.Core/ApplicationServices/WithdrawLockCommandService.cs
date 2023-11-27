@@ -3,14 +3,9 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class WithdrawLockCommandService : IGetService<WithdrawLockCommand, ExchangeResult>
+internal class WithdrawLockCommandService(IWalletExchangeService walletExchangeService) : IGetService<WithdrawLockCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService;
-
-    public WithdrawLockCommandService(IWalletExchangeService walletExchangeService)
-    {
-        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
-    }
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public async ValueTask<ExchangeResult> GetAsync(WithdrawLockCommand command, CancellationToken cancellationToken = default)
     {

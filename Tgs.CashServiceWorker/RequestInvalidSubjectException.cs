@@ -1,8 +1,5 @@
 ﻿namespace Tgs.CashServiceWorker;
 
-public class RequestInvalidSubjectException : Exception
+public class RequestInvalidSubjectException(string? message) : Exception(message)
 {
-    public RequestInvalidSubjectException(string? message) : base(message)
-    {
-    }
 }

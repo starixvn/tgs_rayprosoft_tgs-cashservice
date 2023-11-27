@@ -6,18 +6,11 @@ using Valhalla.MessageQueue;
 
 namespace Tgs.CashService;
 
-internal class WalletExchangeService : IWalletExchangeService
+internal class WalletExchangeService(IDatabase redisDatabase, IMessageSender messageSender, ILogger<WalletExchangeService> logger) : IWalletExchangeService
 {
-    private readonly IDatabase _redisDatabase;
-    private readonly IMessageSender _messageSender;
-    private readonly ILogger<WalletExchangeService> _logger;
-
-    public WalletExchangeService(IDatabase redisDatabase, IMessageSender messageSender, ILogger<WalletExchangeService> logger)
-    {
-        _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
-        _messageSender = messageSender ?? throw new ArgumentNullException(nameof(messageSender));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly IDatabase _redisDatabase = redisDatabase ?? throw new ArgumentNullException(nameof(redisDatabase));
+    private readonly IMessageSender _messageSender = messageSender ?? throw new ArgumentNullException(nameof(messageSender));
+    private readonly ILogger<WalletExchangeService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async ValueTask<ExchangeResult> SendRequestAsync(WalletExchangeRequest request, CancellationToken cancellationToken)
     {

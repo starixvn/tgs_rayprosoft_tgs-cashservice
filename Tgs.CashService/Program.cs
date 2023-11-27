@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +12,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Tgs.CashService;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Configuration
-    .AddJsonFile("/config/appsettings.json", true)
-    .AddEnvironmentVariables();
 
 builder.Logging
     .AddOpenTelemetry(options =>
@@ -74,6 +69,7 @@ builder.Services
 builder.Services
     .AddHealthChecks();
 
+var instrumentationExtenionFilters = new[] { "html", "ico", "png", "jpg" };
 builder.Services
     .AddOpenTelemetry()
     .WithTracing(
@@ -102,7 +98,7 @@ builder.Services
             && !httpContext.Request.Path.StartsWithSegments("/healthz")
             && !httpContext.Request.Path.StartsWithSegments("/metrics")
             && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-            && !new[] { "html", "ico", "png", "jpg" }.Any(
+            && !instrumentationExtenionFilters.Any(
                 ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
 
 builder.Services

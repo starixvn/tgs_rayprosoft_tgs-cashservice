@@ -3,14 +3,11 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class DividendAllAgentRebateCommandService : IGetService<DividendAllAgentRebateCommand, ExchangeResult>
+internal class DividendAllAgentRebateCommandService(IWalletExchangeService walletExchangeService)
+    : IGetService<DividendAllAgentRebateCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService;
-
-    public DividendAllAgentRebateCommandService(IWalletExchangeService walletExchangeService)
-    {
-        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
-    }
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
+        ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public ValueTask<ExchangeResult> GetAsync(
         DividendAllAgentRebateCommand command,

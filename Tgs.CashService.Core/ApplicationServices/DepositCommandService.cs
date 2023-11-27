@@ -4,14 +4,11 @@ using Tgs.ServiceUtility;
 namespace Tgs.CashService.ApplicationServices;
 
 [Obsolete("已淘汰")]
-internal class DepositCommandService : IGetService<DepositCommand, ExchangeResult>
+internal class DepositCommandService(IWalletExchangeService walletExchangeService) 
+    : IGetService<DepositCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService;
-
-    public DepositCommandService(IWalletExchangeService walletExchangeService)
-    {
-        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
-    }
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService 
+        ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public ValueTask<ExchangeResult> GetAsync(DepositCommand command, CancellationToken cancellationToken = default)
     {

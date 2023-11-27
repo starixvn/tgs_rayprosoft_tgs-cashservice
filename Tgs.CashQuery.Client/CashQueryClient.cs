@@ -31,8 +31,8 @@ internal class CashQueryClient : ICashQueryClient
         CancellationToken cancellationToken = default)
     {
         var queryStrings = new List<KeyValuePair<string, string>> {
-            new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
-            new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
+            new("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
+            new("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
         };
 
         if (condition.SearchTypes is not null && condition.SearchTypes.Any())
@@ -76,8 +76,8 @@ internal class CashQueryClient : ICashQueryClient
         CancellationToken cancellationToken = default)
     {
         var queryStrings = new List<KeyValuePair<string, string>> {
-            new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
-            new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O")),
+            new("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
+            new("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O")),
         };
 
         if (condition.SearchTypes is not null && condition.SearchTypes.Any())
@@ -114,8 +114,8 @@ internal class CashQueryClient : ICashQueryClient
         CancellationToken cancellationToken = default)
     {
         var queryStrings = new List<KeyValuePair<string, string>> {
-            new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
-            new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
+            new("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
+            new("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
         };
 
         if (condition.SearchTypes is not null && condition.SearchTypes.Any())
@@ -148,8 +148,8 @@ internal class CashQueryClient : ICashQueryClient
         CancellationToken cancellationToken = default)
     {
         var queryStrings = new List<KeyValuePair<string, string>> {
-            new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
-            new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
+            new("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
+            new("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
         };
 
         if (condition.SearchTypes is not null && condition.SearchTypes.Any())
@@ -180,8 +180,8 @@ internal class CashQueryClient : ICashQueryClient
     public ValueTask<int> CountAgentAdjustRecordsAsync(Guid brandId, AdjustRecordQueryCondition condition, CancellationToken cancellationToken = default)
     {
         var queryStrings = new List<KeyValuePair<string, string>> {
-            new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
-            new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
+            new("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
+            new("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
         };
 
         if (condition.SearchTypes is not null && condition.SearchTypes.Any())
@@ -214,8 +214,8 @@ internal class CashQueryClient : ICashQueryClient
     public ValueTask<int> CountPlayerAdjustRecordsAsync(Guid brandId, AdjustRecordQueryCondition condition, CancellationToken cancellationToken = default)
     {
         var queryStrings = new List<KeyValuePair<string, string>> {
-            new KeyValuePair<string, string>("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
-            new KeyValuePair<string, string>("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
+            new("from", condition.CreatedOnRange.From.ToUniversalTime().ToString("O")),
+            new("to", condition.CreatedOnRange.To.ToUniversalTime().ToString("O"))
         };
 
         if (condition.SearchTypes is not null && condition.SearchTypes.Any())

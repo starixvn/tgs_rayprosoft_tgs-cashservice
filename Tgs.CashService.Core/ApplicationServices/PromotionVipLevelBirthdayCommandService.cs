@@ -3,11 +3,11 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class PromotionVipLevelBirthdayCommandService : IGetService<PromotionVipLevelBirthdayCommand, ExchangeResult>
+internal class PromotionVipLevelBirthdayCommandService(IWalletExchangeService walletExchangeService)
+    : IGetService<PromotionVipLevelBirthdayCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService;
-
-    public PromotionVipLevelBirthdayCommandService(IWalletExchangeService walletExchangeService) => _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
+        ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public async ValueTask<ExchangeResult> GetAsync(PromotionVipLevelBirthdayCommand command,
         CancellationToken cancellationToken = default)

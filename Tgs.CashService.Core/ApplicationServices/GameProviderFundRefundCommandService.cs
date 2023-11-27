@@ -3,14 +3,11 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class GameProviderFundRefundCommandService : IGetService<GameProviderFundRefundCommand, ExchangeResult>
+internal class GameProviderFundRefundCommandService(IWalletExchangeService walletExchangeService)
+    : IGetService<GameProviderFundRefundCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService;
-
-    public GameProviderFundRefundCommandService(IWalletExchangeService walletExchangeService)
-    {
-        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
-    }
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
+        ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public ValueTask<ExchangeResult> GetAsync(GameProviderFundRefundCommand command, CancellationToken cancellationToken = default)
     {

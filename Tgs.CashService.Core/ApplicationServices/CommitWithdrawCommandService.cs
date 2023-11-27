@@ -3,14 +3,11 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class CommitWithdrawCommandService : IGetService<CommitWithdrawCommand, ExchangeResult>
+internal class CommitWithdrawCommandService(IWalletExchangeService walletExchangeService)
+    : IGetService<CommitWithdrawCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService;
-
-    public CommitWithdrawCommandService(IWalletExchangeService walletExchangeService)
-    {
-        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
-    }
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
+        ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public ValueTask<ExchangeResult> GetAsync(CommitWithdrawCommand command, CancellationToken cancellationToken = default)
     {

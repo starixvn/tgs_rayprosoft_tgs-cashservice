@@ -5,6 +5,7 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Tgs.CashServiceWorker;
 using Tgs.CashServiceWorker.MessageQueue;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,19 +34,12 @@ builder.Logging
     });
 
 builder.Services
-    .AddDbRepository((sp, dbBuilder) =>
-    {
-        var config = sp.GetRequiredService<IConfiguration>();
-
-        _ = dbBuilder
-            .UseNpgsql("name=Tgs");
-    })
-    .AddCashServiceWorker((options, sp) =>
-    {
-        var config = sp.GetRequiredService<IConfiguration>();
-
-        options.RedisConnectionString = config.GetConnectionString("Redis")!;
-    });
+    .AddSingleton(sp => ActivatorUtilities.CreateInstance<RedisConnectionManager>(
+        sp,
+        builder.Configuration.GetConnectionString("Redis")!))
+    .AddDbRepository((_, dbBuilder) => dbBuilder
+        .UseNpgsql("name=Tgs"))
+    .AddCashServiceWorker();
 
 builder.Services
     .AddMessageQueue()
@@ -63,6 +57,7 @@ builder.Services
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");
 
+var instrumentationExtenionFilters = new[] { "html", "ico", "png", "jpg" };
 builder.Services
     .AddOpenTelemetry()
     .WithTracing(
@@ -91,7 +86,7 @@ builder.Services
             && !httpContext.Request.Path.StartsWithSegments("/healthz")
             && !httpContext.Request.Path.StartsWithSegments("/metrics")
             && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-            && !new[] { "html", "ico", "png", "jpg" }.Any(
+            && !instrumentationExtenionFilters.Any(
                 ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
     .AddHealthChecks()
     .Services

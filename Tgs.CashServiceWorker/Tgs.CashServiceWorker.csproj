@@ -1,34 +1,33 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>2d3c92bb-9452-4666-ba78-5f01447c67da</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<DockerfileBuildArguments>--build-arg "BuildConfiguration=$(Configuration)"</DockerfileBuildArguments>
-		<DockerfileTag Condition="$(DockerfileTag) == ''">cash/worker</DockerfileTag>
+		<ContainerImageName>cash/worker</ContainerImageName>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Tgs.CashService.Repositories\Tgs.CashService.Repositories.csproj" />
 		<ProjectReference Include="..\Tgs.CashServiceWorker.Core\Tgs.CashServiceWorker.Core.csproj" />
+		<ProjectReference Include="..\Tgs.CashServiceWorker.Repositories\Tgs.CashServiceWorker.Repositories.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AsyncMethodNameFixer" Version="2.3.0" />
-		<PackageReference Include="FluentdForward.OpenTelemetry.MessagePack" Version="0.3.1" />
+		<PackageReference Include="FluentdForward.OpenTelemetry.MessagePack" Version="0.3.3" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
-		<PackageReference Include="Npgsql.OpenTelemetry" Version="7.0.6" />
+		<PackageReference Include="Npgsql.OpenTelemetry" Version="8.0.0" />
 		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.6.0" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.6.0" />
-		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.6.0-beta.3" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.7" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.5.1" />
 		<PackageReference Include="PhoenixToolkits.MessageQueue" Version="1.0.3" />
-		<PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="1.0.6" />
-		<PackageReference Include="ProfileViewer.OpenTelemetry.Exporter" Version="0.2.1" />
+		<PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="1.0.9-alpha" />
+		<PackageReference Include="ProfileViewer.OpenTelemetry.Exporter" Version="0.3.1" />
 		<PackageReference Include="Tgs.Interceptors" Version="0.2.1" />
 	</ItemGroup>
 

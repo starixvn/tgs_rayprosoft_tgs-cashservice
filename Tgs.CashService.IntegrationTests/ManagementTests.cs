@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.Cash.Protos;
 using Tgs.CashService.Client;
 using Tgs.CashServiceWorker;
+using Tgs.SerialNumberGenerator;
 
 namespace Tgs.CashService.IntegrationTests;
 
@@ -14,38 +14,26 @@ public class ManagementTests
     public async Task Bonus_To_Wallet()
     {
         var walletId = Guid.NewGuid();
-        var bonusAmount = 1000M;
         var transactionId = Guid.NewGuid();
-        var postBalance = 12345M;
+
+        var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
 
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                _ = services.AddSingleton<WalletExchanger>();
-
-                var fakeWalletRepository = Substitute.For<IWalletRepository>();
+                _ = services
+                    .AddSingleton(fakeSerialNumberGenerator)
+                    .AddSingleton<WalletExchanger>();
 
                 _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-                    .Returns(new Wallet
-                    {
-                        Id = walletId,
-                        BrandId = Guid.NewGuid(),
-                        PlayerCode = "Player1"
-                    });
-
-                _ = fakeWalletRepository
-                    .ExchangeAsync(
-                        Arg.Any<Guid>(),
-                        Arg.Is(walletId),
-                        Arg.Any<string>(),
-                        Arg.Is(TransactionType.Bonus),
-                        Arg.Is(bonusAmount),
-                        Arg.Is(0M),
-                        Arg.Any<string>(),
-                        Arg.Any<string>(),
-                        Arg.Any<Guid?>(),
-                        Arg.Any<CancellationToken>())
-                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
+                    .Returns(new Wallet(
+                        walletId,
+                        Guid.NewGuid(),
+                        "Player1",
+                        0M,
+                        0M,
+                        Guid.NewGuid()));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -76,6 +64,9 @@ public class ManagementTests
 
                 _ = services.AddFakeNatsMessageQueue();
             }));
+
+        _ = fakeSerialNumberGenerator.GenerateAsync(Arg.Any<CancellationToken>())
+            .Returns(transactionId);
 
         var httpClient = web.CreateClient();
 
@@ -84,7 +75,7 @@ public class ManagementTests
         var actual = await sut.BonusAsync(walletId, 1000M, null, null);
 
         Assert.IsNotNull(actual);
-        Assert.AreEqual(postBalance, actual.Balance);
+        Assert.AreEqual(1000M, actual.Balance);
         Assert.AreEqual(transactionId, actual.TransactionId);
     }
 
@@ -92,38 +83,26 @@ public class ManagementTests
     public async Task Other_To_Wallet()
     {
         var walletId = Guid.NewGuid();
-        var otherAmount = 1000M;
         var transactionId = Guid.NewGuid();
-        var postBalance = 12345M;
+
+        var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
 
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                _ = services.AddSingleton<WalletExchanger>();
-
-                var fakeWalletRepository = Substitute.For<IWalletRepository>();
+                _ = services
+                    .AddSingleton(fakeSerialNumberGenerator)
+                    .AddSingleton<WalletExchanger>();
 
                 _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-                    .Returns(new Wallet
-                    {
-                        Id = walletId,
-                        BrandId = Guid.NewGuid(),
-                        PlayerCode = "Player1"
-                    });
-
-                _ = fakeWalletRepository
-                    .ExchangeAsync(
-                        Arg.Any<Guid>(),
-                        Arg.Is(walletId),
-                        Arg.Any<string>(),
-                        Arg.Is(TransactionType.Other),
-                        Arg.Is(otherAmount),
-                        Arg.Is(0M),
-                        Arg.Any<string>(),
-                        Arg.Any<string>(),
-                        Arg.Any<Guid?>(),
-                        Arg.Any<CancellationToken>())
-                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
+                    .Returns(new Wallet(
+                        walletId,
+                        Guid.NewGuid(),
+                        "Player1",
+                        0M,
+                        0M,
+                        Guid.NewGuid()));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -154,6 +133,9 @@ public class ManagementTests
 
                 _ = services.AddFakeNatsMessageQueue();
             }));
+
+        _ = fakeSerialNumberGenerator.GenerateAsync(Arg.Any<CancellationToken>())
+            .Returns(transactionId);
 
         var httpClient = web.CreateClient();
 
@@ -167,7 +149,7 @@ public class ManagementTests
             Guid.NewGuid());
 
         Assert.IsNotNull(actual);
-        Assert.AreEqual(postBalance, actual.Balance);
+        Assert.AreEqual(1000M, actual.Balance);
         Assert.AreEqual(transactionId, actual.TransactionId);
     }
 
@@ -175,38 +157,26 @@ public class ManagementTests
     public async Task Rebate_To_Wallet()
     {
         var walletId = Guid.NewGuid();
-        var rebateAmount = 1000M;
         var transactionId = Guid.NewGuid();
-        var postBalance = 12345M;
+
+        var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
 
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                _ = services.AddSingleton<WalletExchanger>();
-
-                var fakeWalletRepository = Substitute.For<IWalletRepository>();
+                _ = services
+                    .AddSingleton(fakeSerialNumberGenerator)
+                    .AddSingleton<WalletExchanger>();
 
                 _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-                    .Returns(new Wallet
-                    {
-                        Id = walletId,
-                        BrandId = Guid.NewGuid(),
-                        PlayerCode = "Player1"
-                    });
-
-                _ = fakeWalletRepository
-                    .ExchangeAsync(
-                        Arg.Any<Guid>(),
-                        Arg.Is(walletId),
-                        Arg.Any<string>(),
-                        Arg.Is(TransactionType.Rebate),
-                        Arg.Is(rebateAmount),
-                        Arg.Is(0M),
-                        Arg.Any<string>(),
-                        Arg.Any<string>(),
-                        Arg.Any<Guid?>(),
-                        Arg.Any<CancellationToken>())
-                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
+                    .Returns(new Wallet(
+                        walletId,
+                        Guid.NewGuid(),
+                        "Player1",
+                        0M,
+                        0M,
+                        Guid.NewGuid()));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -237,6 +207,9 @@ public class ManagementTests
 
                 _ = services.AddFakeNatsMessageQueue();
             }));
+
+        _ = fakeSerialNumberGenerator.GenerateAsync(Arg.Any<CancellationToken>())
+            .Returns(transactionId);
 
         var httpClient = web.CreateClient();
 
@@ -249,7 +222,7 @@ public class ManagementTests
             null);
 
         Assert.IsNotNull(actual);
-        Assert.AreEqual(postBalance, actual.Balance);
+        Assert.AreEqual(1000M, actual.Balance);
         Assert.AreEqual(transactionId, actual.TransactionId);
     }
 
@@ -257,38 +230,26 @@ public class ManagementTests
     public async Task UnsettledBetManual_To_Wallet()
     {
         var walletId = Guid.NewGuid();
-        var otherAmount = 1000M;
         var transactionId = Guid.NewGuid();
-        var postBalance = 12345M;
+
+        var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
 
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services =>
             {
-                _ = services.AddSingleton<WalletExchanger>();
-
-                var fakeWalletRepository = Substitute.For<IWalletRepository>();
+                _ = services
+                    .AddSingleton(fakeSerialNumberGenerator)
+                    .AddSingleton<WalletExchanger>();
 
                 _ = fakeWalletRepository.GetWalletAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-                    .Returns(new Wallet
-                    {
-                        Id = walletId,
-                        BrandId = Guid.NewGuid(),
-                        PlayerCode = "Player1"
-                    });
-
-                _ = fakeWalletRepository
-                    .ExchangeAsync(
-                        Arg.Any<Guid>(),
-                        Arg.Is(walletId),
-                        Arg.Any<string>(),
-                        Arg.Is(TransactionType.UnsettledBetManual),
-                        Arg.Is(otherAmount),
-                        Arg.Is(0M),
-                        Arg.Any<string>(),
-                        Arg.Any<string>(),
-                        Arg.Any<Guid?>(),
-                        Arg.Any<CancellationToken>())
-                    .Returns(new ExchangeResult(transactionId, postBalance, 0M));
+                    .Returns(new Wallet(
+                        walletId,
+                        Guid.NewGuid(),
+                        "Player1",
+                        0M,
+                        0M,
+                        Guid.NewGuid()));
 
                 _ = services.AddSingleton(fakeWalletRepository);
 
@@ -319,6 +280,9 @@ public class ManagementTests
 
                 _ = services.AddFakeNatsMessageQueue();
             }));
+
+        _ = fakeSerialNumberGenerator.GenerateAsync(Arg.Any<CancellationToken>())
+            .Returns(transactionId);
 
         var httpClient = web.CreateClient();
 
@@ -332,7 +296,7 @@ public class ManagementTests
             Guid.NewGuid());
 
         Assert.IsNotNull(actual);
-        Assert.AreEqual(postBalance, actual.Balance);
+        Assert.AreEqual(1000M, actual.Balance);
         Assert.AreEqual(transactionId, actual.TransactionId);
     }
 }

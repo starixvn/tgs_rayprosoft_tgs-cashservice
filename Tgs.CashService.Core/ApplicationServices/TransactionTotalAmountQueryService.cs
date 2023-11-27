@@ -2,14 +2,9 @@
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class TransactionTotalAmountQueryService : IGetService<TransactionTotalAmountQuery, decimal?>
+internal class TransactionTotalAmountQueryService(ITgsRepository tgsRepository) : IGetService<TransactionTotalAmountQuery, decimal?>
 {
-    private readonly ITgsRepository _tgsRepository;
-
-    public TransactionTotalAmountQueryService(ITgsRepository tgsRepository)
-    {
-        _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-    }
+    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
     public async ValueTask<decimal?> GetAsync(TransactionTotalAmountQuery query, CancellationToken cancellationToken = default)
     {

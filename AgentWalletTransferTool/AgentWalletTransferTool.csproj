@@ -2,12 +2,11 @@
 
   <PropertyGroup>
 	<OutputType>Exe</OutputType>
-	<TargetFramework>net7.0</TargetFramework>
+	<TargetFramework>net8.0</TargetFramework>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
 	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	<DockerfileBuildArguments>--build-arg "BuildConfiguration=$(Configuration)"</DockerfileBuildArguments>
-	<DockerfileTag Condition="$(DockerfileTag) == ''">cash/agent-wallet-transfer</DockerfileTag>
+	<ContainerImageName>cash/agent-wallet-transfer</ContainerImageName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,9 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
-	<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+	<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
+	<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
 	<PackageReference Include="Tgs.SerialNumberGenerator" Version="1.0.1" />
   </ItemGroup>
 

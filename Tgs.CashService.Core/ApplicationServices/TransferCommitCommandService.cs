@@ -3,14 +3,9 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class TransferCommitCommandService : IGetService<TransferCommitCommand, ExchangeResult>
+internal class TransferCommitCommandService(IWalletExchangeService walletExchangeService) : IGetService<TransferCommitCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService;
-
-    public TransferCommitCommandService(IWalletExchangeService walletExchangeService)
-    {
-        _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
-    }
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public ValueTask<ExchangeResult> GetAsync(TransferCommitCommand command, CancellationToken cancellationToken = default)
     {

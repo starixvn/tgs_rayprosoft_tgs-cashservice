@@ -19,8 +19,7 @@ internal class RequestSession : IMessageSession
         RedisConnectionManager redisConnectionManager,
         ILogger<RequestSession> logger)
     {
-        if (redisConnectionManager is null)
-            throw new ArgumentNullException(nameof(redisConnectionManager));
+        ArgumentNullException.ThrowIfNull(redisConnectionManager);
 
         _exchangeService = exchangeService ?? throw new ArgumentNullException(nameof(exchangeService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

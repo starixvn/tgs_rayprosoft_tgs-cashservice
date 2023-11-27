@@ -31,7 +31,7 @@ public class AdjustQueryController : ControllerBase
             query,
             HttpContext.RequestAborted).ConfigureAwait(false);
 
-        HttpContext.Response.Headers.Add("Tgs-Return", count.ToString());
+        HttpContext.Response.Headers["Tgs-Return"] = count.ToString();
 
         return NoContent();
     }
@@ -89,7 +89,7 @@ public class AdjustQueryController : ControllerBase
             query,
             HttpContext.RequestAborted).ConfigureAwait(false);
 
-        HttpContext.Response.Headers.Add("Tgs-Return", count.ToString());
+        HttpContext.Response.Headers["Tgs-Return"] = count.ToString();
 
         return NoContent();
     }

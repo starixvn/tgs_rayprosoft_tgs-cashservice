@@ -1,33 +1,21 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Tgs.CashService;
 
 namespace Tgs.CashServiceWorker;
 
-internal class WalletExchangeBackgroundService : BackgroundService
+internal class WalletExchangeBackgroundService(WalletExchanger walletExchanger) : BackgroundService
 {
-    private readonly WalletExchanger _walletExchanger;
-
-    public WalletExchangeBackgroundService(WalletExchanger walletExchanger)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _walletExchanger = walletExchanger;
-    }
+        await NewThreadAwaitable.Default;
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        _ = stoppingToken.Register(_walletExchanger.StopReceive);
-
-        return Task.Run(async () =>
+        while (!stoppingToken.IsCancellationRequested)
         {
-            while (true)
-            {
-                if (stoppingToken.IsCancellationRequested)
-                    break;
+            walletExchanger.ScanExpiredQueues();
 
-                _walletExchanger.ScanExpiredQueues();
-
-                await Task.Delay(
-                    10000,
-                    stoppingToken).ConfigureAwait(false);
-            }
-        }, stoppingToken);
+            await Task.Delay(
+                10000,
+                stoppingToken).ConfigureAwait(false);
+        }
     }
 }
