@@ -7,13 +7,16 @@ variables:
   ServiceImageName: pgtgs/cashservice-api
   WorkerImageName: pgtgs/cashservice-worker
   QueryImageName: pgtgs/cashservice-query
+  CommitterImageName: pgtgs/cashservice-committer
   AgentWalletTransferImageName: pgtgs/agent-wallet-transfer
   TgsServiceSettingKey: cashservice-api
   TgsWorkerSettingKey: cashservice-worker
+  TgsCommitterSettingKey: cashservice-committer
   TgsQuerySettingKey: cash-query
   HelmTemplateServiceFolderName: cashservice-api
   HelmTemplateWorkerFolderName: cashservice-worker
   HelmTemplateQueryFolderName: cashservice-query
+  HelmTemplateCommitterFolderName: cashservice-committer
   HelmTemplateAgentWalletTransferFolderName: agent-wallet-transfer
   BuildCacheKey: Tgs.CashService.$CI_PIPELINE_IID
 
@@ -47,6 +50,7 @@ push-docker-image:
     - push_docker "Tgs.CashService/Tgs.CashService.csproj" $ServiceImageName $Tag
     - push_docker "Tgs.CashServiceWorker/Tgs.CashServiceWorker.csproj" $WorkerImageName $Tag
     - push_docker "Tgs.CashQueryService/Tgs.CashQueryService.csproj" $QueryImageName $Tag
+    - push_docker "Tgs.CashServiceCommitter/Tgs.CashServiceCommitter.csproj" $CommitterImageName $Tag
 
 push-tool-docker-image:
   extends: .push-docker-image-template
@@ -121,6 +125,25 @@ deploy-worker-dev:
           }
         }
       EOF
+
+deploy-committer-dev:
+  extends: .deploy-template
+  variables:
+    namespace: dev
+    kube_config: KubeConfig_Raypro_dev
+  environment:
+    name: committer-dev
+  stage: deploy-dev
+  needs:
+    - push-nuget
+    - push-docker-image
+    - job: push-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: on_success
+  script:
+    - deploy_k8s $TgsCommitterSettingKey $HelmTemplateCommitterFolderName $namespace
 
 deploy-query-dev:
   extends: .deploy-template
@@ -223,6 +246,24 @@ deploy-worker-staging:
         }
       EOF
 
+deploy-committer-staging:
+  extends: .deploy-template
+  variables:
+    namespace: staging
+    kube_config: KubeConfig_Raypro_staging
+  environment:
+    name: committer-staging
+  stage: deploy-staging
+  needs:
+    - deploy-committer-dev
+    - job: push-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - deploy_k8s $TgsCommitterSettingKey $HelmTemplateCommitterFolderName $namespace
+
 deploy-query-staging:
   extends: .deploy-template
   variables:
@@ -322,6 +363,24 @@ deploy-worker-prod:
           }
         }
       EOF
+
+deploy-committer-prod:
+  extends: .deploy-template
+  variables:
+    namespace: prod
+    kube_config: KubeConfig_Raypro_prod
+  environment:
+    name: committer-prod
+  stage: deploy-prod
+  needs:
+    - deploy-committer-staging
+    - job: push-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - deploy_k8s $TgsCommitterSettingKey $HelmTemplateCommitterFolderName $namespace
 
 deploy-query-prod:
   extends: .deploy-template

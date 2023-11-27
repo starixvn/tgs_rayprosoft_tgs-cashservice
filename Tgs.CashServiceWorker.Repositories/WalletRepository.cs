@@ -100,8 +100,8 @@ internal class WalletRepository(
 
         var newestRecord = dbContext.Transactions
            .Where(row => row.Id > snapshotId 
-            && row.WalletId == walletId 
-            && row.RecordedOn > _MigrateDate)
+                && row.WalletId == walletId 
+                && row.RecordedOn > _MigrateDate)
            .OrderByDescending(row => row.Id)
            .FirstOrDefault();
 
