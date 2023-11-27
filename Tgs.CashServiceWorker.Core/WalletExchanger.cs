@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService;
 using Tgs.CashServiceWorker.ExchangeCommands;
+using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker;
 
@@ -107,6 +108,7 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
             _ => new WalletReception(
                 walletId,
                 _serviceProvider,
+                _serviceProvider.GetRequiredService<IMessageSender>(),
                 _serviceProvider.GetRequiredService<ILogger<WalletReception>>(),
                 _cancellationTokenSource.Token));
 

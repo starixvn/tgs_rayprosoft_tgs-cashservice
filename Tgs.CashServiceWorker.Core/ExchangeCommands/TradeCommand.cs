@@ -9,7 +9,7 @@ internal class TradeCommand(ExchangeRequest request) : IExchangeCommand
     private readonly TaskCompletionSource<ExchangeResult> _promise = new();
 
     public void Cancel()
-        => _promise.TrySetCanceled();
+            => _promise.TrySetCanceled();
 
     public async ValueTask ExecuteAsync(
         IWalletExchangeContext context,
@@ -51,6 +51,8 @@ internal class TradeCommand(ExchangeRequest request) : IExchangeCommand
         await repository.WriteTransactionRecordAsync(
             record,
             cancellationToken).ConfigureAwait(false);
+
+        await context.NotifyCommitAsync(cancellationToken).ConfigureAwait(false);
 
         _promise.SetResult(new ExchangeResult(
             transactionId,

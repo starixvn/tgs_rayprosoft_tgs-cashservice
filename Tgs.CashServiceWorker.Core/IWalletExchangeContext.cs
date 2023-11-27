@@ -11,4 +11,6 @@ internal interface IWalletExchangeContext
     decimal Balance { get; set; }
 
     decimal LockedBalance { get; set; }
+
+    ValueTask NotifyCommitAsync(CancellationToken cancellationToken = default);
 }

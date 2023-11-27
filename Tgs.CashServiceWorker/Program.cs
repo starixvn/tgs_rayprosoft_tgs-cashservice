@@ -1,5 +1,6 @@
 ﻿using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
+using NATS.Client.JetStream;
 using Npgsql;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
@@ -52,11 +53,17 @@ builder.Services
 
             options.Url = configuration.GetConnectionString("Nats")!;
         })
+        .ConfigJetStream(
+            "tgs_cash_commit",
+            streamConfiguration => streamConfiguration
+                .AddSubjects("tgs.cash.commit.batch")
+                .WithStorageType(StorageType.File))
         .AddProcessor<BidProcessor>("tgs.cash.bid")
         .AddSession<RequestSession>($"tgs.cash.worker.{Environment.MachineName}")
         .AddProcessor<GetBalanceProcessor>($"tgs.cash.balance.{Environment.MachineName}")
         .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
+    .AddNatsJetStreamGlobPatternExchange("tgs.cash.commit.batch")
     .AddNatsGlobPatternExchange("*");
 
 var instrumentationExtenionFilters = new[] { "html", "ico", "png", "jpg" };

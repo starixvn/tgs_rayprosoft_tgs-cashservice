@@ -56,9 +56,9 @@ var builder = WebApplication.CreateBuilder(args);
             .ConfigJetStream(
                 "tgs_cash_commit",
                 streamConfiguration => streamConfiguration
-                    .AddSubjects("tgs.cash.batch")
+                    .AddSubjects("tgs.cash.commit.batch")
                     .WithStorageType(StorageType.File))
-            .AddJetStreamHandler<CommitExchangeDispatchHandler>("tgs.cash.batch")
+            .AddJetStreamHandler<CommitExchangeDispatchHandler>("tgs.cash.commit.batch")
             .AddProcessor<BidProcessor>("tgs.cash.commit.bid")
             .AddReplyHandler<BookkeepHandler>($"tgs.cash.commit.batch.{Environment.MachineName}"))
         .AddNatsGlobPatternExchange("*");

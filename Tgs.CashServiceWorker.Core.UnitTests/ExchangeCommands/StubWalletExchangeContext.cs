@@ -16,4 +16,6 @@ internal class StubWalletExchangeContext(
     public decimal Balance { get; set; } = balance;
 
     public decimal LockedBalance { get; set; } = lockedBalance;
+
+    public ValueTask NotifyCommitAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 }
