@@ -6,7 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>83bec509-2e56-43e7-ae75-142883f6eb70</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<ContainerImageName>cash/query</ContainerImageName>
+		<ContainerRepository>cash/query</ContainerRepository>
 	</PropertyGroup>
 
 	<ItemGroup>

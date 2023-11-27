@@ -7,7 +7,7 @@
     <SqlQueryToolsConnectionString />
     <UserSecretsId>87510c54-ca86-466e-b3f0-d122ca36cd79</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <ContainerImageName>cash/committer</ContainerImageName>
+    <ContainerRepository>cash/committer</ContainerRepository>
   </PropertyGroup>
 
   <ItemGroup>
