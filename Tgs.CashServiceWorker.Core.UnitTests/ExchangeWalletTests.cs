@@ -8,6 +8,7 @@ using Tgs.CashService;
 using Tgs.CashServiceWorker.ApplicationServices;
 using Tgs.SerialNumberGenerator;
 using ExpectedObjects;
+using NUnit.Framework.Legacy;
 
 namespace Tgs.CashServiceWorker.Core.UnitTests;
 
@@ -70,8 +71,8 @@ public class ExchangeWalletTests
                 .Ignore(o => o.RecordedOn)
                 .IgnoreEqualsOverride());
 
-        Assert.AreEqual(100M, actual.Balance);
-        Assert.AreEqual(0M, actual.LockedBalance);
+        ClassicAssert.AreEqual(100M, actual.Balance);
+        ClassicAssert.AreEqual(0M, actual.LockedBalance);
 
         _ = fakeWalletRepository.Received(1)
             .WriteTransactionRecordAsync(
@@ -112,7 +113,7 @@ public class ExchangeWalletTests
 
         var actual = await sut.GetAsync(query);
 
-        Assert.AreEqual(1000M, actual);
+        ClassicAssert.AreEqual(1000M, actual);
     }
 
     [Test]

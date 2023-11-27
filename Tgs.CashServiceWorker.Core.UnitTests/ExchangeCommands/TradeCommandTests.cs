@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework.Legacy;
 using Tgs.CashService;
 using Tgs.CashServiceWorker.ExchangeCommands;
 using Tgs.SerialNumberGenerator;
@@ -39,9 +40,9 @@ public class TradeCommandTests
         await sut.ExecuteAsync(context, serviceProvider);
         var actual = await sut.GetExchangeResultAsync();
 
-        Assert.NotNull(actual);
-        Assert.AreEqual(1000M, actual.Balance);
-        Assert.AreEqual(0M, actual.LockedBalance);
+        ClassicAssert.NotNull(actual);
+        ClassicAssert.AreEqual(1000M, actual.Balance);
+        ClassicAssert.AreEqual(0M, actual.LockedBalance);
         _ = fakeWalletRepository.Received(1)
             .WriteTransactionRecordAsync(Arg.Is<TransactionRecord>(record => record.Amount == request.Amount
                 && record.LockAmount == request.LockAmount

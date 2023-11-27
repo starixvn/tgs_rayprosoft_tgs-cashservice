@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using Tgs.CashService;
 using Tgs.CashServiceWorker.ExchangeCommands;
 using Tgs.SerialNumberGenerator;
@@ -42,8 +43,8 @@ public class WalletReceptionTests
 
         var actual = await command.GetBalanceResultAsync();
 
-        Assert.AreEqual(1000M, actual.Balance);
-        Assert.AreEqual(0M, actual.LockedBalance);
+        ClassicAssert.AreEqual(1000M, actual.Balance);
+        ClassicAssert.AreEqual(0M, actual.LockedBalance);
     }
 
     [Test]
@@ -98,8 +99,8 @@ public class WalletReceptionTests
 
         var actual = await command.GetBalanceResultAsync();
 
-        Assert.AreEqual(1234M, actual.Balance);
-        Assert.AreEqual(0M, actual.LockedBalance);
+        ClassicAssert.AreEqual(1234M, actual.Balance);
+        ClassicAssert.AreEqual(0M, actual.LockedBalance);
     }
 
     [Test]

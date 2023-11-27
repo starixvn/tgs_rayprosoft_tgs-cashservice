@@ -13,10 +13,6 @@ using Tgs.CashService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration
-    .AddJsonFile("/config/appsettings.json", true)
-    .AddEnvironmentVariables();
-
 builder.Logging
     .AddOpenTelemetry(options =>
     {

@@ -1,4 +1,5 @@
-﻿using Tgs.CashServiceWorker.ExchangeCommands;
+﻿using NUnit.Framework.Legacy;
+using Tgs.CashServiceWorker.ExchangeCommands;
 
 namespace Tgs.CashServiceWorker.Core.UnitTests.ExchangeCommands;
 
@@ -20,8 +21,8 @@ public class ReadCommandTests
         await sut.ExecuteAsync(context, fakeServiceProvider);
         var actual = await sut.GetBalanceResultAsync();
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(context.Balance, actual.Balance);
-        Assert.AreEqual(context.LockedBalance, actual.LockedBalance);
+        ClassicAssert.IsNotNull(actual);
+        ClassicAssert.AreEqual(context.Balance, actual.Balance);
+        ClassicAssert.AreEqual(context.LockedBalance, actual.LockedBalance);
     }
 }

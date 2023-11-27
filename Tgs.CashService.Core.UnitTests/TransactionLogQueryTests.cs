@@ -1,4 +1,5 @@
 ﻿using NSubstitute;
+using NUnit.Framework.Legacy;
 using Tgs.CashService.ApplicationServices;
 using Tgs.Paging;
 
@@ -68,7 +69,7 @@ public class TransactionLogQueryTests
 
         var actual = await sut.GetAsync(query);
 
-        Assert.AreEqual(100, actual);
+        ClassicAssert.AreEqual(100, actual);
     }
 
     [Test]
@@ -96,6 +97,6 @@ public class TransactionLogQueryTests
 
         var actual = await sut.GetAsync(query);
 
-        Assert.AreEqual(100M, actual);
+        ClassicAssert.AreEqual(100M, actual);
     }
 }
