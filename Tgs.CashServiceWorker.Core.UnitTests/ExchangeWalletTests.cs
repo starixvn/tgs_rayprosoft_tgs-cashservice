@@ -1,14 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using ExpectedObjects;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using NSubstitute;
-using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using Tgs.CashService;
 using Tgs.CashServiceWorker.ApplicationServices;
 using Tgs.SerialNumberGenerator;
-using ExpectedObjects;
-using NUnit.Framework.Legacy;
+using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker.Core.UnitTests;
 
@@ -21,11 +20,13 @@ public class ExchangeWalletTests
 
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
         var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+        var fakeMessageSender = Substitute.For<IMessageSender>();
 
         _ = services
             .AddSingleton<ILogger<WalletReception>>(NullLogger<WalletReception>.Instance)
             .AddSingleton(fakeWalletRepository)
-            .AddSingleton(fakeSerialNumberGenerator);
+            .AddSingleton(fakeSerialNumberGenerator)
+            .AddSingleton(fakeMessageSender);
 
         var fakeHostApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
 
@@ -87,11 +88,13 @@ public class ExchangeWalletTests
 
         var fakeWalletRepository = Substitute.For<IWalletRepository>();
         var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+        var fakeMessageSender = Substitute.For<IMessageSender>();
 
         _ = services
             .AddSingleton<ILogger<WalletReception>>(NullLogger<WalletReception>.Instance)
             .AddSingleton(fakeWalletRepository)
-            .AddSingleton(fakeSerialNumberGenerator);
+            .AddSingleton(fakeSerialNumberGenerator)
+            .AddSingleton(fakeMessageSender);
 
         var fakeHostApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
 

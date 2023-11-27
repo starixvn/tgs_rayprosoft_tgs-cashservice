@@ -7,7 +7,7 @@ internal class ReadCommand : IExchangeCommand
     private readonly TaskCompletionSource<WalletView> _promise = new();
 
     public void Cancel()
-        => _promise.TrySetCanceled();
+            => _promise.TrySetCanceled();
 
     public void Fail(Exception ex)
         => _promise.TrySetException(ex);

@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using NSubstitute;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using Tgs.CashService;
 using Tgs.CashServiceWorker.ExchangeCommands;
 using Tgs.SerialNumberGenerator;
+using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker.Core.UnitTests;
 
@@ -17,12 +17,14 @@ public class WalletReceptionTests
         var services = new ServiceCollection();
 
         var fakeTgsRepository = Substitute.For<IWalletRepository>();
+        var fakeMessageSender = Substitute.For<IMessageSender>();
 
         var sut = new WalletReception(
             Guid.NewGuid(),
             services
                 .AddSingleton(fakeTgsRepository)
                 .BuildServiceProvider(),
+            fakeMessageSender,
             NullLogger<WalletReception>.Instance,
             default);
 
@@ -53,12 +55,14 @@ public class WalletReceptionTests
         var services = new ServiceCollection();
 
         var fakeTgsRepository = Substitute.For<IWalletRepository>();
+        var fakeMessageSender = Substitute.For<IMessageSender>();
 
         var sut = new WalletReception(
             Guid.NewGuid(),
             services
                 .AddSingleton(fakeTgsRepository)
                 .BuildServiceProvider(),
+            fakeMessageSender,
             NullLogger<WalletReception>.Instance,
             default);
 
@@ -110,6 +114,7 @@ public class WalletReceptionTests
 
         var fakeTgsRepository = Substitute.For<IWalletRepository>();
         var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+        var fakeMessageSender = Substitute.For<IMessageSender>();
 
         var sut = new WalletReception(
             Guid.NewGuid(),
@@ -117,6 +122,7 @@ public class WalletReceptionTests
                 .AddSingleton(fakeTgsRepository)
                 .AddSingleton(fakeSerialNumberGenerator)
                 .BuildServiceProvider(),
+            fakeMessageSender,
             NullLogger<WalletReception>.Instance,
             default);
 
@@ -138,6 +144,67 @@ public class WalletReceptionTests
                     && record.LockAmount == 0M
                     && record.Balance == 1000M
                     && record.LockedBalance == 0M),
+                Arg.Any<CancellationToken>());
+        _ = fakeMessageSender.Received(1)
+            .PublishAsync(
+                Arg.Is("tgs.cash.commit.batch"),
+                Arg.Any<ReadOnlyMemory<byte>>(),
+                Arg.Any<IEnumerable<MessageHeaderValue>>(),
+                Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task WalletReception_錢包交易後_如果需要通知Commit_會用MessageSender發出通知()
+    {
+        var services = new ServiceCollection();
+
+        var fakeTgsRepository = Substitute.For<IWalletRepository>();
+        var fakeMessageSender = Substitute.For<IMessageSender>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+
+        var sut = new WalletReception(
+            Guid.NewGuid(),
+            services
+                .AddSingleton(fakeTgsRepository)
+                .AddSingleton(fakeSerialNumberGenerator)
+                .BuildServiceProvider(),
+            fakeMessageSender,
+            NullLogger<WalletReception>.Instance,
+            default);
+
+        _ = fakeTgsRepository.GetWalletAsync(Arg.Is(sut.WalletId), Arg.Any<CancellationToken>())
+            .Returns(new Wallet(
+                sut.WalletId,
+                Guid.NewGuid(),
+                "test1",
+                1000M,
+                0M,
+                Guid.NewGuid()));
+
+        await sut.StartReceiveAsync();
+
+        var tradeRequest = new ExchangeRequest(
+            sut.WalletId,
+            TransactionType.Deposit,
+            1000M,
+            0M,
+            null,
+            null,
+            null);
+
+        var command = new TradeCommand(tradeRequest);
+
+        await sut.EnqueueAsync(command);
+
+        var actual = await command.GetExchangeResultAsync();
+
+        ClassicAssert.AreEqual(2000M, actual.Balance);
+        ClassicAssert.AreEqual(0M, actual.LockedBalance);
+        _ = fakeMessageSender.Received(1)
+            .PublishAsync(
+                Arg.Is("tgs.cash.commit.batch"),
+                Arg.Any<ReadOnlyMemory<byte>>(),
+                Arg.Any<IEnumerable<MessageHeaderValue>>(),
                 Arg.Any<CancellationToken>());
     }
 }

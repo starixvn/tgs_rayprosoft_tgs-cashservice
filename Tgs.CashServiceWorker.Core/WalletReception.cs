@@ -1,15 +1,18 @@
 ﻿using System.Threading.Channels;
+using Google.Protobuf;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Tgs.Cash.Protos;
 using Tgs.CashService;
 using Tgs.CashServiceWorker.ExchangeCommands;
-using Tgs.SerialNumberGenerator;
+using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker;
 
 internal class WalletReception(
     Guid walletId,
     IServiceProvider serviceProvider,
+    IMessageSender messageSender,
     ILogger<WalletReception> logger,
     CancellationToken cancellationToken)
     : IWalletExchangeContext
@@ -116,6 +119,19 @@ internal class WalletReception(
         // 請勿變更此程式碼。請將清除程式碼放入 'Dispose(bool disposing)' 方法
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    ValueTask IWalletExchangeContext.NotifyCommitAsync(CancellationToken cancellationToken)
+    {
+        var commitRequest = new CommitExchangeRequest
+        {
+            WalletId = WalletId
+        };
+
+        return messageSender.PublishAsync(
+            "tgs.cash.commit.batch",
+            commitRequest.ToByteArray(),
+            cancellationToken);
     }
 
     protected virtual void Dispose(bool disposing)

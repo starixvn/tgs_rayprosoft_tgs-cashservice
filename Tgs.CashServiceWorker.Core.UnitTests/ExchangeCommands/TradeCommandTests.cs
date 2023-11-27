@@ -50,4 +50,41 @@ public class TradeCommandTests
                 && record.Balance == 1000M
                 && record.LockedBalance == 0M));
     }
+
+    [Test]
+    public void TradeCommand_執行錢包交易後_如果LockedBalance為負數會交易失敗()
+    {
+        var request = new ExchangeRequest(
+            Guid.NewGuid(),
+            TransactionType.WithdrawCommit,
+            0M,
+            -10M,
+            null,
+            null,
+            null);
+
+        var sut = new TradeCommand(request);
+
+        var context = new StubWalletExchangeContext(
+            request.WalletId,
+            Guid.NewGuid(),
+            "test1",
+            0M,
+            0M);
+
+        var fakeWalletRepository = Substitute.For<IWalletRepository>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+
+        var serviceProvider = new ServiceCollection()
+            .AddSingleton(fakeWalletRepository)
+            .AddSingleton(fakeSerialNumberGenerator)
+            .BuildServiceProvider();
+
+        _ = Assert.ThrowsAsync<WalletExchangeFailException>(async () => await sut.ExecuteAsync(context, serviceProvider));
+
+        ClassicAssert.AreEqual(0M, context.Balance);
+        ClassicAssert.AreEqual(0M, context.LockedBalance);
+        _ = fakeWalletRepository.Received(0)
+            .WriteTransactionRecordAsync(Arg.Any<TransactionRecord>());
+    }
 }
