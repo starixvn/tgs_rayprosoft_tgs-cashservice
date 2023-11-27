@@ -47,10 +47,10 @@ push-nuget:
 push-docker-image:
   extends: .push-docker-image-template
   script:
-    - push_docker "Tgs.CashService/Tgs.CashService.csproj" $ServiceImageName $Tag
-    - push_docker "Tgs.CashServiceWorker/Tgs.CashServiceWorker.csproj" $WorkerImageName $Tag
-    - push_docker "Tgs.CashQueryService/Tgs.CashQueryService.csproj" $QueryImageName $Tag
-    - push_docker "Tgs.CashServiceCommitter/Tgs.CashServiceCommitter.csproj" $CommitterImageName $Tag
+    - push_docker "Tgs.CashService" $ServiceImageName $Tag
+    - push_docker "Tgs.CashServiceWorker" $WorkerImageName $Tag
+    - push_docker "Tgs.CashQueryService" $QueryImageName $Tag
+    - push_docker "Tgs.CashServiceCommitter" $CommitterImageName $Tag
 
 push-tool-docker-image:
   extends: .push-docker-image-template
