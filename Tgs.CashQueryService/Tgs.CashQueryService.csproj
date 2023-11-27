@@ -6,8 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>83bec509-2e56-43e7-ae75-142883f6eb70</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<DockerfileBuildArguments>--build-arg "BuildConfiguration=$(Configuration)"</DockerfileBuildArguments>
-		<DockerfileTag Condition="$(DockerfileTag) == ''">cash/query</DockerfileTag>
+		<ContainerImageName>cash/query</ContainerImageName>
 	</PropertyGroup>
 
 	<ItemGroup>
