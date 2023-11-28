@@ -46,7 +46,7 @@ var builder = WebApplication.CreateBuilder(args);
         .AddCashServiceCommitterRepositories(
             dbBuilder => dbBuilder
                 .UseNpgsql("name=Tgs"),
-            sp => null!);
+            sp => sp.GetRequiredKeyedService<IDatabase>("Redis"));
 
     _ = builder.Services
         .AddMessageQueue()
