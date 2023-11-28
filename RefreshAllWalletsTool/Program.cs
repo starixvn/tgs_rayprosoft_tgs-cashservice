@@ -23,7 +23,7 @@ var builder = Host.CreateApplicationBuilder(args);
 using var app = builder.Build();
 await app.StartAsync().ConfigureAwait(false);
 {
-    var connectionMultiplexer = app.Services.GetRequiredService<IConnectionMultiplexer>();
+    var connectionMultiplexer = app.Services.GetRequiredKeyedService<IConnectionMultiplexer>("Redis");
     var database = connectionMultiplexer.GetDatabase();
     var messageSender = app.Services.GetRequiredService<IMessageSender>();
 
