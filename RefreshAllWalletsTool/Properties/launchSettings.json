@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RefreshAllWalletsTool": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

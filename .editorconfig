@@ -9,7 +9,12 @@ tab_width = 4
 [.(yml|yaml)]
 indent_size = 2
 indent_style = space
-tab_width = 4
+tab_width = 2
+
+[*.tpl]
+indent_size = 2
+indent_style = space
+tab_width = 2
 
 # C# 檔案
 [*.cs]

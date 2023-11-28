@@ -1,0 +1,15 @@
+{{- if eq .Values.kind "CronJob" }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "cashservice-countervail.fullname" . }}
+  labels:
+    {{- include "cashservice-countervail.labels" . | nindent 4 }}
+spec:
+  timeZone: 'Asia/Shanghai'
+  schedule: "0 8 * * *"
+  jobTemplate:
+    spec:
+      template:
+        {{- include "countervail.job" . | nindent 8 }}
+{{- end }}
