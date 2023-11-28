@@ -61,7 +61,7 @@ var builder = WebApplication.CreateBuilder(args);
             .AddJetStreamPushHandler<CommitExchangeDispatchHandler>(
                 "tgs.cash.commit.batch",
                 configBuilder => configBuilder
-                    .WithDeliverGroup("tgs.cash.commit.batch")
+                    .WithDeliverGroup("tgs_cash_commit_batch")
                     .WithMaxAckPending(1)
                     .WithDurable("cash_commit_batch"))
             .AddProcessor<BidProcessor>("tgs.cash.commit.bid")
