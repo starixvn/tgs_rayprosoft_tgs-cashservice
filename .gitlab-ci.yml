@@ -210,7 +210,7 @@ deploy-countervail-dev:
     name: countervail-schedule-dev
   stage: deploy-dev
   needs:
-    - push-job-image
+    - push-tool-docker-image
     - job: push-tool-k8s-template
       artifacts: true
   only:
@@ -242,7 +242,7 @@ deploy-countervail-job-dev:
     name: countervail-job-dev
   stage: deploy-dev
   needs:
-    - push-job-image
+    - push-tool-docker-image
     - job: push-tool-k8s-template
       artifacts: true
   only:
