@@ -53,12 +53,17 @@ var builder = WebApplication.CreateBuilder(args);
         .AddNatsMessageQueue(natsConfig => natsConfig
             .ConfigQueueOptions((natsOptions, _) => natsOptions.Url =
                 builder.Configuration.GetConnectionString("Nats")!)
-            .ConfigJetStream(
-                "tgs_cash_commit",
-                streamConfiguration => streamConfiguration
-                    .AddSubjects("tgs.cash.commit.batch")
-                    .WithStorageType(StorageType.File))
-            .AddJetStreamHandler<CommitExchangeDispatchHandler>("tgs.cash.commit.batch")
+            .ConfigJetStream(streamConfiguration => streamConfiguration
+                .WithName("tgs_cash_commit")
+                .AddSubjects("tgs.cash.commit.batch")
+                .WithStorageType(StorageType.File)
+                .WithRetentionPolicy(RetentionPolicy.WorkQueue))
+            .AddJetStreamPushHandler<CommitExchangeDispatchHandler>(
+                "tgs.cash.commit.batch",
+                configBuilder => configBuilder
+                    .WithDeliverGroup("tgs.cash.commit.batch")
+                    .WithMaxAckPending(1)
+                    .WithDurable("cash_commit_batch"))
             .AddProcessor<BidProcessor>("tgs.cash.commit.bid")
             .AddReplyHandler<BookkeepHandler>($"tgs.cash.commit.batch.{Environment.MachineName}"))
         .AddNatsGlobPatternExchange("*");

@@ -53,11 +53,11 @@ builder.Services
 
             options.Url = configuration.GetConnectionString("Nats")!;
         })
-        .ConfigJetStream(
-            "tgs_cash_commit",
-            streamConfiguration => streamConfiguration
-                .AddSubjects("tgs.cash.commit.batch")
-                .WithStorageType(StorageType.File))
+        .ConfigJetStream(streamConfiguration => streamConfiguration
+            .WithName("tgs_cash_commit")
+            .AddSubjects("tgs.cash.commit.batch")
+            .WithStorageType(StorageType.File)
+            .WithRetentionPolicy(RetentionPolicy.WorkQueue))
         .AddProcessor<BidProcessor>("tgs.cash.bid")
         .AddSession<RequestSession>($"tgs.cash.worker.{Environment.MachineName}")
         .AddProcessor<GetBalanceProcessor>($"tgs.cash.balance.{Environment.MachineName}")
