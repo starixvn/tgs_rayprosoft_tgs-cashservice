@@ -202,7 +202,7 @@ deploy-transfer-job-dev:
       EOF
 
 deploy-countervail-dev:
-  extends: .deploy-job-template
+  extends: .deploy-template
   variables:
     namespace: dev
     kube_config: KubeConfig_Raypro_dev
@@ -234,7 +234,7 @@ deploy-countervail-dev:
       EOF
 
 deploy-countervail-job-dev:
-  extends: .deploy-job-template
+  extends: .deploy-template
   variables:
     namespace: dev
     kube_config: KubeConfig_Raypro_dev
@@ -384,7 +384,7 @@ deploy-transfer-job-staging:
       EOF
 
 deploy-countervail-staging:
-  extends: .deploy-job-template
+  extends: .deploy-template
   variables:
     namespace: staging
     kube_config: KubeConfig_Raypro_staging
@@ -416,7 +416,7 @@ deploy-countervail-staging:
       EOF
 
 deploy-countervail-job-staging:
-  extends: .deploy-job-template
+  extends: .deploy-template
   variables:
     namespace: staging
     kube_config: KubeConfig_Raypro_staging
@@ -567,7 +567,7 @@ deploy-transfer-job-prod:
       EOF
 
 deploy-countervail-prod:
-  extends: .deploy-job-template
+  extends: .deploy-template
   variables:
     namespace: prod
     kube_config: KubeConfig_Raypro_prod
@@ -599,7 +599,7 @@ deploy-countervail-prod:
       EOF
 
 deploy-countervail-job-prod:
-  extends: .deploy-job-template
+  extends: .deploy-template
   variables:
     namespace: prod
     kube_config: KubeConfig_Raypro_prod
