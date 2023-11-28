@@ -422,7 +422,7 @@ deploy-countervail-job-staging:
     kube_config: KubeConfig_Raypro_staging
   environment:
     name: countervail-job-staging
-  stage: deploy-dev
+  stage: deploy-staging
   needs:
     - deploy-countervail-job-dev
     - job: push-tool-k8s-template
