@@ -23,7 +23,7 @@ public class CommitExchangeDispatchHandler(
 
         var subject = $"tgs.cash.commit.batch.{bidToken}";
 
-        await messageSender.PublishAsync(
+        await messageSender.SendAsync(
             subject,
             args.Message.Data,
             cancellationToken).ConfigureAwait(false);
