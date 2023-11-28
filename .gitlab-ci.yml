@@ -9,6 +9,7 @@ variables:
   QueryImageName: pgtgs/cashservice-query
   CommitterImageName: pgtgs/cashservice-committer
   AgentWalletTransferImageName: pgtgs/agent-wallet-transfer
+  CountervailImageName: pgtgs/wallet-countervail
   TgsServiceSettingKey: cashservice-api
   TgsWorkerSettingKey: cashservice-worker
   TgsCommitterSettingKey: cashservice-committer
@@ -18,6 +19,7 @@ variables:
   HelmTemplateQueryFolderName: cashservice-query
   HelmTemplateCommitterFolderName: cashservice-committer
   HelmTemplateAgentWalletTransferFolderName: agent-wallet-transfer
+  HelmTemplateCountervailFolderName: cashservice-countervail
   BuildCacheKey: Tgs.CashService.$CI_PIPELINE_IID
 
 stages:
@@ -55,7 +57,8 @@ push-docker-image:
 push-tool-docker-image:
   extends: .push-docker-image-template
   script:
-    - push_docker "AgentWalletTransferTool/AgentWalletTransferTool.csproj" $AgentWalletTransferImageName $Tag
+    - push_docker "AgentWalletTransferTool" $AgentWalletTransferImageName $Tag
+    - push_docker "RefreshAllWalletsTool" $CountervailImageName $Tag
   when: manual
 
 push-k8s-template:
@@ -70,6 +73,7 @@ push-tool-k8s-template:
   extends: .push-k8s-template
   script:
     - push_k8s_template $HelmTemplateAgentWalletTransferFolderName $AgentWalletTransferImageName $Tag
+    - push_k8s_template $HelmTemplateCountervailFolderName $CountervailImageName $Tag
   needs:
     - push-tool-docker-image
 
@@ -182,8 +186,73 @@ deploy-transfer-job-dev:
   when: manual
   script:
     - |
-      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateAgentWalletTransferFolderName $namespace
+      cat << EOF | deploy_k8s default $HelmTemplateAgentWalletTransferFolderName $namespace
         {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
+
+deploy-countervail-dev:
+  extends: .deploy-template
+  variables:
+    namespace: dev
+    kube_config: KubeConfig_Raypro_dev
+  environment:
+    name: countervail-schedule-dev
+  stage: deploy-dev
+  needs:
+    - push-tool-docker-image
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s default $HelmTemplateCountervailFolderName $namespace
+        {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
+
+deploy-countervail-job-dev:
+  extends: .deploy-template
+  variables:
+    namespace: dev
+    kube_config: KubeConfig_Raypro_dev
+  environment:
+    name: countervail-job-dev
+  stage: deploy-dev
+  needs:
+    - push-tool-docker-image
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s default $HelmTemplateCountervailFolderName $namespace
+        {
+          "kind":"Job",
           "resources": {
             "limits": {
               "cpu": "1",
@@ -285,7 +354,7 @@ deploy-query-staging:
 deploy-transfer-job-staging:
   extends: .deploy-template
   variables:
-    namespace: dev
+    namespace: staging
     kube_config: KubeConfig_Raypro_staging
   environment:
     name: transfer-job-staging
@@ -301,6 +370,71 @@ deploy-transfer-job-staging:
     - |
       cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateAgentWalletTransferFolderName $namespace
         {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
+
+deploy-countervail-staging:
+  extends: .deploy-template
+  variables:
+    namespace: staging
+    kube_config: KubeConfig_Raypro_staging
+  environment:
+    name: countervail-schedule-staging
+  stage: deploy-staging
+  needs:
+    - deploy-countervail-dev
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s default $HelmTemplateCountervailFolderName $namespace
+        {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
+
+deploy-countervail-job-staging:
+  extends: .deploy-template
+  variables:
+    namespace: staging
+    kube_config: KubeConfig_Raypro_staging
+  environment:
+    name: countervail-job-staging
+  stage: deploy-dev
+  needs:
+    - deploy-countervail-job-dev
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s default $HelmTemplateCountervailFolderName $namespace
+        {
+          "kind":"Job",
           "resources": {
             "limits": {
               "cpu": "1",
@@ -403,7 +537,7 @@ deploy-query-prod:
 deploy-transfer-job-prod:
   extends: .deploy-template
   variables:
-    namespace: dev
+    namespace: prod
     kube_config: KubeConfig_Raypro_prod
   environment:
     name: transfer-job-prod
@@ -419,6 +553,71 @@ deploy-transfer-job-prod:
     - |
       cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateAgentWalletTransferFolderName $namespace
         {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
+
+deploy-countervail-prod:
+  extends: .deploy-template
+  variables:
+    namespace: prod
+    kube_config: KubeConfig_Raypro_prod
+  environment:
+    name: countervail-schedule-prod
+  stage: deploy-prod
+  needs:
+    - deploy-countervail-dev
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s default $HelmTemplateCountervailFolderName $namespace
+        {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
+
+deploy-countervail-job-prod:
+  extends: .deploy-template
+  variables:
+    namespace: prod
+    kube_config: KubeConfig_Raypro_prod
+  environment:
+    name: countervail-job-prod
+  stage: deploy-prod
+  needs:
+    - deploy-countervail-job-dev
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s default $HelmTemplateCountervailFolderName $namespace
+        {
+          "kind":"Job",
           "resources": {
             "limits": {
               "cpu": "1",
