@@ -23,8 +23,9 @@ public enum TransactionType
     GameProviderDeposit = 10,
     GameProviderWithdrawal = 11,
     UnsettledBetManual = 12,
-    Snapshot = 100,
     Other = 99,
+    Snapshot = 100,
+    CreateWallet = 110,
 
     /// <summary>
     /// 存款 1000~1999
