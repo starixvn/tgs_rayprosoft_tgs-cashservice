@@ -1,12 +1,13 @@
-﻿using System.ComponentModel;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Tgs.CashService;
 using Tgs.CashServiceCommitter.Repositories.Entities;
 
 namespace Tgs.CashServiceCommitter.Repositories;
 
 internal class TgsRepository(
-    TgsContext dbContext) : ITgsRepository
+    TgsContext dbContext,
+    ILogger<TgsRepository> logger) : ITgsRepository
 {
     private static readonly DateTime _MigrateDate = DateTime.Parse("2023-11-20").ToUniversalTime();
 
@@ -61,6 +62,8 @@ internal class TgsRepository(
             [walletId],
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
+        logger.LogDebug("Find walletRow is {walletRow}", walletRow);
+
         if (walletRow is null || walletRow.SnapshotId is null)
             return;
 
@@ -70,6 +73,8 @@ internal class TgsRepository(
                 && row.RecordedOn > _MigrateDate)
             .OrderByDescending(row => row.Id)
             .FirstOrDefault();
+
+        logger.LogDebug("Newest record is {newestRecord}", newestRecord);
 
         if (newestRecord is null)
             return;
