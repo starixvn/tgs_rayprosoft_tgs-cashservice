@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using Tgs.Cash.Protos;
 using Tgs.CashService.Client;
 using Tgs.CashService.Repositories.Entities;
 
@@ -11,10 +13,13 @@ public class WalletManagementTests
     [TestMethod]
     public async Task 建立新錢包()
     {
+        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services => services
                 .AddFakeNatsMessageQueue()
-                .AddHttpClientLoggingHandler()));
+                .AddHttpClientLoggingHandler()
+                .AddSingleton(fakeWalletExchangeService)));
 
         var httpClient = web.CreateDefaultClient(web.Services.ResolveLoggingHandler<CashServiceClient>());
 
@@ -36,5 +41,7 @@ public class WalletManagementTests
         Assert.AreEqual(0M, insertedRow.LockedBalance);
         Assert.AreEqual(brandId, insertedRow.BrandId);
         Assert.AreEqual(nameof(CashType.Agent), insertedRow.CashType);
+        _ = fakeWalletExchangeService.Received(1)
+            .SendRequestAsync(Arg.Any<WalletExchangeRequest>(), Arg.Any<CancellationToken>());
     }
 }

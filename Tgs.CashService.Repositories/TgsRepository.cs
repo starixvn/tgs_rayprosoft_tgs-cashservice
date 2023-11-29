@@ -115,7 +115,8 @@ internal class TgsRepository(TgsContext dbContext)
             CreatedOn = currentDate,
             UpdatedOn = currentDate,
             BrandId = brandId,
-            CashType = type.ToString()
+            CashType = type.ToString(),
+            SnapshotId = Guid.Empty
         };
 
         _ = await _dbContext.Wallets.AddAsync(
