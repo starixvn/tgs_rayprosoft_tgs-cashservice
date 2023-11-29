@@ -83,5 +83,7 @@ internal class TgsRepository(
                     .SetProperty(row => row.SnapshotId, newestRecord.Id)
                     .SetProperty(row => row.UpdatedOn, newestRecord.RecordedOn),
                 cancellationToken).ConfigureAwait(false);
+
+        _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 }

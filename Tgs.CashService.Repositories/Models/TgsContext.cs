@@ -26,7 +26,9 @@ public partial class TgsContext : DbContext
             .HasPostgresExtension("ltree")
             .HasPostgresExtension("pg_trgm");
 
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(TgsContext).Assembly);
+        modelBuilder.ApplyConfiguration(new Configurations.GameActionConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.TransactionConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.WalletConfiguration());
         OnModelCreatingPartial(modelBuilder);
     }
 
