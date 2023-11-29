@@ -3,6 +3,6 @@
 public enum CashType
 {
     None = 0,
-    Player,
-    Agent
+    Player = 1,
+    Agent = 2
 }
