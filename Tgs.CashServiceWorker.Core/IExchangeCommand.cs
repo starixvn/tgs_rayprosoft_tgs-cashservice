@@ -1,7 +1,11 @@
-﻿namespace Tgs.CashServiceWorker;
+﻿using System.Diagnostics;
+
+namespace Tgs.CashServiceWorker;
 
 internal interface IExchangeCommand
 {
+    ActivityContext? Context { get; }
+
     void Cancel();
 
     void Fail(Exception ex);

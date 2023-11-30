@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Tgs.CashService;
 using Tgs.SerialNumberGenerator;
 
@@ -8,8 +9,10 @@ internal class TradeCommand(ExchangeRequest request) : IExchangeCommand
 {
     private readonly TaskCompletionSource<ExchangeResult> _promise = new();
 
+    public ActivityContext? Context { get; } = Activity.Current?.Context;
+
     public void Cancel()
-            => _promise.TrySetCanceled();
+        => _promise.TrySetCanceled();
 
     public async ValueTask ExecuteAsync(
         IWalletExchangeContext context,

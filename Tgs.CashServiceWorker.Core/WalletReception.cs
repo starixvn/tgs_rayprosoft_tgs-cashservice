@@ -185,7 +185,10 @@ internal class WalletReception(
 
     private async Task HandleExchangeAsync(IExchangeCommand command, CancellationToken cancellationToken)
     {
-        using var activity = _ActivitySource.StartActivity("WalletReception handle exchange");
+        using var activity = _ActivitySource.StartActivity(
+            "WalletReception handle exchange",
+            ActivityKind.Internal,
+            parentContext: command.Context ?? default);
 
         try
         {
