@@ -12,7 +12,7 @@ internal class SnapshotCommand : IExchangeCommand
     public ActivityContext? Context { get; } = Activity.Current?.Context;
 
     public void Cancel()
-            => _promise.TrySetCanceled();
+        => _promise.TrySetCanceled();
 
     public void Fail(Exception ex)
         => _promise.TrySetException(ex);
