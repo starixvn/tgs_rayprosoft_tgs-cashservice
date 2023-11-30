@@ -20,7 +20,10 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
 
     public async ValueTask<ExchangeResult> RequestAsync(ExchangeRequest request, CancellationToken cancellationToken = default)
     {
-        using var activity = _ActivitySource.StartActivity("WalletExchanger Request");
+        using var activity = _ActivitySource.StartActivity(
+            "WalletExchanger Request",
+            ActivityKind.Internal,
+            Activity.Current?.Context ?? default);
 
         if (_cancellationTokenSource.IsCancellationRequested)
             throw new TaskCanceledException();
@@ -42,7 +45,10 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
 
     public async ValueTask<WalletView> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
-        using var activity = _ActivitySource.StartActivity("WalletExchanger GetBalance");
+        using var activity = _ActivitySource.StartActivity(
+            "WalletExchanger GetBalance",
+            ActivityKind.Internal,
+            Activity.Current?.Context ?? default);
 
         if (_cancellationTokenSource.IsCancellationRequested)
             throw new TaskCanceledException();
@@ -109,7 +115,10 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
 
     private async ValueTask<WalletReception> GetWalletReceptionAsync(Guid walletId)
     {
-        using var activity = _ActivitySource.StartActivity("WalletExchanger GetWalletReception");
+        using var activity = _ActivitySource.StartActivity(
+            "WalletExchanger GetWalletReception",
+            ActivityKind.Internal,
+            Activity.Current?.Context ?? default);
 
         var queue = _exchangeQueuePool.GetOrAdd(
             walletId,
