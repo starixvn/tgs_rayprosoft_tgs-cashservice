@@ -28,10 +28,24 @@ public class WalletExchangeServiceDecorator(
                 async ct => await _walletExchangeService
                     .SendRequestAsync(request, ct)
                     .ConfigureAwait(false),
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken)
+            .ConfigureAwait(false);
 
-    public ValueTask<decimal?> GetBalanceAsync(Guid WalletId, CancellationToken cancellationToken = default)
-        => _walletExchangeService.GetBalanceAsync(WalletId, cancellationToken);
+    public async ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
+        => await Policy.Handle<NATSNoRespondersException>()
+            .RetryAsync(
+                1,
+                async (ex, count) =>
+                {
+                    await _walletExchangeService.DiscardBidAsync(walletId).ConfigureAwait(false);
+                    _logger.LogWarning(ex, "NoReponders error retry {count}", count);
+                })
+            .ExecuteAsync(
+                async ct => await _walletExchangeService.GetBalanceAsync(
+                    walletId,
+                    cancellationToken).ConfigureAwait(false),
+                cancellationToken)
+            .ConfigureAwait(false);
 
     public ValueTask DiscardBidAsync(Guid walletId)
         => _walletExchangeService.DiscardBidAsync(walletId);

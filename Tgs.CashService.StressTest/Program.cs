@@ -31,7 +31,6 @@ await app.StartAsync().ConfigureAwait(false);
         .ToArrayAsync()
         .ConfigureAwait(false);
 
-
     var singleWalletScenario = Scenario
         .Create("單一錢包壓測", async context =>
         {
@@ -78,6 +77,12 @@ await app.StartAsync().ConfigureAwait(false);
             {
                 return Response.Fail(500, ex.ToString());
             }
+        })
+        .WithInit(async context =>
+        {
+            for (var i = 0; i <= 1001; i++)
+                _ = await client.GetBalanceAsync(
+                    walletIds[i]).ConfigureAwait(false);
         })
         .WithoutWarmUp()
         .WithLoadSimulations(
@@ -138,6 +143,13 @@ await app.StartAsync().ConfigureAwait(false);
             {
                 return Response.Fail(500, ex.ToString());
             }
+        })
+        .WithInit(async context =>
+        {
+            foreach (var batch in walletIds.Chunk(100))
+                _ = await Task.WhenAll(batch
+                    .Select(id => client.GetBalanceAsync(id).AsTask())
+                    .ToArray()).ConfigureAwait(false);
         })
         .WithoutWarmUp()
         .WithLoadSimulations(
