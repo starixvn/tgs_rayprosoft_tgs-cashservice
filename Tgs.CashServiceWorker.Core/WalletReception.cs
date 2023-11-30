@@ -27,7 +27,8 @@ internal class WalletReception(
     private readonly Channel<IExchangeCommand> _exchangeTasks = Channel.CreateUnbounded<IExchangeCommand>(
         new UnboundedChannelOptions
         {
-            SingleReader = true
+            SingleReader = true,
+            SingleWriter = true
         });
 
     private readonly CancellationTokenSource _cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -67,14 +68,12 @@ internal class WalletReception(
             ActivityKind.Internal,
             command.Context ?? default);
 
-        //if (_exchangeTasks.Reader.CanCount)
-        //    _ = (activity?.SetTag("queue_length", _exchangeTasks.Reader.Count));
+        if (_exchangeTasks.Reader.CanCount)
+            _ = (activity?.SetTag("queue_length", _exchangeTasks.Reader.Count));
 
         await _exchangeTasks.Writer.WriteAsync(
             command,
             cancellationToken).ConfigureAwait(false);
-
-        activity?.Stop();
     }
 
     public async ValueTask StartReceiveAsync(CancellationToken cancellationToken = default)
