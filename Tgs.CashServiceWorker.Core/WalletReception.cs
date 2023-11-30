@@ -60,7 +60,7 @@ internal class WalletReception(
         set => _lockedBalance = value;
     }
 
-    public ValueTask EnqueueAsync(IExchangeCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask EnqueueAsync(IExchangeCommand command, CancellationToken cancellationToken = default)
     {
         using var activity = _ActivitySource.StartActivity(
             "WalletReception Enqueue",
@@ -70,7 +70,9 @@ internal class WalletReception(
         if (_exchangeTasks.Reader.CanCount)
             _ = (activity?.SetTag("queue_length", _exchangeTasks.Reader.Count));
 
-        return _exchangeTasks.Writer.WriteAsync(command, cancellationToken);
+        await _exchangeTasks.Writer.WriteAsync(
+            command,
+            cancellationToken).ConfigureAwait(false);
     }
 
     public async ValueTask StartReceiveAsync(CancellationToken cancellationToken = default)
