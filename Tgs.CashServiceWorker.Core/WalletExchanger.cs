@@ -37,6 +37,7 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
         var command = new TradeCommand(request, activity?.Context);
         await using var tokenRegistration = cts.Token.Register(
             command.Cancel).ConfigureAwait(false);
+        using var enqueueActivity = _ActivitySource.StartActivity("Enqueue", ActivityKind.Internal, Activity.Current?.Context ?? default);
         await queue.EnqueueAsync(
             command,
             cts.Token).ConfigureAwait(false);

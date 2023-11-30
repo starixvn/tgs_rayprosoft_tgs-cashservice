@@ -63,7 +63,9 @@ internal class WalletReception(
     public async ValueTask EnqueueAsync(IExchangeCommand command, CancellationToken cancellationToken = default)
     {
         using var activity = _ActivitySource.StartActivity(
-            "WalletReception Enqueue");
+            "WalletReception Enqueue",
+            ActivityKind.Internal,
+            command.Context ?? default);
 
         //if (_exchangeTasks.Reader.CanCount)
         //    _ = (activity?.SetTag("queue_length", _exchangeTasks.Reader.Count));
@@ -71,6 +73,8 @@ internal class WalletReception(
         await _exchangeTasks.Writer.WriteAsync(
             command,
             cancellationToken).ConfigureAwait(false);
+
+        activity?.Stop();
     }
 
     public async ValueTask StartReceiveAsync(CancellationToken cancellationToken = default)
