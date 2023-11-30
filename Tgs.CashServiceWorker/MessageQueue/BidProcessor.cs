@@ -27,7 +27,7 @@ internal class BidProcessor : IMessageProcessor
         var isGot = await _redisDatabase.StringSetAsync(
             redisKey,
             Environment.MachineName,
-            expiry: TimeSpan.FromMinutes(1),
+            expiry: TimeSpan.FromMinutes(10D),
             when: When.NotExists).ConfigureAwait(false);
 
         var response = new BidResponse();
