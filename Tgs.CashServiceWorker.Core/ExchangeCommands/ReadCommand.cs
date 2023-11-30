@@ -1,4 +1,5 @@
-﻿using Tgs.CashService;
+﻿using System.Diagnostics;
+using Tgs.CashService;
 
 namespace Tgs.CashServiceWorker.ExchangeCommands;
 
@@ -6,8 +7,10 @@ internal class ReadCommand : IExchangeCommand
 {
     private readonly TaskCompletionSource<WalletView> _promise = new();
 
+    public ActivityContext? Context { get; } = Activity.Current?.Context;
+
     public void Cancel()
-            => _promise.TrySetCanceled();
+        => _promise.TrySetCanceled();
 
     public void Fail(Exception ex)
         => _promise.TrySetException(ex);
