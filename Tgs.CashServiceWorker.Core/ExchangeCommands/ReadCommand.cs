@@ -3,11 +3,11 @@ using Tgs.CashService;
 
 namespace Tgs.CashServiceWorker.ExchangeCommands;
 
-internal class ReadCommand : IExchangeCommand
+internal class ReadCommand(ActivityContext? activityContext) : IExchangeCommand
 {
     private readonly TaskCompletionSource<WalletView> _promise = new();
 
-    public ActivityContext? Context { get; } = Activity.Current?.Context;
+    public ActivityContext? Context => activityContext;
 
     public void Cancel()
         => _promise.TrySetCanceled();

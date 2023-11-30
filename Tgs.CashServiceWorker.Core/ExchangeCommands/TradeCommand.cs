@@ -5,11 +5,13 @@ using Tgs.SerialNumberGenerator;
 
 namespace Tgs.CashServiceWorker.ExchangeCommands;
 
-internal class TradeCommand(ExchangeRequest request) : IExchangeCommand
+internal class TradeCommand(
+    ExchangeRequest request,
+    ActivityContext? activityContext) : IExchangeCommand
 {
     private readonly TaskCompletionSource<ExchangeResult> _promise = new();
 
-    public ActivityContext? Context { get; } = Activity.Current?.Context;
+    public ActivityContext? Context => activityContext;
 
     public void Cancel()
         => _promise.TrySetCanceled();

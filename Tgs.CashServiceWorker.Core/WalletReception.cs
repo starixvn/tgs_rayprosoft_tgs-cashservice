@@ -122,7 +122,7 @@ internal class WalletReception(
 
         if (isSnapshotWallet)
         {
-            var command = new SnapshotCommand();
+            var command = new SnapshotCommand(activity?.Context);
             await EnqueueAsync(
                 command,
                 cancellationToken).ConfigureAwait(false);

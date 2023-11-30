@@ -11,7 +11,7 @@ public class SnapshotCommandTests
     [Test]
     public async Task SnapshotCommand_增加快照記錄()
     {
-        var sut = new SnapshotCommand();
+        var sut = new SnapshotCommand(null);
 
         var context = new StubWalletExchangeContext(
             Guid.NewGuid(),
