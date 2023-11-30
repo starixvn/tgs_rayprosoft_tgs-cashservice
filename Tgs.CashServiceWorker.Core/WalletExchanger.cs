@@ -109,6 +109,8 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
 
     private async ValueTask<WalletReception> GetWalletReceptionAsync(Guid walletId)
     {
+        using var activity = _ActivitySource.StartActivity("WalletExchanger GetWalletReception");
+
         var queue = _exchangeQueuePool.GetOrAdd(
             walletId,
             _ => new WalletReception(
