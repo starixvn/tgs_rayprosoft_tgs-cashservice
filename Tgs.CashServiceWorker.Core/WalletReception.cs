@@ -37,7 +37,7 @@ internal class WalletReception(
 
     public bool IsStartReceive { get; private set; } = false;
 
-    public DateTime Expired { get; set; } = DateTime.Now.AddMinutes(1).AddSeconds(20);
+    public DateTime Expired { get; set; } = DateTime.Now.AddMinutes(10D).AddSeconds(20D);
 
     public Guid WalletId { get; } = walletId;
 
@@ -162,7 +162,7 @@ internal class WalletReception(
             if (reader.TryRead(out var command))
                 try
                 {
-                    Expired = DateTime.Now.AddMinutes(1).AddSeconds(20);
+                    Expired = DateTime.Now.AddMinutes(10D).AddSeconds(20D);
 
                     await HandleExchangeAsync(
                         command,

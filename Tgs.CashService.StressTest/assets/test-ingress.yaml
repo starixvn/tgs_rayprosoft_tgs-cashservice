@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cashservice-api-test
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: cash-api-test.rpgp.cc
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cashservice-api
+            port:
+              number: 80

@@ -37,7 +37,7 @@ internal class RequestSession : IMessageSession
             _logger.LogWarning("This machine ({MachineName}) not match {subjectKey}", Environment.MachineName, subjectKey);
         else
             _ = await _redisDatabase
-                .KeyExpireAsync(redisKey, TimeSpan.FromMinutes(1), CommandFlags.FireAndForget)
+                .KeyExpireAsync(redisKey, TimeSpan.FromMinutes(10D), CommandFlags.FireAndForget)
                 .ConfigureAwait(false);
 
         var result = await _exchangeService.GetAsync(
