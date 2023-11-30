@@ -39,7 +39,7 @@ public class WalletReceptionTests
 
         await sut.StartReceiveAsync();
 
-        var command = new ReadCommand();
+        var command = new ReadCommand(null);
 
         await sut.EnqueueAsync(command);
 
@@ -97,7 +97,7 @@ public class WalletReceptionTests
 
         await sut.StartReceiveAsync();
 
-        var command = new ReadCommand();
+        var command = new ReadCommand(null);
 
         await sut.EnqueueAsync(command);
 
@@ -192,7 +192,7 @@ public class WalletReceptionTests
             null,
             null);
 
-        var command = new TradeCommand(tradeRequest);
+        var command = new TradeCommand(tradeRequest, null);
 
         await sut.EnqueueAsync(command);
 

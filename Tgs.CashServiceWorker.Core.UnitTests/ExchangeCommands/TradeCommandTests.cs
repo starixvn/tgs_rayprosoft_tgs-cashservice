@@ -20,7 +20,7 @@ public class TradeCommandTests
             null,
             null);
 
-        var sut = new TradeCommand(request);
+        var sut = new TradeCommand(request, null);
 
         var context = new StubWalletExchangeContext(
             request.WalletId,
@@ -63,7 +63,7 @@ public class TradeCommandTests
             null,
             null);
 
-        var sut = new TradeCommand(request);
+        var sut = new TradeCommand(request, null);
 
         var context = new StubWalletExchangeContext(
             request.WalletId,

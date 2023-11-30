@@ -8,7 +8,7 @@ public class ReadCommandTests
     [Test]
     public async Task ReadCommand_讀取錢包餘額()
     {
-        var sut = new ReadCommand();
+        var sut = new ReadCommand(null);
 
         var context = new StubWalletExchangeContext(
             Guid.NewGuid(),
