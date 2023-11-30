@@ -1,4 +1,5 @@
-﻿using System.Threading.Channels;
+﻿using System.Diagnostics;
+using System.Threading.Channels;
 using Google.Protobuf;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,8 @@ internal class WalletReception(
     : IWalletExchangeContext
     , IDisposable
 {
+    private static readonly ActivitySource _ActivitySource = new("Tgs.CashServiceWorker.WalletReception");
+
     private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     private readonly ILogger<WalletReception> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -64,6 +67,8 @@ internal class WalletReception(
     {
         if (IsStartReceive)
             return;
+
+        using var activity = _ActivitySource.StartActivity("WalletReception start receive");
 
         var isSnapshotWallet = false; ;
         var scope = _serviceProvider.CreateAsyncScope();
@@ -133,7 +138,8 @@ internal class WalletReception(
         _ = messageSender.PublishAsync(
             "tgs.cash.commit.batch",
             commitRequest.ToByteArray(),
-            cancellationToken);
+            cancellationToken)
+            .AsTask();
     }
 
     protected virtual void Dispose(bool disposing)
@@ -179,6 +185,8 @@ internal class WalletReception(
 
     private async Task HandleExchangeAsync(IExchangeCommand command, CancellationToken cancellationToken)
     {
+        using var activity = _ActivitySource.StartActivity("WalletReception handle exchange");
+
         try
         {
             if (cancellationToken.IsCancellationRequested)
