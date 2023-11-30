@@ -67,8 +67,8 @@ internal class WalletReception(
             ActivityKind.Internal,
             command.Context ?? default);
 
-        if (_exchangeTasks.Reader.CanCount)
-            _ = (activity?.SetTag("queue_length", _exchangeTasks.Reader.Count));
+        //if (_exchangeTasks.Reader.CanCount)
+        //    _ = (activity?.SetTag("queue_length", _exchangeTasks.Reader.Count));
 
         await _exchangeTasks.Writer.WriteAsync(
             command,
