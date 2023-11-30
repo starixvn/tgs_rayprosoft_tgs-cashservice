@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ namespace Tgs.CashServiceWorker;
 
 internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime) : IDisposable
 {
+    private static readonly ActivitySource _ActivitySource = new("Tgs.CashServiceWorker.WalletExchanger");
     private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     private readonly ConcurrentDictionary<Guid, WalletReception> _exchangeQueuePool = new();
     private readonly CancellationTokenSource _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(hostApplicationLifetime.ApplicationStopping);
@@ -18,6 +20,8 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
 
     public async ValueTask<ExchangeResult> RequestAsync(ExchangeRequest request, CancellationToken cancellationToken = default)
     {
+        using var activity = _ActivitySource.StartActivity("WalletExchanger Request");
+
         if (_cancellationTokenSource.IsCancellationRequested)
             throw new TaskCanceledException();
 
@@ -38,6 +42,8 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
 
     public async ValueTask<WalletView> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
+        using var activity = _ActivitySource.StartActivity("WalletExchanger GetBalance");
+
         if (_cancellationTokenSource.IsCancellationRequested)
             throw new TaskCanceledException();
 

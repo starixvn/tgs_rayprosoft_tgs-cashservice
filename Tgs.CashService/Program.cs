@@ -104,12 +104,8 @@ builder.Services
 builder.Services
     .AddMessageQueue()
     .AddNatsMessageQueue(config => config
-        .ConfigQueueOptions((options, sp) =>
-        {
-            var configuration = sp.GetRequiredService<IConfiguration>();
-
-            options.Url = configuration.GetConnectionString("Nats")!;
-        })
+        .ConfigQueueOptions((options, _) => options.Url =
+            builder.Configuration.GetConnectionString("Nats")!)
         .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");
