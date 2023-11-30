@@ -121,14 +121,16 @@ internal class WalletReception(
         GC.SuppressFinalize(this);
     }
 
-    ValueTask IWalletExchangeContext.NotifyCommitAsync(CancellationToken cancellationToken)
+    async ValueTask IWalletExchangeContext.NotifyCommitAsync(CancellationToken cancellationToken)
     {
         var commitRequest = new CommitExchangeRequest
         {
             WalletId = WalletId
         };
 
-        return messageSender.PublishAsync(
+        await NewThreadAwaitable.Default;
+
+        _ = messageSender.PublishAsync(
             "tgs.cash.commit.batch",
             commitRequest.ToByteArray(),
             cancellationToken);
