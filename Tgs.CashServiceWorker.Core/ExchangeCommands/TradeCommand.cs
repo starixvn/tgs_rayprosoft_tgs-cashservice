@@ -53,9 +53,19 @@ internal class TradeCommand(
             request.ExternalId,
             request.CreatedByUserId);
 
-        await repository.WriteTransactionRecordAsync(
-            record,
-            cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await repository.WriteTransactionRecordAsync(
+                record,
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            context.LockedBalance -= request.LockAmount;
+            context.Balance -= request.Amount;
+
+            throw;
+        }
 
         await context.NotifyCommitAsync(cancellationToken).ConfigureAwait(false);
 

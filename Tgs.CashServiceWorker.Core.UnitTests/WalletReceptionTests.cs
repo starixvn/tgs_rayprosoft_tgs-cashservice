@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using Tgs.CashService;
@@ -206,5 +207,59 @@ public class WalletReceptionTests
                 Arg.Any<ReadOnlyMemory<byte>>(),
                 Arg.Any<IEnumerable<MessageHeaderValue>>(),
                 Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task WalletReception_錢包交易_如果寫記錄失敗_金額不會異動()
+    {
+        var services = new ServiceCollection();
+
+        var fakeTgsRepository = Substitute.For<IWalletRepository>();
+        var fakeMessageSender = Substitute.For<IMessageSender>();
+        var fakeSerialNumberGenerator = Substitute.For<ISerialNumberGenerator>();
+
+        var sut = new WalletReception(
+            Guid.NewGuid(),
+            services
+                .AddSingleton(fakeTgsRepository)
+                .AddSingleton(fakeSerialNumberGenerator)
+                .BuildServiceProvider(),
+            fakeMessageSender,
+            NullLogger<WalletReception>.Instance,
+            default);
+
+        _ = fakeTgsRepository.GetWalletAsync(Arg.Is(sut.WalletId), Arg.Any<CancellationToken>())
+            .Returns(new Wallet(
+                sut.WalletId,
+                Guid.NewGuid(),
+                "test1",
+                1000M,
+                0M,
+                Guid.NewGuid()));
+
+        await sut.StartReceiveAsync();
+
+        var tradeRequest = new ExchangeRequest(
+            sut.WalletId,
+            TransactionType.Deposit,
+            1000M,
+            0M,
+            null,
+            null,
+            null);
+
+        _ = fakeTgsRepository.WriteTransactionRecordAsync(
+            Arg.Any<TransactionRecord>(),
+            Arg.Any<CancellationToken>())
+            .Throws<Exception>();
+
+        var command = new TradeCommand(tradeRequest, null);
+
+        await sut.EnqueueAsync(command);
+
+        _ = Assert.ThrowsAsync<Exception>(command.GetExchangeResultAsync);
+
+        ClassicAssert.AreEqual(1000M, ((IWalletExchangeContext)sut).Balance);
+        ClassicAssert.AreEqual(0M, ((IWalletExchangeContext)sut).LockedBalance);
     }
 }
