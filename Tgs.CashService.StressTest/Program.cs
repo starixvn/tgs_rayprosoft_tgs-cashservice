@@ -1,12 +1,9 @@
-﻿using System.Linq;
+﻿using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NBomber.Contracts;
 using NBomber.CSharp;
 using Tgs.CashService.Client;
-using System.IO;
-using System.Text;
 
 var builder = Host.CreateApplicationBuilder(args);
 {
@@ -53,73 +50,7 @@ await app.StartAsync().ConfigureAwait(false);
             }
         })
         .WithoutWarmUp()
-        .WithLoadSimulations(Simulation.RampingInject(1000, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(60D)));
-
-    var wallets100Scenario = Scenario.Create(
-        "錢包100個壓測",
-        async context =>
-        {
-            try
-            {
-                var idx = context.InvocationNumber % 100;
-                var walletId = walletIds[idx];
-
-                _ = await client.DepositedAsync(
-                    walletId,
-                    10M,
-                    null,
-                    null,
-                    null).ConfigureAwait(false);
-
-                return Response.Ok();
-            }
-            catch (Exception ex)
-            {
-                return Response.Fail(500, ex.ToString());
-            }
-        })
-        .WithInit(async context =>
-        {
-            for (var i = 0; i <= 1001; i++)
-                _ = await client.GetBalanceAsync(
-                    walletIds[i]).ConfigureAwait(false);
-        })
-        .WithoutWarmUp()
-        .WithLoadSimulations(
-            Simulation.RampingInject(10000, TimeSpan.FromSeconds(1D), TimeSpan.FromMinutes(5D)));
-
-    var wallets1000Scenario = Scenario.Create(
-        "錢包1000個壓測",
-        async context =>
-        {
-            try
-            {
-                var idx = context.InvocationNumber % 1000;
-                var walletId = walletIds[idx];
-
-                _ = await client.DepositedAsync(
-                    walletId,
-                    10M,
-                    null,
-                    null,
-                    null).ConfigureAwait(false);
-
-                return Response.Ok();
-            }
-            catch (Exception ex)
-            {
-                return Response.Fail(500, ex.ToString());
-            }
-        })
-        .WithInit(async context =>
-        {
-            for (var i = 0; i <= 1000; i++)
-                _ = await client.GetBalanceAsync(
-                    walletIds[i]).ConfigureAwait(false);
-        })
-        .WithoutWarmUp()
-        .WithLoadSimulations(
-            Simulation.RampingInject(10000, TimeSpan.FromSeconds(1D), TimeSpan.FromMinutes(5D)));
+        .WithLoadSimulations(Simulation.RampingConstant(100, TimeSpan.FromSeconds(60D)));
 
     var wallets10000Scenario = Scenario.Create(
         "錢包10000個壓測",
@@ -127,8 +58,8 @@ await app.StartAsync().ConfigureAwait(false);
         {
             try
             {
-                var idx = context.InvocationNumber % 10000;
-                var walletId = walletIds[idx];
+                context.Logger.Information($"{context.TestInfo.SessionId}: {context.InvocationNumber}");
+                var walletId = walletIds[context.InvocationNumber - 1];
 
                 _ = await client.DepositedAsync(
                     walletId,
@@ -146,16 +77,14 @@ await app.StartAsync().ConfigureAwait(false);
         })
         .WithInit(async context =>
         {
-            foreach (var batch in walletIds.Chunk(100))
-                _ = await Task.WhenAll(batch
-                    .Select(id => client.GetBalanceAsync(id).AsTask())
-                    .ToArray()).ConfigureAwait(false);
+            foreach (var walletId in walletIds)
+                _ = await client.GetBalanceAsync(walletId).ConfigureAwait(false);
         })
         .WithoutWarmUp()
         .WithLoadSimulations(
             Simulation.RampingInject(10000, TimeSpan.FromSeconds(1D), TimeSpan.FromMinutes(5D)));
 
     _ = NBomberRunner
-        .RegisterScenarios(wallets1000Scenario)
+        .RegisterScenarios(wallets10000Scenario)
         .Run();
 }
