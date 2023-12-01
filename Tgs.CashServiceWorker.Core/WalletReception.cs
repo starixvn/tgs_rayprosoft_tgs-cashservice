@@ -107,8 +107,17 @@ internal class WalletReception(
 
         IsStartReceive = true;
         _ = _cancellationSource.Token.Register(() => _exchangeTasks.Writer.Complete());
-        _backgroundTask = ProcessExchangeLoopAsync(cancellationToken);
-        _ = _cancellationSource.Token.Register(_backgroundTask.Wait);
+        _backgroundTask = ProcessExchangeLoopAsync(_cancellationSource.Token);
+        _ = _cancellationSource.Token.Register(() =>
+        {
+            try
+            {
+                _backgroundTask.Wait();
+            }
+            catch
+            {
+            }
+        });
 
         if (isSnapshotWallet)
         {
@@ -176,7 +185,7 @@ internal class WalletReception(
 
                     await HandleExchangeAsync(
                         command,
-                        _cancellationSource!.Token).ConfigureAwait(false);
+                        cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

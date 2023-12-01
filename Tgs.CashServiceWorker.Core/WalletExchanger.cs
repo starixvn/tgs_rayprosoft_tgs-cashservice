@@ -68,6 +68,14 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
         return await command.GetBalanceResultAsync().ConfigureAwait(false);
     }
 
+    public async Task DiscardReceptionAsync(Guid walletId)
+    {
+        await NewThreadAwaitable.Default;
+
+        if (_exchangeQueuePool.TryRemove(walletId, out var reception))
+            reception.Dispose();
+    }
+
     public void ScanExpiredQueues()
     {
         var currentTime = DateTime.Now;
