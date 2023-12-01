@@ -31,13 +31,11 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         var queue = await GetWalletReceptionAsync(
-            request.WalletId,
-            activity?.Context).ConfigureAwait(false);
+            request.WalletId).ConfigureAwait(false);
 
         var command = new TradeCommand(request, activity?.Context);
         await using var tokenRegistration = cts.Token.Register(
             command.Cancel).ConfigureAwait(false);
-        using var enqueueActivity = _ActivitySource.StartActivity("Enqueue", ActivityKind.Internal, Activity.Current?.Context ?? default);
         await queue.EnqueueAsync(
             command,
             cts.Token).ConfigureAwait(false);
@@ -58,8 +56,7 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         var queue = await GetWalletReceptionAsync(
-            walletId,
-            activity?.Context).ConfigureAwait(false);
+            walletId).ConfigureAwait(false);
 
         var command = new ReadCommand(activity?.Context);
         await using var tokenRegistration = cts.Token.Register(
@@ -116,13 +113,8 @@ internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicatio
         }
     }
 
-    private async ValueTask<WalletReception> GetWalletReceptionAsync(Guid walletId, ActivityContext? context)
+    private async ValueTask<WalletReception> GetWalletReceptionAsync(Guid walletId)
     {
-        using var activity = _ActivitySource.StartActivity(
-            "WalletExchanger GetWalletReception",
-            ActivityKind.Internal,
-            context ?? default);
-
         var queue = _exchangeQueuePool.GetOrAdd(
             walletId,
             _ => new WalletReception(
