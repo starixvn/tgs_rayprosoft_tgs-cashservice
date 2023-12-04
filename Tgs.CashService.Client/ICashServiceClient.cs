@@ -127,6 +127,11 @@ public partial interface ICashServiceClient
         PagingConditions paging,
         CancellationToken cancellationToken = default);
 
+    Task<PagingResponse<TransactionLog>> QueryInRedisTransactionLogsAsync(
+        Guid walletId,
+        PagingConditions paging,
+        CancellationToken cancellationToken = default);
+
     ValueTask<decimal?> QueryTransactionTotalAmountAsync(
         Guid walletId,
         DateTime from,

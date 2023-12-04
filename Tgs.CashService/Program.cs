@@ -8,6 +8,7 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using StackExchange.Redis;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Tgs.CashService;
 
@@ -58,13 +59,19 @@ builder.Services
     });
 
 builder.Services
-    .AddCashServiceRepositories((_, optionsBuilder) => optionsBuilder.UseNpgsql("name=Tgs"))
-    .AddCashServiceCore((options, sp) =>
-    {
-        var config = sp.GetRequiredService<IConfiguration>();
-
-        options.RedisConnectionString = config.GetConnectionString("Redis")!;
-    })
+    .AddKeyedSingleton<IConnectionMultiplexer>(
+        "Redis",
+        (sp, _) => ConnectionMultiplexer.Connect(
+            builder.Configuration.GetConnectionString("Redis")!))
+    .AddKeyedSingleton(
+        "Redis",
+        (sp, _) => sp
+            .GetRequiredKeyedService<IConnectionMultiplexer>("Redis")
+            .GetDatabase())
+    .AddCashServiceRepositories(
+        (_, optionsBuilder) => optionsBuilder.UseNpgsql("name=Tgs"),
+        sp => sp.GetRequiredKeyedService<IDatabase>("Redis"))
+    .AddCashServiceCore(sp => sp.GetRequiredKeyedService<IDatabase>("Redis"))
     .Decorate<IWalletExchangeService, WalletExchangeServiceDecorator>();
 builder.Services
     .AddHealthChecks();
