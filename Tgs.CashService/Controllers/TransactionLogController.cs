@@ -10,8 +10,8 @@ namespace Tgs.CashService.Controllers;
 [ApiController]
 public class TransactionLogController : ControllerBase
 {
-    [HttpGet("~/api/transaction-log/{walletId}", Name = "QueryTransactionLogsOld")]
-    [HttpGet("{walletId}", Name = "QueryTransactionLogs")]
+    [HttpGet("~/api/transaction-log/{walletId:Guid}", Name = "QueryTransactionLogsOld")]
+    [HttpGet("{walletId:Guid}", Name = "QueryTransactionLogs")]
     public async Task<PagingResponseViewModel<TransactionLogViewModel>> QueryTransactionLogsAsync(
         [FromServices] IQueryService<TransactionLogQuery, TransactionLog> queryService,
         [FromServices] IGetService<TransactionLogQuery, int> countService,
@@ -61,10 +61,10 @@ public class TransactionLogController : ControllerBase
         };
     }
 
-    [HttpGet("~/api/transaction-log/totalamount/{walletId}", Name = "QueryTransactionTotalAmountOld")]
-    [HttpGet("totalamount/{walletId}", Name = "QueryTransactionTotalAmount")]
-    public ValueTask<decimal?> QueryTransactionTotalAmountAsync(
-        [FromServices] IGetService<TransactionTotalAmountQuery, decimal?> getService,
+    [HttpGet("~/api/transaction-log/totalamount/{walletId:Guid}", Name = "QueryTransactionTotalAmountOld")]
+    [HttpGet("totalamount/{walletId:Guid}", Name = "QueryTransactionTotalAmount")]
+    public ValueTask<decimal> QueryTransactionTotalAmountAsync(
+        [FromServices] IGetService<TransactionTotalAmountQuery, decimal> getService,
         [FromQuery] TransactionLogQueryViewModel queryConditions,
         Guid walletId)
     {
@@ -76,5 +76,48 @@ public class TransactionLogController : ControllerBase
         return getService.GetAsync(
             query,
             HttpContext.RequestAborted);
+    }
+
+    [HttpGet("buffer/{walletId:Guid}", Name = "QueryInRedisTransactionLogs")]
+    public IAsyncEnumerable<TransactionLogViewModel> QueryInRedisTransactionLogsAsync(
+        [FromServices] IQueryService<InRedisTransactionLogQuery, TransactionLog> queryService,
+        [FromServices] IGetService<InRedisTransactionLogQuery, int> countService,
+        Guid walletId,
+        [FromQuery] PagingViewModel pagingViewModel)
+    {
+        var paging = new Paging<TransactionLog>
+        {
+            Page = pagingViewModel.Page ?? 1,
+            RowCount = pagingViewModel.Rows ?? 1000
+        };
+
+        paging.SortByPropertyName(
+            pagingViewModel.SortBy ?? nameof(TransactionLog.RecordedOn),
+            pagingViewModel.IsDesc ?? true);
+
+        var query = new InRedisTransactionLogQuery(
+            walletId,
+            paging);
+
+        return countService.GetAsync(
+            query,
+            HttpContext.RequestAborted)
+            .AsTask()
+            .ToAsyncEnumerable()
+            .Take(1)
+            .Do(totalCount => Response.Headers.Append("TGS-TotalCount", totalCount.ToString()))
+            .SelectMany(_ => queryService.QueryAsync(query, HttpContext.RequestAborted)
+                .Select(item => new TransactionLogViewModel
+                {
+                    Id = item.Id,
+                    RecordedOn = item.RecordedOn,
+                    Amount = item.Amount,
+                    Balance = item.Balance,
+                    LockAmount = item.LockAmount,
+                    LockedBalance = item.LockedBalance,
+                    Type = item.Type,
+                    Description = item.Description,
+                    ExternalId = item.ExternalId
+                }));
     }
 }

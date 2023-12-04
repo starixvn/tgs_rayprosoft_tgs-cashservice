@@ -23,17 +23,12 @@ public class TransactionLogQueryTests
                 Page = 1,
                 RowCount = 10
             });
-        var playerCode = "test1";
-
-        _ = fakeTgsRepository.GetPlayerCodeByWalletIdAsync(Arg.Is(query.WalletId))
-            .Returns(playerCode);
 
         _ = await sut.QueryAsync(query).ToArrayAsync();
 
         _ = fakeTgsRepository.Received(1)
             .QueryTransactionLogsAsync(
                 Arg.Is(query.WalletId),
-                Arg.Is(playerCode),
                 Arg.Is(query.QueryRange),
                 Arg.Is(query.QueryTypes),
                 Arg.Is(query.Paging));
@@ -55,14 +50,9 @@ public class TransactionLogQueryTests
                 Page = 1,
                 RowCount = 10
             });
-        var playerCode = "test1";
-
-        _ = fakeTgsRepository.GetPlayerCodeByWalletIdAsync(Arg.Is(query.WalletId))
-            .Returns(playerCode);
 
         _ = fakeTgsRepository.CountTransactionLogsQueryAsync(
             Arg.Is(query.WalletId),
-            Arg.Is(playerCode),
             Arg.Is(query.QueryRange),
             Arg.Is(query.QueryTypes))
             .Returns(100);
@@ -83,14 +73,9 @@ public class TransactionLogQueryTests
             Guid.NewGuid(),
             (DateTime.UtcNow.AddDays(-1D), DateTime.UtcNow.AddDays(1D)),
             Array.Empty<TransactionType>());
-        var playerCode = "test1";
-
-        _ = fakeTgsRepository.GetPlayerCodeByWalletIdAsync(Arg.Is(query.WalletId))
-            .Returns(playerCode);
 
         _ = fakeTgsRepository.QueryTransactionTotalAmountAsync(
             Arg.Is(query.WalletId),
-            Arg.Is(playerCode),
             Arg.Is(query.QueryRange),
             Arg.Is(query.QueryTypes))
             .Returns(100M);

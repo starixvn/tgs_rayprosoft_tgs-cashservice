@@ -1,99 +1,45 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using Tgs.Cash.Common;
 using Tgs.CashService.Repositories.Entities;
 using Tgs.Paging;
 
 namespace Tgs.CashService.Repositories;
 
-internal class TgsRepository(TgsContext dbContext)
+internal class TgsRepository(
+    TgsContext dbContext,
+    IDatabase redisDatabase)
     : ITgsRepository
 {
-    private readonly TgsContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-
-    public IAsyncEnumerable<TransactionLog> QueryTransactionLogsAsync(
-        Guid walletId,
-        string playerCode,
-        ValueRange<DateTime> queryRange,
-        IEnumerable<TransactionType> queryTypes,
-        Paging<TransactionLog> paging,
-        CancellationToken cancellationToken = default)
+    private static readonly JsonSerializerOptions _SerializerOptions = new(JsonSerializerDefaults.Web)
     {
-        var query = MakeTransactionLogQuery(walletId, playerCode, queryRange, queryTypes);
-
-        var dbPaging = paging.ConvertTo<TransactionData>(newPaging =>
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+        WriteIndented = false,
+        Converters =
         {
-            _ = newPaging.MapProperty(
-                nameof(TransactionLog.RecordedOn),
-                row => row.RecordedOn);
-        });
+            new JsonStringEnumConverter()
+        }
+    };
 
-        query = query.ApplyOrderBy(dbPaging).ApplyPaging(dbPaging);
+    public async ValueTask<int> CountInRedisTransactionLogsAsync(Guid walletId, CancellationToken cancellationToken = default)
+    {
+        var length = await redisDatabase.ListLengthAsync(
+            $"Tgs:Transactions:{walletId}").ConfigureAwait(false);
 
-        return query.ToAsyncEnumerable()
-            .Select(row => new TransactionLog(
-                row.Id,
-                row.RecordedOn,
-                row.RecordType is "T"
-                    ? (TransactionType)row.Type
-                    : (GameActionType)row.Type switch
-                    {
-                        GameActionType.PlaceBet => TransactionType.GameBet,
-                        GameActionType.WinBet => TransactionType.GameSettleWin,
-                        GameActionType.LoseBet => TransactionType.GameSettleLose,
-                        GameActionType.FreeBet => TransactionType.GameSettleFree,
-                        GameActionType.TieBet => TransactionType.GameSettleTie,
-                        GameActionType.CancelTransaction => TransactionType.GameCancel,
-                        GameActionType.LockAmount => TransactionType.GameLock,
-                        GameActionType.UnlockAmount => TransactionType.GameUnlock,
-                        GameActionType.WinJackpot => TransactionType.GameWinJackpot,
-                        _ => TransactionType.Unknown
-                    },
-                row.Amount,
-                row.Balance,
-                row.RecordType is "G"
-                    ? 0M
-                    : row.LockAmount,
-                row.RecordType is "G"
-                    ? 0M
-                    : row.LockedBalance,
-                row.Description,
-                row.ExternalTransactionId));
+        return (int)length;
     }
 
     public async ValueTask<int> CountTransactionLogsQueryAsync(
         Guid walletId,
-        string playerCode,
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes,
         CancellationToken cancellationToken = default)
         => await MakeTransactionLogQuery(
             walletId,
-            playerCode,
             queryRange,
             queryTypes).CountAsync(cancellationToken).ConfigureAwait(false);
-
-    public async ValueTask<string?> GetPlayerCodeByWalletIdAsync(Guid walletId, CancellationToken cancellationToken = default)
-    {
-        var wallet = await _dbContext.Wallets.FindAsync(
-            [walletId],
-            cancellationToken: cancellationToken).ConfigureAwait(false);
-
-        return wallet?.PlayerCode;
-    }
-
-    public async ValueTask<decimal> QueryTransactionTotalAmountAsync(
-        Guid walletId,
-        string playerCode,
-        ValueRange<DateTime> queryRange,
-        IEnumerable<TransactionType> queryTypes,
-        CancellationToken cancellationToken = default)
-        => await MakeTransactionLogQuery(
-            walletId,
-            playerCode,
-            queryRange,
-            queryTypes)
-            .SumAsync(t => t.Amount, cancellationToken)
-            .ConfigureAwait(false);
 
     public async ValueTask CreateWalletAsync(
         Guid walletId,
@@ -119,22 +65,101 @@ internal class TgsRepository(TgsContext dbContext)
             SnapshotId = Guid.Empty
         };
 
-        _ = await _dbContext.Wallets.AddAsync(
+        _ = await dbContext.Wallets.AddAsync(
             wallet,
             cancellationToken).ConfigureAwait(false);
 
-        _ = await _dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    private IQueryable<TransactionData> MakeTransactionLogQuery(
+    public async ValueTask<string?> GetPlayerCodeByWalletIdAsync(Guid walletId, CancellationToken cancellationToken = default)
+    {
+        var wallet = await dbContext.Wallets.FindAsync(
+            [walletId],
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        return wallet?.PlayerCode;
+    }
+
+    public IAsyncEnumerable<TransactionLog> QueryInRedisTransactionLogsAsync(
         Guid walletId,
-        string playerCode,
+        CancellationToken cancellationToken = default)
+        => redisDatabase.ListRangeAsync($"Tgs:Transactions:{walletId}")
+            .ToAsyncEnumerable()
+            .SelectMany(values => values.ToAsyncEnumerable())
+            .Select(value => JsonSerializer.Deserialize<TransactionRecord>((string)value!, _SerializerOptions))
+            .Where(record => record is not null)
+            .Select(record => record!)
+            .Select(record => new TransactionLog(
+                record.Id,
+                record.RecordedOn,
+                record.Type,
+                record.Amount,
+                record.Balance,
+                record.LockAmount,
+                record.LockedBalance,
+                record.Description,
+                record.ExternalId))
+            .ToArrayAsync(cancellationToken)
+            .AsTask()
+            .ToAsyncEnumerable()
+            .SelectMany(arr => arr.ToAsyncEnumerable());
+
+    public IAsyncEnumerable<TransactionLog> QueryTransactionLogsAsync(
+        Guid walletId,
+        ValueRange<DateTime> queryRange,
+        IEnumerable<TransactionType> queryTypes,
+        Paging<TransactionLog> paging,
+        CancellationToken cancellationToken = default)
+    {
+        var query = MakeTransactionLogQuery(walletId, queryRange, queryTypes);
+
+        var dbPaging = paging.ConvertTo<TransactionData>(newPaging =>
+        {
+            _ = newPaging.MapProperty(
+                nameof(TransactionLog.RecordedOn),
+                row => row.RecordedOn);
+        });
+
+        query = query.ApplyOrderBy(dbPaging).ApplyPaging(dbPaging);
+
+        return query.ToAsyncEnumerable()
+            .Select(row => new TransactionLog(
+                row.Id,
+                row.RecordedOn,
+                (TransactionType)row.Type,
+                row.Amount,
+                row.Balance,
+                row.RecordType is "G"
+                    ? 0M
+                    : row.LockAmount,
+                row.RecordType is "G"
+                    ? 0M
+                    : row.LockedBalance,
+                row.Description,
+                row.ExternalTransactionId));
+    }
+
+    public async ValueTask<decimal> QueryTransactionTotalAmountAsync(
+        Guid walletId,
+        ValueRange<DateTime> queryRange,
+        IEnumerable<TransactionType> queryTypes,
+        CancellationToken cancellationToken = default)
+        => await MakeTransactionLogQuery(
+            walletId,
+            queryRange,
+            queryTypes)
+            .SumAsync(t => t.Amount, cancellationToken)
+            .ConfigureAwait(false);
+
+    private IQueryable<TransactionData> MakeTransactionLogQuery(
+            Guid walletId,
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes)
     {
         var (from, to) = (queryRange.From.ToUniversalTime(), queryRange.To.ToUniversalTime());
 
-        var transactionQuery = _dbContext.Transactions.AsQueryable()
+        var transactionQuery = dbContext.Transactions.AsQueryable()
             .Where(trx => trx.WalletId == walletId)
             .Where(trx => trx.RecordedOn >= from && trx.RecordedOn < to)
             .Select(trx => new TransactionData
@@ -151,49 +176,11 @@ internal class TgsRepository(TgsContext dbContext)
                 ExternalTransactionId = trx.ExternalTransactionId
             });
 
-        var gameActionQuery = _dbContext.GameActions.AsQueryable()
-            .Where(trx => trx.PlayerCode == playerCode)
-            .Where(trx => trx.RecordedOn >= from && trx.RecordedOn < to)
-            .Select(trx => new TransactionData
-            {
-                Id = trx.Id,
-                RecordType = "G",
-                Amount = trx.Amount,
-                LockAmount = trx.Amount,
-                Balance = trx.Balance,
-                LockedBalance = trx.Balance,
-                Type = trx.Type,
-                RecordedOn = trx.RecordedOn,
-                Description = null,
-                ExternalTransactionId = null
-            });
-
         var transactionTypes = queryTypes.Select(t => (short)t).ToArray();
-        var gameTypes = queryTypes
-            .Select(t => t switch
-            {
-                TransactionType.GameBet => GameActionType.PlaceBet,
-                TransactionType.GameSettleWin => GameActionType.WinBet,
-                TransactionType.GameSettleLose => GameActionType.LoseBet,
-                TransactionType.GameSettleFree => GameActionType.FreeBet,
-                TransactionType.GameSettleTie => GameActionType.TieBet,
-                TransactionType.GameCancel => GameActionType.CancelTransaction,
-                TransactionType.GameLock => GameActionType.LockAmount,
-                TransactionType.GameUnlock => GameActionType.UnlockAmount,
-                TransactionType.GameWinJackpot => GameActionType.WinJackpot,
-                _ => (GameActionType?)null
-            })
-            .Where(t => t is not null)
-            .Select(t => (short)t!)
-            .ToArray();
 
         if (transactionTypes.Length > 0)
             transactionQuery = transactionQuery.Where(trx => transactionTypes.Contains(trx.Type));
-        if (gameTypes.Length > 0)
-            gameActionQuery = gameActionQuery.Where(trx => gameTypes.Contains(trx.Type));
 
-        return transactionTypes.Length == 0 || gameTypes.Length > 0
-            ? transactionQuery.Concat(gameActionQuery)
-            : transactionQuery;
+        return transactionQuery;
     }
 }

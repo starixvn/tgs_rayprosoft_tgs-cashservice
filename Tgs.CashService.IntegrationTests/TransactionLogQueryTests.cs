@@ -1,7 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using NSubstitute;
+using StackExchange.Redis;
 using Tgs.CashService.Client;
 using Tgs.CashService.Repositories.Entities;
 
@@ -10,6 +14,16 @@ namespace Tgs.CashService.IntegrationTests;
 [TestClass]
 public class TransactionLogQueryTests
 {
+    private static readonly JsonSerializerOptions _RedisSerializerOptions = new(JsonSerializerDefaults.Web)
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+        WriteIndented = false,
+        Converters =
+            {
+                new JsonStringEnumConverter()
+            }
+    };
+
     [TestMethod]
     public async Task 查詢玩家帳變紀錄()
     {
@@ -430,7 +444,7 @@ public class TransactionLogQueryTests
     }
 
     [TestMethod]
-    public async Task 查詢玩家遊戲帳變紀錄()
+    public async Task 查詢玩家遊戲帳變紀錄_將會查不到()
     {
         await using var web = new TestCashApplication(builder => builder
             .ConfigureServices(services => services
@@ -485,19 +499,6 @@ public class TransactionLogQueryTests
 
         _ = await dbContext.SaveChangesAsync();
 
-        var expected = gameActionLogs
-            .Select(trx => new Client.TransactionLog(
-                trx.Id,
-                trx.RecordedOn,
-                (int)TransactionType.GameBet,
-                trx.Amount,
-                trx.Balance,
-                0,
-                0,
-                null,
-                null))
-            .ToArray();
-
         var actual = await sut.QueryTransactionLogsAsync(
             walletId,
             from,
@@ -505,9 +506,9 @@ public class TransactionLogQueryTests
             Array.Empty<int>(),
             new PagingConditions(1, 10));
 
-        Assert.AreEqual(1, actual.TotalCount);
+        Assert.AreEqual(0, actual.TotalCount);
         Assert.AreEqual(1, actual.Page);
-        CollectionAssert.AreEqual(expected, actual.Items.ToArray());
+        Assert.AreEqual(0, actual.Items.Count());
     }
 
     [TestMethod]
@@ -663,5 +664,72 @@ public class TransactionLogQueryTests
         Assert.AreEqual(0, actual.TotalCount);
         Assert.AreEqual(1, actual.Page);
         Assert.AreEqual(0, actual.Items.Count());
+    }
+
+    [TestMethod]
+    public async Task 查詢還在Redis的資料()
+    {
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
+
+        await using var web = new TestCashApplication(builder => builder
+            .ConfigureServices(services => services
+                .Replace(ServiceDescriptor.Singleton(sp =>
+                {
+                    var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+                    _ = dbContextOptionsBuilder
+                        .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                        .ConfigureWarnings(x => x.Ignore(
+                            InMemoryEventId.TransactionIgnoredWarning));
+
+                    return new TgsContext(dbContextOptionsBuilder.Options);
+                }))
+                .AddKeyedSingleton("Redis", fakeRedisDatabase)));
+
+        var httpClient = web.CreateClient();
+
+        var sut = new CashServiceClient(httpClient);
+
+        var walletId = Guid.NewGuid();
+
+        var redisRecord = new TransactionRecord(
+            Guid.NewGuid(),
+            walletId,
+            Guid.NewGuid(),
+            "test1",
+            100M,
+            0M,
+            1000M,
+            0M,
+            TransactionType.Deposit,
+            null,
+            DateTime.UtcNow,
+            null,
+            null);
+
+        _ = fakeRedisDatabase.ListRangeAsync(Arg.Any<RedisKey>())
+            .Returns([new RedisValue(JsonSerializer.Serialize(redisRecord, _RedisSerializerOptions))]);
+        _ = fakeRedisDatabase.ListLengthAsync(Arg.Any<RedisKey>())
+            .Returns(1L);
+
+        var expected = new[] {
+            new Client.TransactionLog(
+                redisRecord.Id,
+                redisRecord.RecordedOn,
+                (int)redisRecord.Type,
+                redisRecord.Amount,
+                redisRecord.Balance,
+                redisRecord.LockAmount,
+                redisRecord.LockedBalance,
+                redisRecord.Description,
+                redisRecord.ExternalId)
+        };
+
+        var actual = await sut.QueryInRedisTransactionLogsAsync(
+            walletId,
+            new PagingConditions(1, 10));
+
+        Assert.AreEqual(1, actual.TotalCount);
+        Assert.AreEqual(1, actual.Page);
+        CollectionAssert.AreEqual(expected, actual.Items.ToArray());
     }
 }
