@@ -2,16 +2,18 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using OpenTelemetry.Exporter;
 using Tgs.CashService.Repositories.Entities;
 
 namespace Tgs.CashService.IntegrationTests;
 
-internal class TestCashApplication(Action<IWebHostBuilder>? webHostConfigure = null) 
+internal class TestCashApplication(Action<IWebHostBuilder>? webHostConfigure = null)
     : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -37,6 +39,7 @@ internal class TestCashApplication(Action<IWebHostBuilder>? webHostConfigure = n
                             InMemoryEventId.TransactionIgnoredWarning));
 
                     return new TgsContext(dbContextOptionsBuilder.Options);
-                })));
+                }))
+                .AddKeyedSingleton("Redis", Substitute.For<IDatabase>()));
     }
 }
