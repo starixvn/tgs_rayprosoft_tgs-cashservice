@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using OpenTelemetry.Exporter;
+using StackExchange.Redis;
 using Tgs.CashService.Repositories.Entities;
 
 namespace Tgs.CashService.IntegrationTests;
@@ -18,8 +18,6 @@ internal class TestCashApplication(Action<IWebHostBuilder>? webHostConfigure = n
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        webHostConfigure?.Invoke(builder);
-
         _ = builder
             .ConfigureLogging(logging => logging
                 .ClearProviders()
@@ -40,6 +38,9 @@ internal class TestCashApplication(Action<IWebHostBuilder>? webHostConfigure = n
 
                     return new TgsContext(dbContextOptionsBuilder.Options);
                 }))
-                .AddKeyedSingleton("Redis", Substitute.For<IDatabase>()));
+                .AddKeyedSingleton("Redis", Substitute.For<IDatabase>())
+                .AddKeyedSingleton("Redis", Substitute.For<IConnectionMultiplexer>()));
+
+        webHostConfigure?.Invoke(builder);
     }
 }
