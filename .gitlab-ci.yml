@@ -9,6 +9,7 @@ variables:
   QueryImageName: pgtgs/cashservice-query
   CommitterImageName: pgtgs/cashservice-committer
   AgentWalletTransferImageName: pgtgs/agent-wallet-transfer
+  WalletSnapshotTransferImageName: pgtgs/wallet-snapshot-transfer
   CountervailImageName: pgtgs/wallet-countervail
   TgsServiceSettingKey: cashservice-api
   TgsWorkerSettingKey: cashservice-worker
@@ -20,6 +21,7 @@ variables:
   HelmTemplateCommitterFolderName: cashservice-committer
   HelmTemplateAgentWalletTransferFolderName: agent-wallet-transfer
   HelmTemplateCountervailFolderName: cashservice-countervail
+  HelmTemplateWalletSnapshotTransferFolderName: wallet-snapshot-transfer
   BuildCacheKey: Tgs.CashService.$CI_PIPELINE_IID
 
 stages:
@@ -59,6 +61,7 @@ push-tool-docker-image:
   script:
     - push_docker "AgentWalletTransferTool" $AgentWalletTransferImageName $Tag
     - push_docker "RefreshAllWalletsTool" $CountervailImageName $Tag
+    - push_docker "WalletSanpshotTransferTool" $WalletSnapshotTransferImageName $Tag
   when: manual
 
 push-k8s-template:
@@ -74,6 +77,7 @@ push-tool-k8s-template:
   script:
     - push_k8s_template $HelmTemplateAgentWalletTransferFolderName $AgentWalletTransferImageName $Tag
     - push_k8s_template $HelmTemplateCountervailFolderName $CountervailImageName $Tag
+    - push_k8s_template $HelmTemplateWalletSnapshotTransferFolderName $WalletSnapshotTransferImageName $Tag
   needs:
     - push-tool-docker-image
 
@@ -187,6 +191,38 @@ deploy-transfer-job-dev:
   script:
     - |
       cat << EOF | deploy_k8s default $HelmTemplateAgentWalletTransferFolderName $namespace
+        {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
+
+deploy-snapshot-job-dev:
+  extends: .deploy-template
+  variables:
+    namespace: dev
+    kube_config: KubeConfig_Raypro_dev
+  environment:
+    name: snapshot-job-dev
+  stage: deploy-dev
+  needs:
+    - push-tool-docker-image
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s default $HelmTemplateWalletSnapshotTransferFolderName $namespace
         {
           "resources": {
             "limits": {
@@ -383,6 +419,38 @@ deploy-transfer-job-staging:
         }
       EOF
 
+deploy-snapshot-job-staging:
+  extends: .deploy-template
+  variables:
+    namespace: staging
+    kube_config: KubeConfig_Raypro_staging
+  environment:
+    name: snapshot-job-staging
+  stage: deploy-staging
+  needs:
+    - deploy-snapshot-job-dev
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateWalletSnapshotTransferFolderName $namespace
+        {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
+
 deploy-countervail-staging:
   extends: .deploy-template
   variables:
@@ -552,6 +620,38 @@ deploy-transfer-job-prod:
   script:
     - |
       cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateAgentWalletTransferFolderName $namespace
+        {
+          "resources": {
+            "limits": {
+              "cpu": "1",
+              "memory": "500Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      EOF
+
+deploy-snapshot-job-prod:
+  extends: .deploy-template
+  variables:
+    namespace: prod
+    kube_config: KubeConfig_Raypro_prod
+  environment:
+    name: snapshot-job-prod
+  stage: deploy-prod
+  needs:
+    - deploy-snapshot-job-staging
+    - job: push-tool-k8s-template
+      artifacts: true
+  only:
+    - main
+  when: manual
+  script:
+    - |
+      cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateWalletSnapshotTransferFolderName $namespace
         {
           "resources": {
             "limits": {
