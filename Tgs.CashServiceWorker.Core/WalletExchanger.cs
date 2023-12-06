@@ -30,7 +30,7 @@ internal class WalletExchanger : IDisposable
         _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(hostApplicationLifetime.ApplicationStopping);
         var meter = meterFactory.Create("Tgs.CashServiceWorker");
 
-        _ = meter.CreateObservableGauge("processing.wallets", () => _exchangeQueuePool.Count, "numbers of people");
+        _ = meter.CreateObservableGauge("processing.wallets", () => _exchangeQueuePool.Count, "numbers of wallet");
     }
 
     public async ValueTask<ExchangeResult> RequestAsync(ExchangeRequest request, CancellationToken cancellationToken = default)
