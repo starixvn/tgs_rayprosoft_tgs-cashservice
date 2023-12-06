@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-{{ include "wallet-snapshot-transfer.fullname" . }}
+data:
+  appsettings.json: |
+    {
+      "Tool": {
+        "CashServiceBaseUrl": "http://cashservice-api"
+      },
+    }

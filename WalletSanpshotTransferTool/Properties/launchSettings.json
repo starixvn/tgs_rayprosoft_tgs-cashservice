@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "WalletSanpshotTransferTool": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

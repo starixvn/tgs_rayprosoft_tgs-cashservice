@@ -4,7 +4,7 @@ namespace Tgs.CashServiceWorker.Core.UnitTests;
 
 internal class StubMeterFactory : IMeterFactory
 {
-    public Meter Create(MeterOptions options) => new Meter(options);
+    public Meter Create(MeterOptions options) => new(options);
 
     public void Dispose()
     {
