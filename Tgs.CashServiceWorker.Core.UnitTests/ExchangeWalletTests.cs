@@ -1,4 +1,5 @@
-﻿using ExpectedObjects;
+﻿using System.Diagnostics.Metrics;
+using ExpectedObjects;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,12 @@ public class ExchangeWalletTests
 
         var fakeHostApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
 
-        var exchanger = new WalletExchanger(services.BuildServiceProvider(), fakeHostApplicationLifetime);
+        var fakeMeterFactory = new StubMeterFactory();
+
+        var exchanger = new WalletExchanger(
+            services.BuildServiceProvider(),
+            fakeHostApplicationLifetime,
+            fakeMeterFactory);
         var sut = new ExchangeWalletCommandService(exchanger);
 
         var command = new ExchangeWalletCommand(
@@ -98,7 +104,12 @@ public class ExchangeWalletTests
 
         var fakeHostApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
 
-        var exchanger = new WalletExchanger(services.BuildServiceProvider(), fakeHostApplicationLifetime);
+        var fakeMeterFactory = new StubMeterFactory();
+
+        var exchanger = new WalletExchanger(
+            services.BuildServiceProvider(),
+            fakeHostApplicationLifetime,
+            fakeMeterFactory);
         var sut = new GetBalanceQueryService(exchanger);
 
         var query = new GetBalanceQuery(Guid.NewGuid());
@@ -130,7 +141,12 @@ public class ExchangeWalletTests
             .AddSingleton(fakeWalletRepository);
         var fakeHostApplicationLifetime = Substitute.For<IHostApplicationLifetime>();
 
-        var exchanger = new WalletExchanger(services.BuildServiceProvider(), fakeHostApplicationLifetime);
+        var fakeMeterFactory = new StubMeterFactory();
+
+        var exchanger = new WalletExchanger(
+            services.BuildServiceProvider(),
+            fakeHostApplicationLifetime,
+            fakeMeterFactory);
         var sut = new ExchangeWalletCommandService(exchanger);
 
         var command = new ExchangeWalletCommand(
