@@ -84,6 +84,7 @@ builder.Services
     .WithMetrics(meterBuilder => meterBuilder
         .SetResourceBuilder(ResourceBuilder.CreateDefault()
             .AddEnvironmentVariableDetector())
+        .AddMeter("Tgs.*")
         .AddAspNetCoreInstrumentation()
         .AddRuntimeInstrumentation()
         .AddOtlpExporter())

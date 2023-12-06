@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics.Metrics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -29,9 +30,12 @@ public class DiscardReceptionCommandServiceTests
         _ = fakeHostApplicationLifetime.ApplicationStopping
             .Returns(cts.Token);
 
+        var fakeMeterFactory = new StubMeterFactory();
+
         var exchanger = new WalletExchanger(
             services.BuildServiceProvider(),
-            fakeHostApplicationLifetime);
+            fakeHostApplicationLifetime,
+            fakeMeterFactory);
 
         var sut = new DiscardReceptionCommandService(exchanger);
 

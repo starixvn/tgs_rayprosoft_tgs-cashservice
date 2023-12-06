@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -9,14 +10,28 @@ using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker;
 
-internal class WalletExchanger(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime) : IDisposable
+internal class WalletExchanger : IDisposable
 {
     private static readonly ActivitySource _ActivitySource = new("Tgs.CashServiceWorker.WalletExchanger");
-    private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     private readonly ConcurrentDictionary<Guid, WalletReception> _exchangeQueuePool = new();
-    private readonly CancellationTokenSource _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(hostApplicationLifetime.ApplicationStopping);
-
+    private readonly CancellationTokenSource _cancellationTokenSource;
+    private readonly IServiceProvider _serviceProvider;
     private bool _disposedValue;
+
+    public WalletExchanger(
+        IServiceProvider serviceProvider,
+        IHostApplicationLifetime hostApplicationLifetime,
+        IMeterFactory meterFactory)
+    {
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        ArgumentNullException.ThrowIfNull(hostApplicationLifetime, nameof(hostApplicationLifetime));
+        ArgumentNullException.ThrowIfNull(meterFactory, nameof(meterFactory));
+
+        _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(hostApplicationLifetime.ApplicationStopping);
+        var meter = meterFactory.Create("Tgs.CashServiceWorker");
+
+        _ = meter.CreateObservableGauge("processing.wallets", () => _exchangeQueuePool.Count, "numbers of people");
+    }
 
     public async ValueTask<ExchangeResult> RequestAsync(ExchangeRequest request, CancellationToken cancellationToken = default)
     {
