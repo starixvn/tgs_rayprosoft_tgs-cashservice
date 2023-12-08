@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Tgs.Cash.Protos;
 using Tgs.CashService;
 using Tgs.CashServiceWorker.ExchangeCommands;
+using Valhalla.Awaitables;
 using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker;
@@ -144,7 +145,7 @@ internal class WalletReception(
             WalletId = WalletId
         };
 
-        await NewThreadAwaitable.Default;
+        await TaskHelper.NewThread();
 
         _ = messageSender.PublishAsync(
             "tgs.cash.commit.batch",

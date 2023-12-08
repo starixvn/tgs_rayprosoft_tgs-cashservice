@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Tgs.CashService;
 using Tgs.CashServiceCommitter.ApplicationServices;
 using Tgs.ServiceUtility;
+using Valhalla.Awaitables;
 using Valhalla.Messages;
 
 namespace Tgs.CashServiceCommitter;
@@ -57,7 +58,7 @@ internal class CashCommitterDispatcher(
                         {
                             _ = wallets.TryRemove(evt.WalletId, out _);
 
-                            await NewThreadAwaitable.Default;
+                            await TaskHelper.NewThread();
 
                             try
                             {

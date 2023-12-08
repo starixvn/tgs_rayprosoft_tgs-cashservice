@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
-using Tgs.CashService;
+using Valhalla.Awaitables;
 
 namespace Tgs.CashServiceWorker;
 
@@ -7,7 +7,7 @@ internal class WalletExchangeBackgroundService(WalletExchanger walletExchanger) 
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await NewThreadAwaitable.Default;
+        await TaskHelper.NewThread();
 
         while (!stoppingToken.IsCancellationRequested)
         {
