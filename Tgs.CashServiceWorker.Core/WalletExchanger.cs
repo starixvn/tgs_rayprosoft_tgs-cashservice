@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService;
 using Tgs.CashServiceWorker.ExchangeCommands;
+using Valhalla.Awaitables;
 using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker;
@@ -85,7 +86,7 @@ internal class WalletExchanger : IDisposable
 
     public async Task DiscardReceptionAsync(Guid walletId)
     {
-        await NewThreadAwaitable.Default;
+        await TaskHelper.NewThread();
 
         if (_exchangeQueuePool.TryRemove(walletId, out var reception))
             reception.Dispose();
