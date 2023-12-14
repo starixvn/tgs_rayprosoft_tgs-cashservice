@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using NSubstitute;
 using StackExchange.Redis;
 using Tgs.CashService;
 using Tgs.CashService.Repositories;
 using TGS.GameProviders.Repositories.Entities;
+using Xunit;
 
 namespace Tgs.CashServiceWorker.Repositories.UnitTests;
 
@@ -138,5 +140,240 @@ public class WalletRepositoryTests
 
         Assert.NotNull(actual);
         Assert.Equal(brandId, actual.BrandId);
+    }
+
+    [Fact]
+    public async Task 取得最新交易記錄_如果SanpshotId是空的但是有快照記錄_會取得最新的快照記錄()
+    {
+        var walletId = Guid.NewGuid();
+
+        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+        _ = dbContextOptionsBuilder
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(x => x.Ignore(
+                InMemoryEventId.TransactionIgnoredWarning));
+
+        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
+
+        _ = await dbContext.Transactions.AddAsync(
+            new Transaction
+            {
+                Id = Guid.NewGuid(),
+                Type = (short)TransactionType.Snapshot,
+                Balance = 11111M,
+                PlayerCode = "test1",
+                RecordedOn = DateTime.UtcNow,
+                WalletId = walletId
+            });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
+
+        var sut = new WalletRepository(
+            dbContext,
+            fakeRedisDatabase);
+
+        var actual = await sut.GetNewestRecordAsync(walletId, null);
+
+        Assert.NotNull(actual);
+        Assert.Equal(11111M, actual.Balance);
+    }
+
+    [Fact]
+    public async Task 取得最新交易記錄_會取得MigrateDate之後的記錄()
+    {
+        var walletId = Guid.NewGuid();
+
+        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+        _ = dbContextOptionsBuilder
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(x => x.Ignore(
+                InMemoryEventId.TransactionIgnoredWarning));
+
+        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
+
+        await dbContext.Transactions.AddRangeAsync(
+            new Transaction
+            {
+                Id = Guid.NewGuid(),
+                Type = (short)TransactionType.Snapshot,
+                Balance = 11111M,
+                PlayerCode = "test1",
+                RecordedOn = DateTime.UtcNow,
+                WalletId = walletId
+            },
+            new Transaction
+            {
+                Id = Guid.NewGuid(),
+                Type = (short)TransactionType.Snapshot,
+                Balance = 333M,
+                PlayerCode = "test1",
+                RecordedOn = DateTime.Parse("2023-11-19").ToUniversalTime(),
+                WalletId = walletId
+            });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
+
+        var sut = new WalletRepository(
+            dbContext,
+            fakeRedisDatabase);
+
+        var actual = await sut.GetNewestRecordAsync(walletId, null);
+
+        Assert.NotNull(actual);
+        Assert.Equal(11111M, actual.Balance);
+    }
+
+    [Fact]
+    public async Task 取得最新交易記錄_會取得指定SnapshotId之後的最新記錄()
+    {
+        var walletId = Guid.NewGuid();
+        var snapshotId = Guid.Parse("018c3e61-4bfa-0000-0001-07e731f8bf36");
+
+        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+        _ = dbContextOptionsBuilder
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(x => x.Ignore(
+                InMemoryEventId.TransactionIgnoredWarning));
+
+        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
+
+        await dbContext.Transactions.AddRangeAsync(
+            new Transaction
+            {
+                Id = Guid.Parse("018c3e6e-28c0-0000-0001-07e731f8bf36"),
+                Type = (short)TransactionType.Snapshot,
+                Balance = 11111M,
+                PlayerCode = "test1",
+                RecordedOn = DateTime.UtcNow,
+                WalletId = walletId
+            },
+            new Transaction
+            {
+                Id = Guid.Parse("018c3e57-124e-0000-0001-07e731f8bf36"),
+                Type = (short)TransactionType.Snapshot,
+                Balance = 333M,
+                PlayerCode = "test1",
+                RecordedOn = DateTime.UtcNow,
+                WalletId = walletId
+            });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
+
+        var sut = new WalletRepository(
+            dbContext,
+            fakeRedisDatabase);
+
+        var actual = await sut.GetNewestRecordAsync(walletId, snapshotId);
+
+        Assert.NotNull(actual);
+        Assert.Equal(11111M, actual.Balance);
+    }
+
+    [Fact]
+    public async Task 取得最新交易記錄_如果沒有新記錄會回傳Null()
+    {
+        var walletId = Guid.NewGuid();
+        var snapshotId = Guid.Parse("018c3e61-4bfa-0000-0001-07e731f8bf36");
+
+        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+        _ = dbContextOptionsBuilder
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(x => x.Ignore(
+                InMemoryEventId.TransactionIgnoredWarning));
+
+        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
+
+        await dbContext.Transactions.AddRangeAsync(
+            new Transaction
+            {
+                Id = Guid.Parse("018c3e57-124e-0000-0001-07e731f8bf36"),
+                Type = (short)TransactionType.Snapshot,
+                Balance = 333M,
+                PlayerCode = "test1",
+                RecordedOn = DateTime.UtcNow,
+                WalletId = walletId
+            });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
+
+        var sut = new WalletRepository(
+            dbContext,
+            fakeRedisDatabase);
+
+        var actual = await sut.GetNewestRecordAsync(walletId, snapshotId);
+
+        Assert.Null(actual);
+    }
+
+    [Fact]
+    public async Task 取得最新交易記錄_如果Redis有記錄會使用Redis的最新記錄()
+    {
+        var walletId = Guid.NewGuid();
+        var snapshotId = Guid.Parse("018c3e61-4bfa-0000-0001-07e731f8bf36");
+
+        var dbContextOptionsBuilder = new DbContextOptionsBuilder<TgsContext>();
+        _ = dbContextOptionsBuilder
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(x => x.Ignore(
+                InMemoryEventId.TransactionIgnoredWarning));
+
+        var dbContext = new TgsContext(dbContextOptionsBuilder.Options);
+
+        await dbContext.Transactions.AddRangeAsync(
+            new Transaction
+            {
+                Id = Guid.Parse("018c3e6e-28c0-0000-0001-07e731f8bf36"),
+                Type = (short)TransactionType.Snapshot,
+                Balance = 11111M,
+                PlayerCode = "test1",
+                RecordedOn = DateTime.UtcNow,
+                WalletId = walletId
+            },
+            new Transaction
+            {
+                Id = Guid.Parse("018c3e57-124e-0000-0001-07e731f8bf36"),
+                Type = (short)TransactionType.Snapshot,
+                Balance = 333M,
+                PlayerCode = "test1",
+                RecordedOn = DateTime.UtcNow,
+                WalletId = walletId
+            });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        var fakeRedisDatabase = Substitute.For<IDatabase>();
+
+        var sut = new WalletRepository(
+            dbContext,
+            fakeRedisDatabase);
+
+        _ = fakeRedisDatabase.ListGetByIndexAsync(Arg.Is(new RedisKey($"Tgs:Transactions:{walletId}")), Arg.Is(-1L))
+            .Returns(JsonSerializer.Serialize(new TransactionRecord(
+                Guid.NewGuid(),
+                walletId,
+                Guid.NewGuid(),
+                "test1",
+                0M,
+                0M,
+                22222M,
+                0M,
+                TransactionType.Deposit,
+                null,
+                DateTime.UtcNow,
+                null,
+                null)));
+
+        var actual = await sut.GetNewestRecordAsync(walletId, snapshotId);
+
+        Assert.NotNull(actual);
+        Assert.Equal(22222M, actual.Balance);
     }
 }
