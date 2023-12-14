@@ -80,7 +80,7 @@ internal class TgsRepository(
             return;
 
         _ = await dbContext.Wallets
-            .Where(row => row.Id == walletId && row.SnapshotId < newestRecord.Id)
+            .Where(row => row.Id == walletId && (row.SnapshotId == null || row.SnapshotId < newestRecord.Id))
             .ExecuteUpdateAsync(
                 setter => setter
                     .SetProperty(row => row.Balance, newestRecord.Balance)
