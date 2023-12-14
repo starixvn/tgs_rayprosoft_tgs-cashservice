@@ -25,12 +25,16 @@ spec:
                 - >-
                   kubectl rollout restart deployment/{{ include "cashservice-api.fullname" . }} &&
                   kubectl rollout status deployment/{{ include "cashservice-api.fullname" . }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
           {{- with .Values.affinity }}
           affinity:
-            {{- toYaml . | nindent 8 }}
+            {{- toYaml . | nindent 10 }}
           {{- end }}
           {{- with .Values.tolerations }}
           tolerations:
-            {{- toYaml . | nindent 8 }}
+            {{- toYaml . | nindent 10 }}
           {{- end }}
 {{- end }}
