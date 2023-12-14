@@ -64,7 +64,7 @@ internal class TgsRepository(
 
         logger.LogDebug("Find walletRow is {walletRow}", walletRow);
 
-        if (walletRow is null || walletRow.SnapshotId is null)
+        if (walletRow is null)
             return;
 
         var newestRecord = dbContext.Transactions
