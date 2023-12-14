@@ -95,13 +95,15 @@ internal class WalletRepository(
         if (value.HasValue)
             return JsonSerializer.Deserialize<TransactionRecord>((string)value!, _SerializerOptions);
 
-        if (snapshotId is null)
-            return null;
+        var query = dbContext.Transactions
+           .Where(row => row.WalletId == walletId
+                && row.RecordedOn > _MigrateDate);
 
-        var newestRecord = dbContext.Transactions
-           .Where(row => row.Id > snapshotId 
-                && row.WalletId == walletId 
-                && row.RecordedOn > _MigrateDate)
+        query = snapshotId is not null
+            ? query.Where(row => row.Id > snapshotId)
+            : query.Where(row => row.Type == (short)TransactionType.Snapshot);
+
+        var newestRecord = query
            .OrderByDescending(row => row.Id)
            .FirstOrDefault();
 
