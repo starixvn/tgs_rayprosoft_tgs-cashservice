@@ -87,7 +87,14 @@ var builder = WebApplication.CreateBuilder(args);
                 .AddSource("TGS.*")
                 .AddSource("Valhalla.*")
                 .AddNpgsql()
-                .AddAspNetCoreInstrumentation()
+                .AddAspNetCoreInstrumentation(options => options.Filter =
+                    httpContext => !httpContext.Request.Path.HasValue
+                        || !httpContext.Request.Path.StartsWithSegments("/swagger")
+                        && !httpContext.Request.Path.StartsWithSegments("/healthz")
+                        && !httpContext.Request.Path.StartsWithSegments("/metrics")
+                        && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+                        && !instrumentationExtenionFilters.Any(
+                            ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
                 .AddProfileViewExporter()
                 .AddOtlpExporter())
         .WithMetrics(meterBuilder => meterBuilder
@@ -99,15 +106,7 @@ var builder = WebApplication.CreateBuilder(args);
         .Services
         .AddHealthChecks()
         .Services
-        .AddProfileViewer()
-        .Configure<AspNetCoreInstrumentationOptions>(options => options.Filter =
-            httpContext => !httpContext.Request.Path.HasValue
-                || !httpContext.Request.Path.StartsWithSegments("/swagger")
-                && !httpContext.Request.Path.StartsWithSegments("/healthz")
-                && !httpContext.Request.Path.StartsWithSegments("/metrics")
-                && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-                && !instrumentationExtenionFilters.Any(
-                    ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
+        .AddProfileViewer();
 }
 
 var app = builder.Build();
