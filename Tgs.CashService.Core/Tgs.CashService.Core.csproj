@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
-    <PackageReference Include="PhoenixToolkits.MessageQueue" Version="1.0.11-alpha" />
+    <PackageReference Include="PhoenixToolkits.MessageQueue" Version="1.9.5-alpha" />
     <PackageReference Include="StackExchange.Redis" Version="2.7.4" />
     <PackageReference Include="System.Interactive.Async" Version="6.0.1" />
     <PackageReference Include="Tgs.Paging.AsyncEnumerable" Version="1.2.1" />

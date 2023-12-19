@@ -74,7 +74,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefreshAllWalletsTool", "Re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.CashService.StressTest", "Tgs.CashService.StressTest\Tgs.CashService.StressTest.csproj", "{F6E7282F-78DE-4722-98AE-0AA053EBB77A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WalletSanpshotTransferTool", "WalletSanpshotTransferTool\WalletSanpshotTransferTool.csproj", "{350E9739-3C62-4F66-B278-DF6D7FD38E75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WalletSanpshotTransferTool", "WalletSanpshotTransferTool\WalletSanpshotTransferTool.csproj", "{350E9739-3C62-4F66-B278-DF6D7FD38E75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

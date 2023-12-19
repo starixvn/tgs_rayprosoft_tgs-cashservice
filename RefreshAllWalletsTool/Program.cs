@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NATS.Client.Core;
 using StackExchange.Redis;
 using Tgs.Cash.Protos;
 using Valhalla.MessageQueue;
@@ -13,10 +14,15 @@ var builder = Host.CreateApplicationBuilder(args);
             "Redis",
             (sp, _) => ConnectionMultiplexer.Connect(
                 builder.Configuration.GetConnectionString("Redis")!))
+        .AddKeyedSingleton(
+        "Nats",
+        (sp, _) => new NatsConnection(NatsOpts.Default with
+        {
+            Url = builder.Configuration.GetConnectionString("Nats")!
+        }))
         .AddMessageQueue()
         .AddNatsMessageQueue(natsConfig => natsConfig
-            .ConfigQueueOptions((queueOptions, _) => queueOptions.Url =
-                builder.Configuration.GetConnectionString("Nats")!))
+            .ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats")))
         .AddNatsJetStreamGlobPatternExchange("tgs.cash.commit.batch");
 }
 

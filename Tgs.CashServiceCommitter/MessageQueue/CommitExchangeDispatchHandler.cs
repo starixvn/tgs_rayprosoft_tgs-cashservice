@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
-using NATS.Client;
+using NATS.Client.Core;
+using NATS.Client.JetStream;
 using Polly;
 using Tgs.Cash.Protos;
 using Valhalla.MessageQueue;
@@ -11,11 +12,11 @@ public class CommitExchangeDispatchHandler(
     IMessageSender messageSender,
     IDistributedResourceManager distributedResourceManager,
     ILogger<CommitExchangeDispatchHandler> logger)
-    : INatsMessageHandler
+    : IAcknowledgeMessageHandler<ReadOnlyMemory<byte>>
 {
-    public async ValueTask HandleAsync(MsgHandlerEventArgs args, CancellationToken cancellationToken = default)
+    public async ValueTask HandleAsync(IAcknowledgeMessage<ReadOnlyMemory<byte>> msg, CancellationToken cancellationToken = default)
     {
-        var request = CommitExchangeRequest.Parser.ParseFrom(args.Message.Data);
+        var request = CommitExchangeRequest.Parser.ParseFrom(msg.Data.Span);
 
         var bidToken = await GetBidTokenAsync(
             request.WalletId,
@@ -25,15 +26,15 @@ public class CommitExchangeDispatchHandler(
 
         await messageSender.SendAsync(
             subject,
-            args.Message.Data,
+            msg.Data,
             cancellationToken).ConfigureAwait(false);
 
-        args.Message.Ack();
+        await msg.AckAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     protected Task<string> GetBidTokenAsync(Guid walletId, CancellationToken cancellationToken)
         => Policy
-            .Handle<NATSNoRespondersException>()
+            .Handle<NatsNoRespondersException>()
             .RetryAsync(
                 1,
                 async (ex, count) =>
@@ -58,7 +59,7 @@ public class CommitExchangeDispatchHandler(
 
         if (string.IsNullOrEmpty(bidToken))
         {
-            var bidResponseData = await messageSender.RequestAsync(
+            var bidResponseData = await messageSender.RequestAsync<ReadOnlyMemory<byte>, ReadOnlyMemory<byte>>(
                 "tgs.cash.commit.bid",
                 new CommitExchangeRequest
                 {

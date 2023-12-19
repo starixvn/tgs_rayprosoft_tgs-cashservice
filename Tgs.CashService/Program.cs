@@ -3,6 +3,7 @@ using Asp.Versioning.ApiExplorer;
 using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using NATS.Client.Core;
 using Npgsql;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
@@ -109,10 +110,15 @@ builder.Services
                 ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
 
 builder.Services
+    .AddKeyedSingleton(
+        "Nats",
+        (sp, _) => new NatsConnection(NatsOpts.Default with
+        {
+            Url = builder.Configuration.GetConnectionString("Nats")!
+        }))
     .AddMessageQueue()
     .AddNatsMessageQueue(config => config
-        .ConfigQueueOptions((options, _) => options.Url =
-            builder.Configuration.GetConnectionString("Nats")!)
+        .ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
         .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");

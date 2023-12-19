@@ -1,6 +1,8 @@
 ﻿using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
+using NATS.Client.Core;
 using NATS.Client.JetStream;
+using NATS.Client.JetStream.Models;
 using Npgsql;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
@@ -45,19 +47,20 @@ builder.Services
     .AddCashServiceWorker();
 
 builder.Services
+    .AddKeyedSingleton(
+        "Nats",
+        (sp, _) => new NatsConnection(NatsOpts.Default with
+        {
+            Url = builder.Configuration.GetConnectionString("Nats")!
+        }))
     .AddMessageQueue()
     .AddNatsMessageQueue(config => config
-        .ConfigQueueOptions((options, sp) =>
+        .ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
+        .ConfigJetStream(new StreamConfig("tgs_cash_commit", ["tgs.cash.commit.batch"]) with
         {
-            var configuration = sp.GetRequiredService<IConfiguration>();
-
-            options.Url = configuration.GetConnectionString("Nats")!;
+            Storage = StreamConfigStorage.File,
+            Retention = StreamConfigRetention.Workqueue
         })
-        .ConfigJetStream(streamConfiguration => streamConfiguration
-            .WithName("tgs_cash_commit")
-            .AddSubjects("tgs.cash.commit.batch")
-            .WithStorageType(StorageType.File)
-            .WithRetentionPolicy(RetentionPolicy.WorkQueue))
         .AddProcessor<BidProcessor>("tgs.cash.bid")
         .AddSession<RequestSession>($"tgs.cash.worker.{Environment.MachineName}")
         .AddProcessor<GetBalanceProcessor>($"tgs.cash.balance.{Environment.MachineName}")

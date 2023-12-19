@@ -4,7 +4,7 @@ using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceCommitter.MessageQueue;
 
-public class BidProcessor(IDistributedResourceManager distributedResourceManager) : IMessageProcessor
+public class BidProcessor(IDistributedResourceManager distributedResourceManager) : IMessageProcessor<ReadOnlyMemory<byte>, ReadOnlyMemory<byte>>
 {
     public async ValueTask<ReadOnlyMemory<byte>> HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
     {

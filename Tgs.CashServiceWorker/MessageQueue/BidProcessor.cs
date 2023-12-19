@@ -7,7 +7,7 @@ using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker.MessageQueue;
 
-internal class BidProcessor : IMessageProcessor
+internal class BidProcessor : IMessageProcessor<ReadOnlyMemory<byte>, ReadOnlyMemory<byte>>
 {
     private readonly IDatabase _redisDatabase;
     private readonly ICommandService<DiscardReceptionCommand> _discardService;
