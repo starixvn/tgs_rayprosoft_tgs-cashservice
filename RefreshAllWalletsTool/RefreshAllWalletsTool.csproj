@@ -23,7 +23,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
-    <PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="1.9.6-alpha" />
+    <PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="1.9.7-alpha" />
     <PackageReference Include="StackExchange.Redis" Version="2.7.10" />
     <PackageReference Include="System.Interactive.Async" Version="6.0.1" />
   </ItemGroup>
