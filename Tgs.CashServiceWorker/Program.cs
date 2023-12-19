@@ -1,10 +1,8 @@
 ﻿using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
 using NATS.Client.Core;
-using NATS.Client.JetStream;
 using NATS.Client.JetStream.Models;
 using Npgsql;
-using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;

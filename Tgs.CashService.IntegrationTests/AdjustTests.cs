@@ -1,12 +1,9 @@
-﻿using System.Text;
-using System.Text.Json;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Tgs.Cash.Protos;
 using Tgs.CashService.Client;
 using Tgs.CashServiceWorker;
 using Tgs.SerialNumberGenerator;
-using Tgs.CashService;
 
 namespace Tgs.CashService.IntegrationTests;
 

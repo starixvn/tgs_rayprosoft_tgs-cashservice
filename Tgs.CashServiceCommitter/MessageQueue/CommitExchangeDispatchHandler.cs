@@ -1,10 +1,8 @@
 ﻿using Google.Protobuf;
 using NATS.Client.Core;
-using NATS.Client.JetStream;
 using Polly;
 using Tgs.Cash.Protos;
 using Valhalla.MessageQueue;
-using Valhalla.MessageQueue.Nats;
 
 namespace Tgs.CashServiceCommitter.MessageQueue;
 

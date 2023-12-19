@@ -1,11 +1,10 @@
-﻿namespace Tgs.CashService;
-
+﻿
 using Asp.Versioning.ApiExplorer;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
+namespace Tgs.CashService;
 /// <summary>
 /// Configures the Swagger generation options.
 /// </summary>

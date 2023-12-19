@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NATS.Client;
-using NATS.Client.Core;
-using NATS.Client.JetStream;
 using NSubstitute;
 using Tgs.Cash.Protos;
 using Tgs.CashService;
@@ -12,7 +9,6 @@ using Tgs.CashServiceCommitter.ApplicationServices;
 using Tgs.CashServiceCommitter.MessageQueue;
 using Tgs.ServiceUtility;
 using Valhalla.MessageQueue;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Tgs.CashServiceCommitter.IntegrationTests;

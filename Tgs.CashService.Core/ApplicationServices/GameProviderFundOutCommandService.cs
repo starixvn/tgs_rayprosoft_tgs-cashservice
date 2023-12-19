@@ -3,10 +3,10 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class GameProviderFundOutCommandService(IWalletExchangeService walletExchangeService) 
+internal class GameProviderFundOutCommandService(IWalletExchangeService walletExchangeService)
     : IGetService<GameProviderFundOutCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService 
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
         ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public ValueTask<ExchangeResult> GetAsync(GameProviderFundOutCommand command, CancellationToken cancellationToken = default)

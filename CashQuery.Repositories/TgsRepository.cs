@@ -327,7 +327,7 @@ public class TgsRepository(TgsContext dbContext) : ITgsRepository
     }
 }
 
-file static class AsyncEnumerableExtensions
+static file class AsyncEnumerableExtensions
 {
     public static async IAsyncEnumerable<TRow> PivotAsync<TSource, TKey, TRow>(
         this IAsyncEnumerable<TSource> source,

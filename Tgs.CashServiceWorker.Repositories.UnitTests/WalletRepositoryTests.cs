@@ -6,7 +6,6 @@ using StackExchange.Redis;
 using Tgs.CashService;
 using Tgs.CashService.Repositories;
 using TGS.GameProviders.Repositories.Entities;
-using Xunit;
 
 namespace Tgs.CashServiceWorker.Repositories.UnitTests;
 

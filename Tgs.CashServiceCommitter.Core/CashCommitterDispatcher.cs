@@ -5,7 +5,6 @@ using System.Reactive.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Tgs.CashService;
 using Tgs.CashServiceCommitter.ApplicationServices;
 using Tgs.ServiceUtility;
 using Valhalla.Awaitables;

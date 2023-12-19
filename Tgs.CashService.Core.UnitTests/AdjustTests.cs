@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using NSubstitute;
 using Tgs.Cash.Protos;
 using Tgs.CashService.ApplicationServices;
 
