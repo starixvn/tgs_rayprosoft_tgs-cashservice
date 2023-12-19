@@ -4,7 +4,6 @@ using Google.Protobuf;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tgs.Cash.Protos;
-using Tgs.CashService;
 using Tgs.CashServiceWorker.ExchangeCommands;
 using Valhalla.Awaitables;
 using Valhalla.MessageQueue;
@@ -149,7 +148,7 @@ internal class WalletReception(
 
         _ = messageSender.PublishAsync(
             "tgs.cash.commit.batch",
-            commitRequest.ToByteArray(),
+            new ReadOnlyMemory<byte>(commitRequest.ToByteArray()),
             cancellationToken)
             .AsTask();
     }

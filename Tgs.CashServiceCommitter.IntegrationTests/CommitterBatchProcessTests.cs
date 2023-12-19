@@ -2,14 +2,13 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NATS.Client;
 using NSubstitute;
 using Tgs.Cash.Protos;
 using Tgs.CashService;
 using Tgs.CashServiceCommitter.ApplicationServices;
 using Tgs.CashServiceCommitter.MessageQueue;
 using Tgs.ServiceUtility;
-using Xunit;
+using Valhalla.MessageQueue;
 using Xunit.Abstractions;
 
 namespace Tgs.CashServiceCommitter.IntegrationTests;
@@ -134,8 +133,11 @@ public class CommitterBatchProcessTests(ITestOutputHelper testOutputHelper)
             Arg.Any<CancellationToken>()))
             .Do(_ => executeTcs.SetResult());
 
+        var msg = Substitute.For<IAcknowledgeMessage<ReadOnlyMemory<byte>>>();
+        _ = msg.Data.Returns(request.ToByteArray());
+
         // Act
-        await sut.HandleAsync(new MsgHandlerEventArgs(new Msg("tgs.cash.batch", request.ToByteArray())));
+        await sut.HandleAsync(msg);
         await executeTcs.Task.WaitAsync(TimeSpan.FromSeconds(2));
 
         // Assert

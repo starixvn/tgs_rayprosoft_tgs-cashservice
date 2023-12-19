@@ -8,7 +8,7 @@ using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceWorker.MessageQueue;
 
-internal class RequestSession : IMessageSession
+internal class RequestSession : IMessageSession<ReadOnlyMemory<byte>>
 {
     private readonly IGetService<ExchangeWalletCommand, ExchangeResult> _exchangeService;
     private readonly ILogger<RequestSession> _logger;
@@ -26,7 +26,7 @@ internal class RequestSession : IMessageSession
         _redisDatabase = redisConnectionManager.Database;
     }
 
-    public async ValueTask HandleAsync(Question question, CancellationToken cancellationToken = default)
+    public async ValueTask HandleAsync(Question<ReadOnlyMemory<byte>> question, CancellationToken cancellationToken = default)
     {
         var request = WalletExchangeRequest.Parser.ParseFrom(question.Data.Span);
         var redisKey = new RedisKey($"Tgs:Cash:{request.WalletId.ToGuid():D}");
@@ -57,8 +57,9 @@ internal class RequestSession : IMessageSession
             Balance = result.Balance
         };
 
-        _ = await question
-            .AskAsync(response.ToByteArray(), cancellationToken)
+        _ = await question.AskAsync<ReadOnlyMemory<byte>, ReadOnlyMemory<byte>>(
+            response.ToByteArray(),
+            cancellationToken)
             .AsTask()
             .WaitAsync(TimeSpan.FromSeconds(5), cancellationToken)
             .ConfigureAwait(false);

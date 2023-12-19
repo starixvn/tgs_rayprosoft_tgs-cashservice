@@ -1,4 +1,4 @@
-﻿using NATS.Client;
+﻿using NATS.Client.Core;
 using Polly;
 using Tgs.Cash.Protos;
 
@@ -16,7 +16,7 @@ public class WalletExchangeServiceDecorator(
         ?? throw new ArgumentNullException(nameof(logger));
 
     public async ValueTask<ExchangeResult> SendRequestAsync(WalletExchangeRequest request, CancellationToken cancellationToken = default)
-        => await Policy.Handle<NATSNoRespondersException>()
+        => await Policy.Handle<NatsNoRespondersException>()
             .RetryAsync(
                 1,
                 async (ex, count) =>
@@ -32,7 +32,7 @@ public class WalletExchangeServiceDecorator(
             .ConfigureAwait(false);
 
     public async ValueTask<decimal?> GetBalanceAsync(Guid walletId, CancellationToken cancellationToken = default)
-        => await Policy.Handle<NATSNoRespondersException>()
+        => await Policy.Handle<NatsNoRespondersException>()
             .RetryAsync(
                 1,
                 async (ex, count) =>

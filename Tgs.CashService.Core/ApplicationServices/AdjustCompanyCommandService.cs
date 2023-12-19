@@ -8,7 +8,7 @@ internal class AdjustCompanyCommandService(
     IWalletExchangeService walletExchangeService)
     : IGetService<AdjustCompanyV2Command, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService 
+    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
         ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     public ValueTask<ExchangeResult> GetAsync(AdjustCompanyV2Command command, CancellationToken cancellationToken = default)

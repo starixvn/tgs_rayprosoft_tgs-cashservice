@@ -70,7 +70,7 @@ internal class TgsRepository(
         var newestRecord = dbContext.Transactions
             .Where(row => row.WalletId == walletId
                 && row.RecordedOn > _MigrateDate
-                && ((walletRow.SnapshotId == null && row.Type == (int)TransactionType.Snapshot) || row.Id > walletRow.SnapshotId))
+                && (walletRow.SnapshotId == null && row.Type == (int)TransactionType.Snapshot || row.Id > walletRow.SnapshotId))
             .OrderByDescending(row => row.Id)
             .FirstOrDefault();
 

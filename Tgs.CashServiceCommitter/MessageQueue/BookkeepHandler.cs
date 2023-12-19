@@ -4,7 +4,7 @@ using Valhalla.Messages;
 
 namespace Tgs.CashServiceCommitter.MessageQueue;
 
-public class BookkeepHandler(IEventBus eventBus) : IMessageHandler
+public class BookkeepHandler(IEventBus eventBus) : IMessageHandler<ReadOnlyMemory<byte>>
 {
     private readonly IEventPublisher<WalletChangedEvent> _walletChangedEventSource =
         eventBus.GetEventPublisher<WalletChangedEvent>(CommitterConsts.WalletChangedEventName)!;

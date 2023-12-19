@@ -1,8 +1,8 @@
 ﻿using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
-using NATS.Client.JetStream;
+using NATS.Client.Core;
+using NATS.Client.JetStream.Models;
 using Npgsql;
-using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -49,21 +49,27 @@ var builder = WebApplication.CreateBuilder(args);
             sp => sp.GetRequiredKeyedService<IDatabase>("Redis"));
 
     _ = builder.Services
+        .AddKeyedSingleton(
+        "Nats",
+        (sp, _) => new NatsConnection(NatsOpts.Default with
+        {
+            Url = builder.Configuration.GetConnectionString("Nats")!
+        }))
         .AddMessageQueue()
         .AddNatsMessageQueue(natsConfig => natsConfig
-            .ConfigQueueOptions((natsOptions, _) => natsOptions.Url =
-                builder.Configuration.GetConnectionString("Nats")!)
-            .ConfigJetStream(streamConfiguration => streamConfiguration
-                .WithName("tgs_cash_commit")
-                .AddSubjects("tgs.cash.commit.batch")
-                .WithStorageType(StorageType.File)
-                .WithRetentionPolicy(RetentionPolicy.WorkQueue))
-            .AddJetStreamPushHandler<CommitExchangeDispatchHandler>(
+            .ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
+            .ConfigJetStream(new StreamConfig("tgs_cash_commit", ["tgs.cash.commit.batch"]) with
+            {
+                Storage = StreamConfigStorage.File,
+                Retention = StreamConfigRetention.Workqueue
+            })
+            .AddJetStreamHandler<CommitExchangeDispatchHandler>(
                 "tgs.cash.commit.batch",
-                configBuilder => configBuilder
-                    .WithDeliverGroup("tgs_cash_commit_batch")
-                    .WithMaxAckPending(1)
-                    .WithDurable("cash_commit_batch"))
+                "tgs_cash_commit",
+                new ConsumerConfig("tgs_cash_commit_batch") with
+                {
+                    MaxAckPending = 1
+                })
             .AddProcessor<BidProcessor>("tgs.cash.commit.bid")
             .AddReplyHandler<BookkeepHandler>($"tgs.cash.commit.batch.{Environment.MachineName}"))
         .AddNatsGlobPatternExchange("*");
@@ -79,7 +85,14 @@ var builder = WebApplication.CreateBuilder(args);
                 .AddSource("TGS.*")
                 .AddSource("Valhalla.*")
                 .AddNpgsql()
-                .AddAspNetCoreInstrumentation()
+                .AddAspNetCoreInstrumentation(options => options.Filter =
+                    httpContext => !httpContext.Request.Path.HasValue
+                        || !httpContext.Request.Path.StartsWithSegments("/swagger")
+                        && !httpContext.Request.Path.StartsWithSegments("/healthz")
+                        && !httpContext.Request.Path.StartsWithSegments("/metrics")
+                        && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+                        && !instrumentationExtenionFilters.Any(
+                            ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
                 .AddProfileViewExporter()
                 .AddOtlpExporter())
         .WithMetrics(meterBuilder => meterBuilder
@@ -91,15 +104,7 @@ var builder = WebApplication.CreateBuilder(args);
         .Services
         .AddHealthChecks()
         .Services
-        .AddProfileViewer()
-        .Configure<AspNetCoreInstrumentationOptions>(options => options.Filter =
-            httpContext => !httpContext.Request.Path.HasValue
-                || !httpContext.Request.Path.StartsWithSegments("/swagger")
-                && !httpContext.Request.Path.StartsWithSegments("/healthz")
-                && !httpContext.Request.Path.StartsWithSegments("/metrics")
-                && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-                && !instrumentationExtenionFilters.Any(
-                    ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
+        .AddProfileViewer();
 }
 
 var app = builder.Build();

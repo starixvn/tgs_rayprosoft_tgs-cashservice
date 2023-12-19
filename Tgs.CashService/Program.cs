@@ -3,8 +3,8 @@ using Asp.Versioning.ApiExplorer;
 using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using NATS.Client.Core;
 using Npgsql;
-using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -87,7 +87,14 @@ builder.Services
             .AddSource("TGS.*")
             .AddSource("Valhalla.*")
             .AddNpgsql()
-            .AddAspNetCoreInstrumentation()
+            .AddAspNetCoreInstrumentation(options => options.Filter =
+                httpContext => !httpContext.Request.Path.HasValue
+                    || !httpContext.Request.Path.StartsWithSegments("/swagger")
+                    && !httpContext.Request.Path.StartsWithSegments("/healthz")
+                    && !httpContext.Request.Path.StartsWithSegments("/metrics")
+                    && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+                    && !instrumentationExtenionFilters.Any(
+                        ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
             .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
             .AddProfileViewExporter()
             .AddOtlpExporter())
@@ -98,21 +105,18 @@ builder.Services
         .AddRuntimeInstrumentation()
         .AddOtlpExporter())
     .Services
-    .AddProfileViewer()
-    .Configure<AspNetCoreInstrumentationOptions>(options => options.Filter =
-        httpContext => !httpContext.Request.Path.HasValue
-            || !httpContext.Request.Path.StartsWithSegments("/swagger")
-            && !httpContext.Request.Path.StartsWithSegments("/healthz")
-            && !httpContext.Request.Path.StartsWithSegments("/metrics")
-            && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-            && !instrumentationExtenionFilters.Any(
-                ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
+    .AddProfileViewer();
 
 builder.Services
+    .AddKeyedSingleton(
+        "Nats",
+        (sp, _) => new NatsConnection(NatsOpts.Default with
+        {
+            Url = builder.Configuration.GetConnectionString("Nats")!
+        }))
     .AddMessageQueue()
     .AddNatsMessageQueue(config => config
-        .ConfigQueueOptions((options, _) => options.Url =
-            builder.Configuration.GetConnectionString("Nats")!)
+        .ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
         .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");

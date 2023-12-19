@@ -18,12 +18,14 @@ internal class WalletExchangeService(IDatabase redisDatabase, IMessageSender mes
             request.WalletId,
             cancellationToken).ConfigureAwait(false);
 
-        var exchangeAnswer = await _messageSender
-            .AskAsync($"tgs.cash.worker.{machineName}", request.ToByteArray(), cancellationToken)
-            .ConfigureAwait(false);
+        var exchangeAnswer = await _messageSender.AskAsync<ReadOnlyMemory<byte>, ReadOnlyMemory<byte>>(
+            $"tgs.cash.worker.{machineName}",
+            request.ToByteArray(),
+            cancellationToken).ConfigureAwait(false);
+
         var response = WalletExchangeResponse.Parser.ParseFrom(exchangeAnswer.Result.Span);
         await exchangeAnswer
-            .CompleteAsync(Array.Empty<byte>(), cancellationToken)
+            .CompleteAsync([], cancellationToken)
             .ConfigureAwait(false);
 
         return new ExchangeResult(response.TransactionId, response.Balance, response.LockedBalance);
@@ -40,9 +42,10 @@ internal class WalletExchangeService(IDatabase redisDatabase, IMessageSender mes
             WalletId = walletId
         };
 
-        var responseData = await _messageSender
-            .RequestAsync($"tgs.cash.balance.{machineName}", request.ToByteArray(), cancellationToken)
-            .ConfigureAwait(false);
+        var responseData = await _messageSender.RequestAsync<ReadOnlyMemory<byte>, ReadOnlyMemory<byte>>(
+            $"tgs.cash.balance.{machineName}",
+            request.ToByteArray(),
+            cancellationToken).ConfigureAwait(false);
 
         var response = BalanceResponse.Parser.ParseFrom(responseData.Span);
 
@@ -78,7 +81,7 @@ internal class WalletExchangeService(IDatabase redisDatabase, IMessageSender mes
             var bidCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             bidCts.CancelAfter(3000);
 
-            var bidResponseData = await _messageSender.RequestAsync(
+            var bidResponseData = await _messageSender.RequestAsync<ReadOnlyMemory<byte>, ReadOnlyMemory<byte>>(
                 "tgs.cash.bid",
                 new BidRequest
                 {

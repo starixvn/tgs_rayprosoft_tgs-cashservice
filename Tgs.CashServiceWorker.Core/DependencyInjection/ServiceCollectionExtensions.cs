@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Microsoft.Extensions.Options;
 using Tgs.CashServiceWorker;
 
 namespace Microsoft.Extensions.DependencyInjection;

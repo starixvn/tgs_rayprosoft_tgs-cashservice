@@ -1,5 +1,4 @@
-﻿using NSubstitute;
-using Tgs.Cash.Protos;
+﻿using Tgs.Cash.Protos;
 using Tgs.CashService.ApplicationServices;
 
 namespace Tgs.CashService.Core.UnitTests;
