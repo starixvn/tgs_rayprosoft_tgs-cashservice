@@ -57,7 +57,8 @@ builder.Services
         .ConfigJetStream(new StreamConfig("tgs_cash_commit", ["tgs.cash.commit.batch"]) with
         {
             Storage = StreamConfigStorage.File,
-            Retention = StreamConfigRetention.Workqueue
+            Retention = StreamConfigRetention.Workqueue,
+            NumReplicas = 3
         })
         .AddProcessor<BidProcessor>("tgs.cash.bid")
         .AddSession<RequestSession>($"tgs.cash.worker.{Environment.MachineName}")

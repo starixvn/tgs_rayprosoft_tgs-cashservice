@@ -61,7 +61,8 @@ var builder = WebApplication.CreateBuilder(args);
             .ConfigJetStream(new StreamConfig("tgs_cash_commit", ["tgs.cash.commit.batch"]) with
             {
                 Storage = StreamConfigStorage.File,
-                Retention = StreamConfigRetention.Workqueue
+                Retention = StreamConfigRetention.Workqueue,
+                NumReplicas = 3
             })
             .AddJetStreamHandler<CommitExchangeDispatchHandler>(
                 "tgs.cash.commit.batch",
