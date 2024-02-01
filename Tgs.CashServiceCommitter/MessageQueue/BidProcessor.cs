@@ -4,24 +4,23 @@ using Valhalla.MessageQueue;
 
 namespace Tgs.CashServiceCommitter.MessageQueue;
 
-public class BidProcessor(IDistributedResourceManager distributedResourceManager) : IMessageProcessor<ReadOnlyMemory<byte>, ReadOnlyMemory<byte>>
+public class BidProcessor(IDistributedResourceManager distributedResourceManager)
+    : IMessageProcessor<CommitExchangeRequest, BidResponse>
 {
-    public async ValueTask<ReadOnlyMemory<byte>> HandleAsync(
+    public async ValueTask<BidResponse> HandleAsync(
         string subject,
-        ReadOnlyMemory<byte> data,
+        CommitExchangeRequest data,
         IEnumerable<MessageHeaderValue>? headerValues,
         CancellationToken cancellationToken = default)
     {
-        var request = CommitExchangeRequest.Parser.ParseFrom(data.Span);
-
         var response = new BidResponse
         {
             Subject = await distributedResourceManager.BidAsync(
-                request.WalletId,
+                data.WalletId,
                 Environment.MachineName,
                 cancellationToken).ConfigureAwait(false)
         };
 
-        return response.ToByteArray();
+        return response;
     }
 }
