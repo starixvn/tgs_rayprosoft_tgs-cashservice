@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using NATS.Client.Core;
+﻿using NATS.Client.Core;
 using Polly;
 using Tgs.Cash.Protos;
 using Valhalla.MessageQueue;
@@ -10,63 +9,59 @@ public class CommitExchangeDispatchHandler(
     IMessageSender messageSender,
     IDistributedResourceManager distributedResourceManager,
     ILogger<CommitExchangeDispatchHandler> logger)
-    : IAcknowledgeMessageHandler<ReadOnlyMemory<byte>>
+    : IAcknowledgeMessageHandler<CommitExchangeRequest>
 {
-    public async ValueTask HandleAsync(IAcknowledgeMessage<ReadOnlyMemory<byte>> msg, CancellationToken cancellationToken = default)
+    public async ValueTask HandleAsync(IAcknowledgeMessage<CommitExchangeRequest> msg, CancellationToken cancellationToken = default)
     {
-        var request = CommitExchangeRequest.Parser.ParseFrom(msg.Data.Span);
+        var request = msg.Data!;
 
-        var bidToken = await GetBidTokenAsync(
-            request.WalletId,
-            cancellationToken).ConfigureAwait(false);
-
-        var subject = $"tgs.cash.commit.batch.{bidToken}";
-
-        await messageSender.SendAsync(
-            subject,
-            msg.Data,
-            cancellationToken).ConfigureAwait(false);
-
-        await msg.AckAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-    }
-
-    protected Task<string> GetBidTokenAsync(Guid walletId, CancellationToken cancellationToken)
-        => Policy
+        await Policy
             .Handle<NatsNoRespondersException>()
             .RetryAsync(
                 1,
                 async (ex, count) =>
                 {
                     await distributedResourceManager.DiscardBidAsync(
-                        walletId,
+                        request.WalletId.ToGuid(),
                         cancellationToken).ConfigureAwait(false);
 
                     logger.LogWarning(ex, "NoReponders error retry {count}", count);
                 })
             .ExecuteAsync(
-                async ct => await InternalGetBidTokenAsync(
-                    walletId,
-                    cancellationToken).ConfigureAwait(false),
-                cancellationToken);
+                async ct =>
+                {
+                    var bidToken = await GetBidTokenAsync(
+                        request.WalletId,
+                        cancellationToken).ConfigureAwait(false);
 
-    private async ValueTask<string> InternalGetBidTokenAsync(Guid walletId, CancellationToken cancellationToken)
+                    var subject = $"tgs.cash.commit.batch.{bidToken}";
+                    await messageSender.SendAsync(
+                        subject,
+                        msg.Data,
+                        cancellationToken).ConfigureAwait(false);
+                },
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        await msg.AckAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+    }
+
+    protected async Task<string> GetBidTokenAsync(Guid walletId, CancellationToken cancellationToken)
     {
         var bidToken = await distributedResourceManager
-            .GetBidTokenAsync(walletId, cancellationToken)
-            .ConfigureAwait(false);
+             .GetBidTokenAsync(walletId, cancellationToken)
+             .ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(bidToken))
         {
-            var bidResponseData = await messageSender.RequestAsync<ReadOnlyMemory<byte>, ReadOnlyMemory<byte>>(
+            var bidResponse = await messageSender.RequestAsync<CommitExchangeRequest, BidResponse>(
                 "tgs.cash.commit.bid",
                 new CommitExchangeRequest
                 {
                     WalletId = walletId
-                }.ToByteArray(),
+                },
                 cancellationToken)
                 .ConfigureAwait(false);
-
-            var bidResponse = BidResponse.Parser.ParseFrom(bidResponseData.Span);
 
             bidToken = bidResponse.Subject;
         }

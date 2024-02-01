@@ -4,21 +4,17 @@ using Valhalla.Messages;
 
 namespace Tgs.CashServiceCommitter.MessageQueue;
 
-public class BookkeepHandler(IEventBus eventBus) : IMessageHandler<ReadOnlyMemory<byte>>
+public class BookkeepHandler(IEventBus eventBus) : IMessageHandler<CommitExchangeRequest>
 {
     private readonly IEventPublisher<WalletChangedEvent> _walletChangedEventSource =
         eventBus.GetEventPublisher<WalletChangedEvent>(CommitterConsts.WalletChangedEventName)!;
 
     public async ValueTask HandleAsync(
         string subject,
-        ReadOnlyMemory<byte> data,
+        CommitExchangeRequest data,
         IEnumerable<MessageHeaderValue>? headerValues,
         CancellationToken cancellationToken = default)
-    {
-        var request = CommitExchangeRequest.Parser.ParseFrom(data.Span);
-
-        _ = await _walletChangedEventSource.PublishAsync(
-            new WalletChangedEvent(request.WalletId),
+        => await _walletChangedEventSource.PublishAsync(
+            new WalletChangedEvent(data.WalletId),
             cancellationToken).ConfigureAwait(false);
-    }
 }
