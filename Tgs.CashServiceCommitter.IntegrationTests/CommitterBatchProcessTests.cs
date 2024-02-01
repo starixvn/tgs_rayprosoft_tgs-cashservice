@@ -76,7 +76,7 @@ public class CommitterBatchProcessTests(ITestOutputHelper testOutputHelper)
             .Do(_ => updateTcs.SetResult());
 
         // Act
-        await sut.HandleAsync(request.ToByteArray());
+        await sut.HandleAsync("test", request.ToByteArray(), null);
         await insertTcs.Task.WaitAsync(TimeSpan.FromSeconds(2));
         await updateTcs.Task.WaitAsync(TimeSpan.FromSeconds(2));
 

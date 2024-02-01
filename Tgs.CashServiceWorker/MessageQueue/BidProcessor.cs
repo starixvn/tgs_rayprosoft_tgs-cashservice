@@ -25,7 +25,11 @@ internal class BidProcessor : IMessageProcessor<ReadOnlyMemory<byte>, ReadOnlyMe
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async ValueTask<ReadOnlyMemory<byte>> HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
+    public async ValueTask<ReadOnlyMemory<byte>> HandleAsync(
+        string subject,
+        ReadOnlyMemory<byte> data,
+        IEnumerable<MessageHeaderValue>? headerValues,
+        CancellationToken cancellationToken = default)
     {
         var request = BidRequest.Parser.ParseFrom(data.Span);
 
@@ -47,11 +51,11 @@ internal class BidProcessor : IMessageProcessor<ReadOnlyMemory<byte>, ReadOnlyMe
             response.Subject = Environment.MachineName;
         else
         {
-            var subject = await _redisDatabase
+            var resource = await _redisDatabase
                 .StringGetAsync(redisKey)
                 .ConfigureAwait(false);
 
-            response.Subject = subject;
+            response.Subject = resource;
         }
 
         _logger.LogInformation("Subject: {subject}", response.Subject);

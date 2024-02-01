@@ -12,7 +12,11 @@ public class GetBalanceProcessor(IGetService<GetBalanceQuery, decimal> getBalanc
     private readonly IGetService<GetBalanceQuery, decimal> _getBalanceService = getBalanceService
         ?? throw new ArgumentNullException(nameof(getBalanceService));
 
-    public async ValueTask<ReadOnlyMemory<byte>> HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
+    public async ValueTask<ReadOnlyMemory<byte>> HandleAsync(
+        string subject,
+        ReadOnlyMemory<byte> data,
+        IEnumerable<MessageHeaderValue>? headerValues,
+        CancellationToken cancellationToken = default)
     {
         var request = BalanceRequest.Parser.ParseFrom(data.Span);
 
@@ -25,4 +29,5 @@ public class GetBalanceProcessor(IGetService<GetBalanceQuery, decimal> getBalanc
 
         return response.ToByteArray();
     }
+
 }

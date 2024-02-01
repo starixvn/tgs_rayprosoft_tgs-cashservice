@@ -9,9 +9,14 @@ public class BookkeepHandler(IEventBus eventBus) : IMessageHandler<ReadOnlyMemor
     private readonly IEventPublisher<WalletChangedEvent> _walletChangedEventSource =
         eventBus.GetEventPublisher<WalletChangedEvent>(CommitterConsts.WalletChangedEventName)!;
 
-    public async ValueTask HandleAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
+    public async ValueTask HandleAsync(
+        string subject,
+        ReadOnlyMemory<byte> data,
+        IEnumerable<MessageHeaderValue>? headerValues,
+        CancellationToken cancellationToken = default)
     {
         var request = CommitExchangeRequest.Parser.ParseFrom(data.Span);
+
         _ = await _walletChangedEventSource.PublishAsync(
             new WalletChangedEvent(request.WalletId),
             cancellationToken).ConfigureAwait(false);
