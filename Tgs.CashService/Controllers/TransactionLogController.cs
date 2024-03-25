@@ -32,7 +32,7 @@ public class TransactionLogController : ControllerBase
         var query = new TransactionLogQuery(
             walletId,
             (queryConditions.From, queryConditions.To),
-            queryConditions.QueryTypes?.Select(n => (TransactionType)n) ?? Array.Empty<TransactionType>(),
+            queryConditions.QueryTypes?.Select(n => (TransactionType)n) ?? [],
             paging);
 
         var totalCount = await countService.GetAsync(
@@ -71,7 +71,7 @@ public class TransactionLogController : ControllerBase
         var query = new TransactionTotalAmountQuery(
             walletId,
             (queryConditions.From, queryConditions.To),
-            queryConditions.QueryTypes?.Select(n => (TransactionType)n) ?? Array.Empty<TransactionType>());
+            queryConditions.QueryTypes?.Select(n => (TransactionType)n) ?? []);
 
         return getService.GetAsync(
             query,

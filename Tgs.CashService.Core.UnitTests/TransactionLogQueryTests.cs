@@ -16,7 +16,7 @@ public class TransactionLogQueryTests
         var query = new TransactionLogQuery(
             Guid.NewGuid(),
             (DateTime.UtcNow.AddDays(-1D), DateTime.UtcNow.AddDays(1D)),
-            Array.Empty<TransactionType>(),
+            [],
             new Paging<TransactionLog>
             {
                 Page = 1,
@@ -43,7 +43,7 @@ public class TransactionLogQueryTests
         var query = new TransactionLogQuery(
             Guid.NewGuid(),
             (DateTime.UtcNow.AddDays(-1D), DateTime.UtcNow.AddDays(1D)),
-            Array.Empty<TransactionType>(),
+            [],
             new Paging<TransactionLog>
             {
                 Page = 1,
@@ -71,7 +71,7 @@ public class TransactionLogQueryTests
         var query = new TransactionTotalAmountQuery(
             Guid.NewGuid(),
             (DateTime.UtcNow.AddDays(-1D), DateTime.UtcNow.AddDays(1D)),
-            Array.Empty<TransactionType>());
+            []);
 
         _ = fakeTgsRepository.QueryTransactionTotalAmountAsync(
             Arg.Is(query.WalletId),

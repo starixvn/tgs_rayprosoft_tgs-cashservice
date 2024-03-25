@@ -97,7 +97,7 @@ public class TransactionLogQueryTests
             walletId,
             from,
             to,
-            Array.Empty<int>(),
+            [],
             new PagingConditions(1, 10));
 
         Assert.AreEqual(1, actual.TotalCount);
@@ -206,7 +206,7 @@ public class TransactionLogQueryTests
             walletId,
             from,
             to,
-            Array.Empty<int>(),
+            [],
             paging);
 
         Assert.AreEqual(3, actual.TotalCount);
@@ -315,7 +315,7 @@ public class TransactionLogQueryTests
             walletId,
             from,
             to,
-            Array.Empty<int>(),
+            [],
             paging);
 
         Assert.AreEqual(1, actual.TotalCount);
@@ -503,7 +503,7 @@ public class TransactionLogQueryTests
             walletId,
             from,
             to,
-            Array.Empty<int>(),
+            [],
             new PagingConditions(1, 10));
 
         Assert.AreEqual(0, actual.TotalCount);
@@ -571,7 +571,7 @@ public class TransactionLogQueryTests
             walletId,
             from,
             to,
-            Array.Empty<int>());
+            []);
 
         Assert.AreEqual(100M, actual);
     }
@@ -618,7 +618,7 @@ public class TransactionLogQueryTests
             walletId,
             from,
             to,
-            Array.Empty<int>(),
+            [],
             new PagingConditions(1, 10));
 
         Assert.AreEqual(0, actual.TotalCount);
@@ -658,7 +658,7 @@ public class TransactionLogQueryTests
             walletId,
             from,
             to,
-            Array.Empty<int>(),
+            [],
             new PagingConditions(1, 10));
 
         Assert.AreEqual(0, actual.TotalCount);
