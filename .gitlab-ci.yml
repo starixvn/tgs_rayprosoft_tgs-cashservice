@@ -556,7 +556,8 @@ deploy-service-prod:
                           ]
                         }
                       ]
-                    }
+                    },
+                    "topologyKey": "kubernetes.io/hostname"
                   }
                 ]
               }
@@ -601,7 +602,8 @@ deploy-worker-prod:
                           ]
                         }
                       ]
-                    }
+                    },
+                    "topologyKey": "kubernetes.io/hostname"
                   }
                 ]
               }
