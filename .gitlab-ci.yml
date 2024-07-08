@@ -104,7 +104,7 @@ deploy-service-dev:
           "restart": {
             "enabled": true,
             "schedule": "0 23 * * *"
-          }
+          }          
         }
       EOF
 
@@ -537,9 +537,29 @@ deploy-service-prod:
     - |
       cat << EOF | deploy_k8s $TgsServiceSettingKey $HelmTemplateServiceFolderName $namespace
         {
+          "replicaCount": 2,
           "restart": {
             "enabled": true,
             "schedule": "0 23 * * *"
+          },
+          "affinity": {
+              "podAntiAffinity": {
+                "requiredDuringSchedulingIgnoredDuringExecution": [
+                  {
+                    "labelSelector": {
+                      "matchExpressions": [
+                        {
+                          "key": "app.kubernetes.io/name",
+                          "operator": "In",
+                          "values": [
+                            "cashservice-api"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
           }
         }
       EOF
@@ -566,6 +586,25 @@ deploy-worker-prod:
           "restart": {
             "enabled": true,
             "schedule": "0 23 * * *"
+          },
+          "affinity": {
+              "podAntiAffinity": {
+                "requiredDuringSchedulingIgnoredDuringExecution": [
+                  {
+                    "labelSelector": {
+                      "matchExpressions": [
+                        {
+                          "key": "app.kubernetes.io/name",
+                          "operator": "In",
+                          "values": [
+                            "cashservice-worker"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
           }
         }
       EOF
