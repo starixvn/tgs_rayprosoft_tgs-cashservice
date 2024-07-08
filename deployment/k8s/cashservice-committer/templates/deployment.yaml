@@ -125,12 +125,7 @@ spec:
               port: health
             periodSeconds: 5
           resources:
-            requests:
-              cpu: 50m
-              memory: 32Mi
-            limits:
-              cpu: 250m
-              memory: 256Mi
+            {{- toYaml .Values.monitorResources | nindent 12 }}
       volumes:
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
