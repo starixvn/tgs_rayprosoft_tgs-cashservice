@@ -93,6 +93,7 @@ var app = builder.Build();
 app.MapControllers();
 app.UseSwaggerUI();
 app.MapSwagger();
+app.MapHealthChecks("/");
 app.MapHealthChecks("/healthz");
 
 app.Run();

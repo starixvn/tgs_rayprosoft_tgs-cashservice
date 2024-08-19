@@ -33,4 +33,12 @@
     <ProjectReference Include="..\Tgs.CashServiceCommitter.Repositories\Tgs.CashServiceCommitter.Repositories.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.LOCAL.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
