@@ -136,6 +136,7 @@ app.UseSwaggerUI(c =>
 app.MapControllers();
 app.MapSwagger();
 app.MapHealthChecks("/healthz");
+app.MapHealthChecks("/");
 app.MapProfileViewer();
 
 app.Run();
