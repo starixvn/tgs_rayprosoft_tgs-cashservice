@@ -84,8 +84,6 @@ builder.Services
     .ConfigureResource(_ => _.AddService(builder.Configuration.GetValue<string>("Otel:ServiceName")))
     .WithTracing(
         tracingBuilder => tracingBuilder
-            .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                .AddEnvironmentVariableDetector())
             .AddSource("Tgs.*")
             .AddSource("TGS.*")
             .AddSource("Valhalla.*")
