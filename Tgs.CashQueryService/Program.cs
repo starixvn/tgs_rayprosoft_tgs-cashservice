@@ -8,6 +8,8 @@ using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseSentry();
+
 builder.Logging
     .AddOpenTelemetry(options =>
     {
@@ -15,9 +17,9 @@ builder.Logging
         options.ParseStateValues = true;
         _ = options.AddFluentdForwardExporter(fluentOptions =>
         {
-            var nodeIp = builder.Configuration.GetValue<string>("NODE_IP")!;
+            var nodeIp = builder.Configuration.GetValue<string>("Otel:NodeIp")!;
             fluentOptions.Host = nodeIp;
-            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME")!;
+            fluentOptions.Tag = builder.Configuration.GetValue<string>("Otel:ServiceName")!;
             fluentOptions.UseMessagePack(LogRecordFormatterResolver.GetResolverInstanceWithExtendInfo(
                 "MachineInfo",
                 () => new
@@ -62,6 +64,7 @@ builder.Services
 var instrumentationExtenionFilters = new[] { "html", "ico", "png", "jpg" };
 builder.Services
     .AddOpenTelemetry()
+    .ConfigureResource(_ => _.AddService(builder.Configuration.GetValue<string>("Otel:ServiceName")))
     .WithTracing(
         tracingBuilder => tracingBuilder
             .SetResourceBuilder(ResourceBuilder.CreateDefault()
@@ -77,7 +80,7 @@ builder.Services
                     && !instrumentationExtenionFilters.Any(
                         ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
             .AddProfileViewExporter()
-            .AddOtlpExporter())
+            .AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector")))
     .WithMetrics(meterBuilder => meterBuilder
         .SetResourceBuilder(ResourceBuilder.CreateDefault()
             .AddEnvironmentVariableDetector())
@@ -95,5 +98,7 @@ app.UseSwaggerUI();
 app.MapSwagger();
 app.MapHealthChecks("/");
 app.MapHealthChecks("/healthz");
+
+SentrySdk.CaptureMessage($"Started result Tgs-CashQueryService at {DateTime.Now.ToString()}");
 
 app.Run();
