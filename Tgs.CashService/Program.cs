@@ -14,6 +14,8 @@ using Tgs.CashService;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseSentry();
+
 builder.Logging
     .AddOpenTelemetry(options =>
     {
@@ -79,6 +81,7 @@ builder.Services
 var instrumentationExtenionFilters = new[] { "html", "ico", "png", "jpg" };
 builder.Services
     .AddOpenTelemetry()
+    .ConfigureResource(_ => _.AddService(builder.Configuration.GetValue<string>("Otel:ServiceName")))
     .WithTracing(
         tracingBuilder => tracingBuilder
             .SetResourceBuilder(ResourceBuilder.CreateDefault()
@@ -97,7 +100,7 @@ builder.Services
                         ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
             .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
             .AddProfileViewExporter()
-            .AddOtlpExporter())
+            .AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector")))
     .WithMetrics(meterBuilder => meterBuilder
         .SetResourceBuilder(ResourceBuilder.CreateDefault()
             .AddEnvironmentVariableDetector())
@@ -138,5 +141,7 @@ app.MapSwagger();
 app.MapHealthChecks("/healthz");
 app.MapHealthChecks("/");
 app.MapProfileViewer();
+
+SentrySdk.CaptureMessage($"Started result Tgs-CashService at {DateTime.Now.ToString()}");
 
 app.Run();

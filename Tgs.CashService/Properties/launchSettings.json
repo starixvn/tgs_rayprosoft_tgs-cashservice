@@ -8,7 +8,8 @@
 			"environmentVariables": {
 				"ASPNETCORE_ENVIRONMENT": "Development",
 				"OTEL_SERVICE_NAME": "Cash-API(local)",
-				"NODE_IP": "otel.rpgp.cc"
+				"NODE_IP": "otel.rpgp.cc",
+				"OTEL_COLLECTOR": "http://10.10.50.121:31317/"
 			},
 			"dotnetRunMessages": "true",
 			"applicationUrl": "https://localhost:44331/"
@@ -22,7 +23,8 @@
 			"environmentVariables": {
 				"ASPNETCORE_ENVIRONMENT": "Development",
 				"OTEL_SERVICE_NAME": "Cash-API(local)",
-				"NODE_IP": "otel.rpgp.cc"
+				"NODE_IP": "otel.rpgp.cc",
+				"OTEL_COLLECTOR": "http://10.10.50.121:31317/"
 			}
 		}
 	}
