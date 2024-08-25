@@ -98,6 +98,9 @@ builder.Services
                     && !httpContext.Request.Path.StartsWithSegments("/profiler/")
                     && !instrumentationExtenionFilters.Any(
                         ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
+            .AddHttpClientInstrumentation()
+            .AddGrpcClientInstrumentation()
+            .AddGrpcCoreInstrumentation()
             .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
             .AddProfileViewExporter()
             .AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector")))
