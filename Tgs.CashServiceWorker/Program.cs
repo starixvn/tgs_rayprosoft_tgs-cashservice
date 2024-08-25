@@ -11,6 +11,8 @@ using Tgs.CashServiceWorker.MessageQueue;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseSentry();
+
 builder.Configuration
     .AddJsonFile("/config/appsettings.json", true)
     .AddEnvironmentVariables();
@@ -22,9 +24,9 @@ builder.Logging
         options.ParseStateValues = true;
         _ = options.AddFluentdForwardExporter(fluentOptions =>
         {
-            var nodeIp = builder.Configuration.GetValue<string>("NODE_IP")!;
+            var nodeIp = builder.Configuration.GetValue<string>("Otel:NodeIp")!;
             fluentOptions.Host = nodeIp;
-            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME")!;
+            fluentOptions.Tag = builder.Configuration.GetValue<string>("Otel:ServiceName")!;
             fluentOptions.UseMessagePack(LogRecordFormatterResolver.GetResolverInstanceWithExtendInfo(
                 "MachineInfo",
                 () => new
@@ -71,6 +73,7 @@ builder.Services
 var instrumentationExtenionFilters = new[] { "html", "ico", "png", "jpg" };
 builder.Services
     .AddOpenTelemetry()
+    .ConfigureResource(_ => _.AddService(builder.Configuration.GetValue<string>("Otel:ServiceName")))
     .WithTracing(
         tracingBuilder => tracingBuilder
             .SetResourceBuilder(ResourceBuilder.CreateDefault()
@@ -88,8 +91,9 @@ builder.Services
                     && !instrumentationExtenionFilters.Any(
                         ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
             .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
+            .AddHttpClientInstrumentation()
             .AddProfileViewExporter()
-            .AddOtlpExporter())
+            .AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector")))
     .WithMetrics(meterBuilder => meterBuilder
         .SetResourceBuilder(ResourceBuilder.CreateDefault()
             .AddEnvironmentVariableDetector())
@@ -108,5 +112,7 @@ var app = builder.Build();
 
 app.MapProfileViewer();
 app.MapHealthChecks("/health");
+
+SentrySdk.CaptureMessage($"Started result Tgs-CashServiceWorker at {DateTime.Now.ToString()}");
 
 app.Run();
