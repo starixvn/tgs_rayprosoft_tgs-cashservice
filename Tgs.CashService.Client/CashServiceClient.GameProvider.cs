@@ -146,6 +146,19 @@ internal partial class CashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
+    public async ValueTask<decimal> GameProviderGetBalanceAsync(string playerCode, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient
+            .GetAsync($"/wallet/gp/get-balance/{playerCode}", cancellationToken)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<decimal>(contentJson);
+    }
+
     public async ValueTask<TransactionResponse> GameProviderAddBalanceAsync(
         string playerCode,
         decimal amount,

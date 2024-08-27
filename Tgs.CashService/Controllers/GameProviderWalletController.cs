@@ -185,6 +185,29 @@ public class GameProviderWalletController : ControllerBase
     }
 
     /// <summary>
+    ///     Games the provider get balance asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="playerCode"></param>
+    /// <param name="request">The view model.</param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     <b>Example</b><br />
+    ///     Get Balance With PlayerCode: 4unwqobrfsro
+    /// </remarks>
+    [HttpGet("gp/get-balance/{playerCode}", Name = "GameProviderGetBalance")]
+    public async ValueTask<decimal> GameProviderGetBalanceAsync(
+        [FromServices] IGetService<GameProviderGetBalanceCommand, decimal> service,
+        string playerCode)
+    {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
+        return await service
+            .GetAsync(new GameProviderGetBalanceCommand(playerCode), cts.Token)
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
     ///     Games the provider add balance asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
@@ -193,7 +216,7 @@ public class GameProviderWalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     ///     <b>Example</b><br />
-    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    ///     Put PlayerCode: 4unwqobrfsro
     ///     {
     ///     "amount": 10,
     ///     "walletId": "",
@@ -230,7 +253,7 @@ public class GameProviderWalletController : ControllerBase
     /// <returns></returns>
     /// <remarks>
     ///     <b>Example</b><br />
-    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    ///     Put PlayerCode: 4unwqobrfsro
     ///     {
     ///     "amount": 10,
     ///     "walletId": "",
