@@ -22,7 +22,7 @@ namespace Tgs.CashService.ClientExamples.Controllers
             var requestDescription = "In the real integration, this description contains all metadata of the request for tracing issue";
 
             // Get Balance
-            var walletAmount = await _cashServiceClient.GetBalanceAsync(walletId);
+            var walletAmount = await _cashServiceClient.GameProviderGetBalanceAsync(playerCode);
 
             // Deduct Balance
             var deductAmount = 10m;
