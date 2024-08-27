@@ -49,7 +49,15 @@ internal class WalletExchanger : IDisposable
         var queue = await GetWalletReceptionAsync(
             request.WalletId).ConfigureAwait(false);
 
-        var command = new TradeCommand(request, activity?.Context);
+        TradeCommand command;
+        if (request.TransactionType == TransactionType.GameProviderDeductBalance)
+        {
+            command = new DeductBalanceCommand(request, activity?.Context);
+        }
+        else
+        {
+            command = new TradeCommand(request, activity?.Context);
+        }
         await using var tokenRegistration = cts.Token.Register(
             command.Cancel).ConfigureAwait(false);
         await queue.EnqueueAsync(

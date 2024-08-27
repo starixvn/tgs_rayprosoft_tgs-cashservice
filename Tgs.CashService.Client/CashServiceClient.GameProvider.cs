@@ -145,4 +145,64 @@ internal partial class CashServiceClient
 
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
+
+    public async ValueTask<TransactionResponse> GameProviderAddBalanceAsync(
+        string playerCode,
+        decimal amount,
+        Guid? walletId,
+        string? description,
+        string? externalId,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new
+        {
+            Amount = amount,
+            WalletId = walletId,
+            Description = description,
+            ExternalId = externalId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PutAsync($"/wallet/gp/add-balance/{playerCode}", requestContent, cancellationToken)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
+
+    public async ValueTask<TransactionResponse> GameProviderDeductBalanceAsync(
+        string playerCode,
+        decimal amount,
+        Guid? walletId,
+        string? description,
+        string? externalId,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new
+        {
+            Amount = amount,
+            WalletId = walletId,
+            Description = description,
+            ExternalId = externalId
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PutAsync($"/wallet/gp/deduct-balance/{playerCode}", requestContent, cancellationToken)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+    }
 }

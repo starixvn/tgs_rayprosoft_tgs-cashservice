@@ -40,4 +40,8 @@ public interface ITgsRepository
         IEnumerable<TransactionType> queryTypes,
         CancellationToken cancellationToken = default);
 
+    ValueTask<Guid> GetWalletIdAsync(
+        string playerCode,
+        Guid? walletIdDefault = default,
+        CancellationToken cancellationToken = default);
 }

@@ -183,4 +183,78 @@ public class GameProviderWalletController : ControllerBase
 
         return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
+
+    /// <summary>
+    ///     Games the provider add balance asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="playerCode"></param>
+    /// <param name="request">The view model.</param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     <b>Example</b><br />
+    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    ///     {
+    ///     "amount": 10,
+    ///     "walletId": "",
+    ///     "description": "place bet gameProviderId - gameId - RoundId - Amount",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     }
+    /// </remarks>
+    [HttpPut("gp/add-balance/{playerCode}", Name = "GameProviderAddBalance")]
+    public async ValueTask<TransactionResultViewModel> GameProviderAddBalanceAsync(
+        [FromServices] IGetService<GameProviderAddBalanceCommand, ExchangeResult> service,
+        string playerCode,
+        [FromBody] GameProviderAddBalanceViewModel request)
+    {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
+        var result = await service
+            .GetAsync(new GameProviderAddBalanceCommand(
+                playerCode,
+                request.Amount,
+                request.WalletId,
+                request.Description,
+                request.ExternalId), cts.Token)
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
+
+    /// <summary>
+    ///     Games the provider deduct balance asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="playerCode"></param>
+    /// <param name="request">The view model.</param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     <b>Example</b><br />
+    ///     Post WalletId: 36a6cdef-094f-eb11-8d88-70b5e82b6b8d
+    ///     {
+    ///     "amount": 10,
+    ///     "walletId": "",
+    ///     "description": "place bet gameProviderId - gameId - RoundId - Amount",
+    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///     }
+    /// </remarks>
+    [HttpPut("gp/deduct-balance/{playerCode}", Name = "GameProviderDeductBalance")]
+    public async ValueTask<TransactionResultViewModel> GameProviderDeductBalanceAsync(
+        [FromServices] IGetService<GameProviderDeductBalanceCommand, ExchangeResult> service,
+        string playerCode,
+        [FromBody] GameProviderAddBalanceViewModel request)
+    {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
+        var result = await service
+            .GetAsync(new GameProviderDeductBalanceCommand(
+                playerCode,
+                request.Amount,
+                request.WalletId,
+                request.Description,
+                request.ExternalId), cts.Token)
+            .ConfigureAwait(false);
+
+        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
+    }
 }

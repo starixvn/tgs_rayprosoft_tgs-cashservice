@@ -9,14 +9,14 @@ internal class TradeCommand(
     ExchangeRequest request,
     ActivityContext? activityContext) : IExchangeCommand
 {
-    private readonly TaskCompletionSource<ExchangeResult> _promise = new();
+    protected readonly TaskCompletionSource<ExchangeResult> _promise = new();
 
     public ActivityContext? Context => activityContext;
 
     public void Cancel()
         => _promise.TrySetCanceled();
 
-    public async ValueTask ExecuteAsync(
+    public virtual async ValueTask ExecuteAsync(
         IWalletExchangeContext context,
         IServiceProvider serviceProvider,
         CancellationToken cancellationToken = default)

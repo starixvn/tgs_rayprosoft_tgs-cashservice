@@ -23,6 +23,8 @@ public enum TransactionType
     GameProviderDeposit = 10,
     GameProviderWithdrawal = 11,
     UnsettledBetManual = 12,
+    GameProviderDeductBalance = 13,
+    GameProviderAddBalance = 14,
     Other = 99,
     Snapshot = 100,
     CreateWallet = 110,

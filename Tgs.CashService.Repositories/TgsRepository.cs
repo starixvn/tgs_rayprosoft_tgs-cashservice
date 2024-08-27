@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using StackExchange.Redis;
 using Tgs.Cash.Common;
 using Tgs.CashService.Repositories.Entities;
@@ -182,5 +183,16 @@ internal class TgsRepository(
             transactionQuery = transactionQuery.Where(trx => transactionTypes.Contains(trx.Type));
 
         return transactionQuery;
+    }
+
+    public async ValueTask<Guid> GetWalletIdAsync(string playerCode,Guid? walletIdDefault = default, CancellationToken cancellationToken = default)
+    {
+        if (walletIdDefault == null ||walletIdDefault == Guid.Empty || walletIdDefault == default)
+        {
+            var wallet = await dbContext.Wallets.FirstOrDefaultAsync(w => w.PlayerCode == playerCode).ConfigureAwait(false);
+            return wallet == default ? Guid.Empty : wallet.Id;
+        }
+        return walletIdDefault.GetValueOrDefault();
+
     }
 }

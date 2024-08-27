@@ -223,7 +223,7 @@ internal class WalletReception(
             _logger.LogError(
                 new EventId(0),
                 ex,
-                "Process wallet({walletId}) exchange occur error.",
+                "Process wallet({walletId}) exchange occur error. Error message: "+ex.Message,
                 WalletId);
 
             command.Fail(ex);

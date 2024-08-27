@@ -3,11 +3,11 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<Version>0.2.9</Version>
+		<Version>0.2.12</Version>
 		<Authors>Raypro</Authors>
 		<Description>Tgs CashService Client</Description>
-		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-cashservice</PackageProjectUrl>
-		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-cashservice.git</RepositoryUrl>
+		<PackageProjectUrl>https://git3.nexdev.net/tgs/rayprosoft/tgs-cashservice</PackageProjectUrl>
+		<RepositoryUrl>https://git3.nexdev.net/tgs/rayprosoft/tgs-cashservice.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Tgs Cash</PackageTags>
 		<ImplicitUsings>enable</ImplicitUsings>
