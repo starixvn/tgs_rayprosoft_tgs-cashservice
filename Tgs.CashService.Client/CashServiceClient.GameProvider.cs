@@ -149,9 +149,9 @@ internal partial class CashServiceClient
     public async ValueTask<TransactionResponse> GameProviderAddBalanceAsync(
         string playerCode,
         decimal amount,
-        Guid? walletId,
-        string? description,
-        string? externalId,
+        string? description = "",
+        string? externalId = null,
+        Guid? walletId = null,
         CancellationToken cancellationToken = default)
     {
         var request = new
@@ -179,9 +179,9 @@ internal partial class CashServiceClient
     public async ValueTask<TransactionResponse> GameProviderDeductBalanceAsync(
         string playerCode,
         decimal amount,
-        Guid? walletId,
-        string? description,
-        string? externalId,
+        string? description = "",
+        string? externalId = null,
+        Guid? walletId = null,
         CancellationToken cancellationToken = default)
     {
         var request = new

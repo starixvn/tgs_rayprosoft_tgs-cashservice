@@ -40,16 +40,16 @@ public partial interface ICashServiceClient
     ValueTask<TransactionResponse> GameProviderAddBalanceAsync(
         string playerCode,
         decimal amount,
-        Guid? walletId,
-        string? description,
-        string? externalId,
+        string? description = "",
+        string? externalId = null,
+        Guid? walletId = null,
         CancellationToken cancellationToken = default);
 
     ValueTask<TransactionResponse> GameProviderDeductBalanceAsync(
         string playerCode,
         decimal amount,
-        Guid? walletId,
-        string? description,
-        string? externalId,
+        string? description = "",
+        string? externalId = null,
+        Guid? walletId = null,
         CancellationToken cancellationToken = default);
 }
