@@ -47,11 +47,11 @@ internal class BookkeepingWalletTransactionLogsCommandService(
                 cancellationToken).ConfigureAwait(false);
         }
 
-        _ = await eventBus.GetEventPublisher<WalletUpdateEvent>(CommitterConsts.WalletUpdateEventName)
-            !.PublishAsync(
-                new WalletUpdateEvent(command.WalletId),
-                cancellationToken)
-            .ConfigureAwait(false);
+        //_ = await eventBus.GetEventPublisher<WalletUpdateEvent>(CommitterConsts.WalletUpdateEventName)
+        //    !.PublishAsync(
+        //        new WalletUpdateEvent(command.WalletId),
+        //        cancellationToken)
+        //    .ConfigureAwait(false);
     }
 
     public async IAsyncEnumerable<TransactionRecord[]> GetWaitingProcessBatchAsync(
