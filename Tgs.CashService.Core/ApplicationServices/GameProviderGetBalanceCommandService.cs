@@ -18,8 +18,8 @@ internal class GameProviderGetBalanceCommandService(IWalletExchangeService walle
             .ConfigureAwait(false);
 
         var isExistWallet = balance is not null;
-        var errorCode = isExistWallet ? 0:1;
-        var errorMessage = isExistWallet? string.Empty: "Can't found wallet.";
-        return new BalanceResult(Guid.Empty, 0, 0,errorCode,errorMessage);
+        var errorCode = isExistWallet ? 0 : 1;
+        var errorMessage = isExistWallet? string.Empty : "Can't found wallet.";
+        return new BalanceResult(Guid.Empty, balance ?? 0, 0, errorCode, errorMessage);
     }
 }

@@ -8,7 +8,7 @@ public record BalanceResponse
 
     public decimal LockedBalance { get; init; }
 
-    public int ErrorCode { get; set; }
+    public int ErrorCode { get; init; }
 
-    public string ErrorMessage { get; set; } = "";
+    public string ErrorMessage { get; init; } = "";
 }
