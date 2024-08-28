@@ -146,7 +146,7 @@ internal partial class CashServiceClient
         return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<decimal> GameProviderGetBalanceAsync(string playerCode, CancellationToken cancellationToken = default)
+    public async ValueTask<BalanceResponse> GameProviderGetBalanceAsync(string playerCode, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient
             .GetAsync($"/wallet/gp/get-balance/{playerCode}", cancellationToken)
@@ -156,10 +156,10 @@ internal partial class CashServiceClient
 
         var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-        return JsonSerializer.Deserialize<decimal>(contentJson);
+        return JsonSerializer.Deserialize<BalanceResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderAddBalanceAsync(
+    public async ValueTask<BalanceResponse> GameProviderAddBalanceAsync(
         string playerCode,
         decimal amount,
         string? description = "",
@@ -186,10 +186,10 @@ internal partial class CashServiceClient
 
         var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+        return JsonSerializer.Deserialize<BalanceResponse>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<TransactionResponse> GameProviderDeductBalanceAsync(
+    public async ValueTask<BalanceResponse> GameProviderDeductBalanceAsync(
         string playerCode,
         decimal amount,
         string? description = "",
@@ -216,6 +216,6 @@ internal partial class CashServiceClient
 
         var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-        return JsonSerializer.Deserialize<TransactionResponse>(contentJson, _SerializerOptions)!;
+        return JsonSerializer.Deserialize<BalanceResponse>(contentJson, _SerializerOptions)!;
     }
 }

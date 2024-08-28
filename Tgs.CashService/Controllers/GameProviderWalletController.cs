@@ -196,8 +196,8 @@ public class GameProviderWalletController : ControllerBase
     ///     Get Balance With PlayerCode: 4unwqobrfsro
     /// </remarks>
     [HttpGet("gp/get-balance/{playerCode}", Name = "GameProviderGetBalance")]
-    public async ValueTask<decimal> GameProviderGetBalanceAsync(
-        [FromServices] IGetService<GameProviderGetBalanceCommand, decimal> service,
+    public async ValueTask<BalanceResult> GameProviderGetBalanceAsync(
+        [FromServices] IGetService<GameProviderGetBalanceCommand, BalanceResult> service,
         string playerCode)
     {
         using var cts = HttpContext.RequestAborted.Wait10Seconds();
@@ -225,14 +225,14 @@ public class GameProviderWalletController : ControllerBase
     ///     }
     /// </remarks>
     [HttpPut("gp/add-balance/{playerCode}", Name = "GameProviderAddBalance")]
-    public async ValueTask<TransactionResultViewModel> GameProviderAddBalanceAsync(
-        [FromServices] IGetService<GameProviderAddBalanceCommand, ExchangeResult> service,
+    public async ValueTask<BalanceResult> GameProviderAddBalanceAsync(
+        [FromServices] IGetService<GameProviderAddBalanceCommand, BalanceResult> service,
         string playerCode,
         [FromBody] GameProviderAddBalanceViewModel request)
     {
         using var cts = HttpContext.RequestAborted.Wait10Seconds();
 
-        var result = await service
+        return await service
             .GetAsync(new GameProviderAddBalanceCommand(
                 playerCode,
                 request.Amount,
@@ -240,8 +240,6 @@ public class GameProviderWalletController : ControllerBase
                 request.Description,
                 request.ExternalId), cts.Token)
             .ConfigureAwait(false);
-
-        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 
     /// <summary>
@@ -262,14 +260,14 @@ public class GameProviderWalletController : ControllerBase
     ///     }
     /// </remarks>
     [HttpPut("gp/deduct-balance/{playerCode}", Name = "GameProviderDeductBalance")]
-    public async ValueTask<TransactionResultViewModel> GameProviderDeductBalanceAsync(
-        [FromServices] IGetService<GameProviderDeductBalanceCommand, ExchangeResult> service,
+    public async ValueTask<BalanceResult> GameProviderDeductBalanceAsync(
+        [FromServices] IGetService<GameProviderDeductBalanceCommand, BalanceResult> service,
         string playerCode,
         [FromBody] GameProviderAddBalanceViewModel request)
     {
         using var cts = HttpContext.RequestAborted.Wait10Seconds();
 
-        var result = await service
+        return await service
             .GetAsync(new GameProviderDeductBalanceCommand(
                 playerCode,
                 request.Amount,
@@ -277,7 +275,5 @@ public class GameProviderWalletController : ControllerBase
                 request.Description,
                 request.ExternalId), cts.Token)
             .ConfigureAwait(false);
-
-        return new TransactionResultViewModel(result.TransactionId, result.Balance, result.LockedBalance);
     }
 }

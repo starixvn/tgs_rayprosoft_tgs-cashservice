@@ -3,20 +3,23 @@
 namespace Tgs.CashService.ApplicationServices;
 
 internal class GameProviderGetBalanceCommandService(IWalletExchangeService walletExchangeService, ITgsRepository tgsRepository)
-    : IGetService<GameProviderGetBalanceCommand, decimal>
+    : IGetService<GameProviderGetBalanceCommand, BalanceResult>
 {
     private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
         ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
-    public async ValueTask<decimal> GetAsync(GameProviderGetBalanceCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<BalanceResult> GetAsync(GameProviderGetBalanceCommand command, CancellationToken cancellationToken = default)
     {
-        Guid walletId = await tgsRepository.GetWalletIdAsync(command.PlayerCode, null, cancellationToken).ConfigureAwait(false);
+        Guid walletId = await _tgsRepository.GetWalletIdAsync(command.PlayerCode, null, cancellationToken).ConfigureAwait(false);
         var balance = await _walletExchangeService
             .GetBalanceAsync(walletId, cancellationToken)
             .ConfigureAwait(false);
 
-        return balance is null ? throw new InvalidOperationException("Can't found wallet.") : balance.Value;
+        var isExistWallet = balance is not null;
+        var errorCode = isExistWallet ? 0:1;
+        var errorMessage = isExistWallet? string.Empty: "Can't found wallet.";
+        return new BalanceResult(Guid.Empty, 0, 0,errorCode,errorMessage);
     }
 }

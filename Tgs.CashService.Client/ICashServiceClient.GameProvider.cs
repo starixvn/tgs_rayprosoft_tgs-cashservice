@@ -37,9 +37,9 @@ public partial interface ICashServiceClient
         string? externalId,
         CancellationToken cancellationToken = default);
 
-    ValueTask<decimal> GameProviderGetBalanceAsync(string playerCode, CancellationToken cancellationToken = default);
+    ValueTask<BalanceResponse> GameProviderGetBalanceAsync(string playerCode, CancellationToken cancellationToken = default);
 
-    ValueTask<TransactionResponse> GameProviderAddBalanceAsync(
+    ValueTask<BalanceResponse> GameProviderAddBalanceAsync(
         string playerCode,
         decimal amount,
         string? description = "",
@@ -47,7 +47,7 @@ public partial interface ICashServiceClient
         Guid? walletId = null,
         CancellationToken cancellationToken = default);
 
-    ValueTask<TransactionResponse> GameProviderDeductBalanceAsync(
+    ValueTask<BalanceResponse> GameProviderDeductBalanceAsync(
         string playerCode,
         decimal amount,
         string? description = "",

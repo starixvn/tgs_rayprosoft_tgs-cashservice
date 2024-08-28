@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Tgs.Cash.Protos;
 using Tgs.ServiceUtility;
@@ -9,19 +8,19 @@ namespace Tgs.CashService.ApplicationServices;
 internal class GameProviderDeductBalanceCommandService(IWalletExchangeService walletExchangeService, 
     ITgsRepository tgsRepository,
     ILogger<GameProviderDeductBalanceCommand> logger)
-    : IGetService<GameProviderDeductBalanceCommand, ExchangeResult>
+    : IGetService<GameProviderDeductBalanceCommand, BalanceResult>
 {
     private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
         ?? throw new ArgumentNullException(nameof(walletExchangeService));
 
     private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
-    public async ValueTask<ExchangeResult> GetAsync(GameProviderDeductBalanceCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<BalanceResult> GetAsync(GameProviderDeductBalanceCommand command, CancellationToken cancellationToken = default)
     {
         if (command.Amount <= 0)
         {
             logger.LogError($"Deduct Invalid Amount {JsonSerializer.Serialize(command)}");
-            throw new Exception("Deduct Invalid Amount");
+            return new BalanceResult(Guid.Empty, 0, 0, 1, "Invalid Amount");
         }
         Guid walletId = await tgsRepository.GetWalletIdAsync(command.PlayerCode, command.WalletId, cancellationToken).ConfigureAwait(false);
         var request = new WalletExchangeRequest
@@ -41,8 +40,9 @@ internal class GameProviderDeductBalanceCommandService(IWalletExchangeService wa
         if(response.Balance < 0)
         {
             logger.LogError($"Not enough balance to deduct {JsonSerializer.Serialize(command)}");
-            throw new Exception("Not enough balance to deduct");
+            return new BalanceResult(response.TransactionId, response.Balance, response.LockedBalance, 1, "Not enough balance to deduct");
         }
-        return response;
+        return new BalanceResult(response.TransactionId, response.Balance, response.LockedBalance, 0, string.Empty);
+
     }
 }
