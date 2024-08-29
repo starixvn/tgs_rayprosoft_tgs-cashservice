@@ -1,5 +1,7 @@
 ﻿using Tgs.Cash.Common;
+using Tgs.Cash.Protos;
 using Tgs.CashService.Core.Entities;
+using Tgs.CashService.Models;
 using Tgs.Paging;
 
 namespace Tgs.CashService;
@@ -50,5 +52,5 @@ public interface ITgsRepository
 
     ValueTask<Wallet?> GetWalletByPlayerCodeAsync(string playerCode, CancellationToken cancellationToken = default);
 
-    ValueTask UpdateWalletAsync(Guid walletId, decimal balance, decimal lockedBalance, CancellationToken cancellationToken = default);
+    ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default);
 }

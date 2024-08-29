@@ -59,22 +59,6 @@ builder.Services
         foreach (var xmlFileName in xmlFileNames)
             c.IncludeXmlComments(xmlFileName);
     });
-
-builder.Services
-    .AddKeyedSingleton<IConnectionMultiplexer>(
-        "Redis",
-        (sp, _) => ConnectionMultiplexer.Connect(
-            builder.Configuration.GetConnectionString("Redis")!))
-    .AddKeyedSingleton(
-        "Redis",
-        (sp, _) => sp
-            .GetRequiredKeyedService<IConnectionMultiplexer>("Redis")
-            .GetDatabase())
-    .AddCashServiceRepositories(
-        (_, optionsBuilder) => optionsBuilder.UseNpgsql("name=Tgs"),
-        sp => sp.GetRequiredKeyedService<IDatabase>("Redis"))
-    .AddCashServiceCore(sp => sp.GetRequiredKeyedService<IDatabase>("Redis"))
-    .Decorate<IWalletExchangeService, WalletExchangeServiceDecorator>();
 builder.Services
     .AddHealthChecks();
 
@@ -112,18 +96,33 @@ builder.Services
     .AddProfileViewer();
 
 builder.Services
+    .AddKeyedSingleton<IConnectionMultiplexer>(
+        "Redis",
+        (sp, _) => ConnectionMultiplexer.Connect(
+            builder.Configuration.GetConnectionString("Redis")!))
     .AddKeyedSingleton(
-        "Nats",
-        (sp, _) => new NatsConnection(NatsOpts.Default with
-        {
-            Url = builder.Configuration.GetConnectionString("Nats")!
-        }))
-    .AddMessageQueue()
-    .AddNatsMessageQueue(config => config
-        .ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
-        .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
-    .ClearAllExchanges()
-    .AddNatsGlobPatternExchange("*");
+        "Redis",
+        (sp, _) => sp
+            .GetRequiredKeyedService<IConnectionMultiplexer>("Redis")
+            .GetDatabase())
+    .AddCashServiceRepositories(
+        (_, optionsBuilder) => optionsBuilder.UseNpgsql("name=Tgs"),
+        sp => sp.GetRequiredKeyedService<IDatabase>("Redis"))
+    .AddCashServiceCore(sp => sp.GetRequiredKeyedService<IDatabase>("Redis"))
+    .Decorate<IWalletExchangeService, WalletExchangeServiceDecorator>();
+//builder.Services
+//    .AddKeyedSingleton(
+//        "Nats",
+//        (sp, _) => new NatsConnection(NatsOpts.Default with
+//        {
+//            Url = builder.Configuration.GetConnectionString("Nats")!
+//        }))
+//    .AddMessageQueue()
+//    .AddNatsMessageQueue(config => config
+//        .ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
+//        .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
+//    .ClearAllExchanges()
+//    .AddNatsGlobPatternExchange("*");
 
 builder.Services
     .AddInterceptionService()

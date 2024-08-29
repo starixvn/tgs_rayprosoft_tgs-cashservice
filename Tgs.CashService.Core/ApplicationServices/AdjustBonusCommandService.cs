@@ -1,15 +1,13 @@
 ﻿using System.Text.Json;
-using Tgs.Cash.Protos;
+using Tgs.CashService.Models;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class AdjustBonusCommandService(
-    IWalletExchangeService walletExchangeService)
+internal class AdjustBonusCommandService(ITgsRepository tgsRepository)
     : IGetService<AdjustBonusV2Command, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
-        ?? throw new ArgumentNullException(nameof(walletExchangeService));
+    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
     public ValueTask<ExchangeResult> GetAsync(AdjustBonusV2Command command, CancellationToken cancellationToken = default)
     {
@@ -19,18 +17,15 @@ internal class AdjustBonusCommandService(
             Remark = command.Description
         };
 
-        var request = new WalletExchangeRequest
-        {
-            WalletId = command.WalletId,
-            TransactionType = TransactionType.AdjustBonus.ToString(),
-            Amount = command.Amount,
-            LockAmount = 0M,
-            Description = JsonSerializer.Serialize(description),
-            ExternalId = command.ExternalId ?? string.Empty,
-            CreatedUser = command.CreatedByUserId
-        };
-
-        return _walletExchangeService
-            .SendRequestAsync(request, cancellationToken);
+        var record = new ExchangeWalletRecord(
+            command.WalletId,
+            TransactionType.AdjustBonus,
+            command.Amount,
+            0,
+            JsonSerializer.Serialize(description),
+            command.ExternalId ?? string.Empty,
+            command.CreatedByUserId
+        );
+        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

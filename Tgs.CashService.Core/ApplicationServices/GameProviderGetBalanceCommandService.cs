@@ -2,12 +2,9 @@
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class GameProviderGetBalanceCommandService(IWalletExchangeService walletExchangeService, ITgsRepository tgsRepository)
+internal class GameProviderGetBalanceCommandService(ITgsRepository tgsRepository)
     : IGetService<GameProviderGetBalanceCommand, BalanceResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
-        ?? throw new ArgumentNullException(nameof(walletExchangeService));
-
     private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
     public async ValueTask<BalanceResult> GetAsync(GameProviderGetBalanceCommand command, CancellationToken cancellationToken = default)
@@ -18,7 +15,7 @@ internal class GameProviderGetBalanceCommandService(IWalletExchangeService walle
         {
             return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.NotFoundWallet);
         }
-        return new BalanceResult(Guid.Empty, wallet.Balance, 0);
+        return new BalanceResult(Guid.Empty, wallet.Balance, wallet.LockedBalance);
 
     }
 }

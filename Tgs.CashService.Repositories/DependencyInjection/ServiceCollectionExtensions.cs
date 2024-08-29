@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
         Func<IServiceProvider, IDatabase> redisDatabaseResolve)
         => services
             .AddDbContext<TgsContext>(efConfigure)
+            .AddSerialNumberGenerator()
             .AddScoped<ITgsRepository>(sp => ActivatorUtilities.CreateInstance<TgsRepository>(
                 sp,
                 sp.GetRequiredService<TgsContext>(),

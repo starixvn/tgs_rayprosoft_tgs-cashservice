@@ -1,27 +1,24 @@
-﻿using Tgs.Cash.Protos;
+﻿using Tgs.CashService.Models;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class DividendAgentCommandService(IWalletExchangeService walletExchangeService)
+internal class DividendAgentCommandService(ITgsRepository tgsRepository)
     : IGetService<DividendAgentCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
-        ?? throw new ArgumentNullException(nameof(walletExchangeService));
+    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
     public ValueTask<ExchangeResult> GetAsync(DividendAgentCommand command, CancellationToken cancellationToken = default)
     {
-        var request = new WalletExchangeRequest
-        {
-            WalletId = command.WalletId,
-            TransactionType = nameof(TransactionType.AgentDividend),
-            Amount = command.Amount.Truncate(2),
-            LockAmount = 0M,
-            Description = command.Description ?? string.Empty,
-            ExternalId = command.ExternalId ?? string.Empty
-        };
+        var record = new ExchangeWalletRecord(
+            command.WalletId,
+            TransactionType.AgentDividend,
+            command.Amount.Truncate(2),
+            0,
+            command.Description ?? string.Empty,
+            command.ExternalId ?? string.Empty
+        );
 
-        return _walletExchangeService
-            .SendRequestAsync(request, cancellationToken);
+        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

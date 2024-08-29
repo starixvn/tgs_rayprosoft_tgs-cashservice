@@ -12,7 +12,7 @@
 				"OTEL_COLLECTOR": "http://10.10.50.121:31317/"
 			},
 			"dotnetRunMessages": "true",
-			"applicationUrl": "https://localhost:44331/"
+			"applicationUrl": "http://localhost:4433/"
 		},
 		"Docker": {
 			"commandName": "Docker",

@@ -20,7 +20,7 @@ public partial class Transaction
 
     public decimal LockedBalance { get; set; }
 
-    public string PlayerCode { get; set; } = null!;
+    public string PlayerCode { get; set; } = "";
 
     public DateTime RecordedOn { get; set; }
 
@@ -29,6 +29,4 @@ public partial class Transaction
     public short Type { get; set; }
 
     public Guid WalletId { get; set; }
-
-    public virtual Wallet Wallet { get; set; } = null!;
 }

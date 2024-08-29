@@ -1,25 +1,24 @@
-﻿using Tgs.Cash.Protos;
+﻿using Tgs.CashService.Models;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class ReceiveRollbackCommandService(IWalletExchangeService walletExchangeService) : IGetService<ReceiveRollbackCommand, ExchangeResult>
+internal class ReceiveRollbackCommandService(ITgsRepository tgsRepository) : IGetService<ReceiveRollbackCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService ?? throw new ArgumentNullException(nameof(walletExchangeService));
+    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
     public ValueTask<ExchangeResult> GetAsync(ReceiveRollbackCommand command, CancellationToken cancellationToken = default)
     {
-        var request = new WalletExchangeRequest
-        {
-            WalletId = command.WalletId,
-            TransactionType = TransactionType.ReceiveRollback.ToString(),
-            Amount = 0M,
-            LockAmount = -command.Amount,
-            Description = command.Description ?? string.Empty,
-            ExternalId = command.ExternalId.ToString(),
-            CreatedUser = command.Executor
-        };
+        var record = new ExchangeWalletRecord(
+            command.WalletId,
+            TransactionType.ReceiveRollback,
+            0,
+            -command.Amount,
+            command.Description ?? string.Empty,
+            command.ExternalId.ToString(),
+            command.Executor
+        );
 
-        return _walletExchangeService.SendRequestAsync(request, cancellationToken);
+        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

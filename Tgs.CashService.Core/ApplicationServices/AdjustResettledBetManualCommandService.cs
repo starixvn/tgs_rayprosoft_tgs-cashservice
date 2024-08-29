@@ -1,29 +1,25 @@
-﻿using Tgs.Cash.Protos;
+﻿using Tgs.CashService.Models;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class AdjustResettledBetManualCommandService(IWalletExchangeService walletExchangeService)
+internal class AdjustResettledBetManualCommandService(ITgsRepository tgsRepository)
     : IGetService<AdjustResettledBetManualCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
-        ?? throw new ArgumentNullException(nameof(walletExchangeService));
+    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
     public ValueTask<ExchangeResult> GetAsync(AdjustResettledBetManualCommand command, CancellationToken cancellationToken = default)
     {
-        var request = new WalletExchangeRequest
-        {
-            WalletId = command.WalletId,
-            TransactionType = TransactionType.AdjustResettledBetManual.ToString(),
-            Amount = command.Amount,
-            LockAmount = 0M,
-            Description = command.Description ?? String.Empty,
-            ExternalId = command.ExternalId ?? String.Empty,
-            CreatedUser = command.CreatedByUserId
-        };
+        var record = new ExchangeWalletRecord(
+            command.WalletId,
+            TransactionType.AdjustResettledBetManual,
+            command.Amount,
+            0,
+            command.Description ?? String.Empty,
+            command.ExternalId ?? string.Empty,
+            command.CreatedByUserId
+        );
 
-        return _walletExchangeService
-            .SendRequestAsync(request, cancellationToken)
-;
+        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

@@ -1,18 +1,24 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using StackExchange.Redis;
 using Tgs.Cash.Common;
 using Tgs.CashService.Repositories.Entities;
 using Tgs.CashService.Core.Entities;
 using Tgs.Paging;
+using Microsoft.Extensions.Logging;
+using Tgs.Cash.Protos;
+using Tgs.SerialNumberGenerator;
+using Tgs.CashService.Models;
+using System.Threading;
 
 namespace Tgs.CashService.Repositories;
 
 internal class TgsRepository(
     TgsContext dbContext,
-    IDatabase redisDatabase)
+    IDatabase redisDatabase,
+    ISerialNumberGenerator snGenerator,
+    ILogger<TgsRepository> logger)
     : ITgsRepository
 {
     private static readonly JsonSerializerOptions _SerializerOptions = new(JsonSerializerDefaults.Web)
@@ -66,17 +72,35 @@ internal class TgsRepository(
             CashType = type.ToString(),
             SnapshotId = Guid.Empty
         };
+        dbContext.Wallets.Add(wallet);
 
-        _ = await dbContext.Wallets.AddAsync(
-            wallet,
-            cancellationToken).ConfigureAwait(false);
+        var transactionId = await snGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
+        var transaction = new Transaction
+        {
+            Id = transactionId,
+            BrandId = wallet.BrandId!.Value,
+            PlayerCode = wallet.PlayerCode,
+            WalletId = walletId,
+            Type = (short)TransactionType.CreateWallet,
+            Amount = 0,
+            LockAmount = 0,
+            Balance = 0,
+            LockedBalance = 0,
+            Description = "Create Wallet",
+            ExternalTransactionId = string.Empty,
+            CreatedByUserId = null,
+            RecordedOn = DateTime.UtcNow.ToUniversalTime(),
+            SentOn = null
+        };
+        dbContext.Transactions.Add(transaction);
 
         _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async ValueTask<string?> GetPlayerCodeByWalletIdAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
-        var wallet = await dbContext.Wallets.FindAsync(
+        var wallet = await dbContext.Wallets
+            .FindAsync(
             [walletId],
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -197,30 +221,61 @@ internal class TgsRepository(
     }
     public async ValueTask<Wallet?> GetWalletByIdAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
-        return await dbContext.Wallets.FirstOrDefaultAsync(wallet => wallet.Id == walletId).ConfigureAwait(false);
+        return await dbContext.Wallets
+            .FirstOrDefaultAsync(wallet => wallet.Id == walletId)
+            .ConfigureAwait(false);
     }
 
     public async ValueTask<Wallet?> GetWalletByPlayerCodeAsync(string playerCode, CancellationToken cancellationToken = default)
     {
-        var wallet = await dbContext.Wallets.FirstOrDefaultAsync(w => w.PlayerCode == playerCode).ConfigureAwait(false);
+        var wallet = await dbContext.Wallets
+            .FirstOrDefaultAsync(w => w.PlayerCode == playerCode)
+            .ConfigureAwait(false);
         return wallet;
     }
 
-    public async ValueTask<Wallet> UpdateWalletAsync(Guid walletId, decimal balance, decimal lockedBalance, CancellationToken cancellationToken = default)
+    public async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default)
     {
-        var wallet = await dbContext.Wallets.SingleAsync(wallet => wallet.Id == walletId).ConfigureAwait(false);
-        if(wallet == null)
+        var wallet = await dbContext.Wallets
+            .SingleAsync(wallet => wallet.Id == record.WalletId || wallet.PlayerCode == record.PlayerCode)
+            .ConfigureAwait(false);
+        if (wallet == null)
         {
+            logger.LogError($"Can't found wallet {record.WalletId}.");
             throw new InvalidOperationException("Can't found wallet.");
         }
-        if(wallet.LockedBalance + lockedBalance < 0M)
+        var transactionId = await snGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
+        var transaction = new Transaction
         {
-            throw new ArgumentOutOfRangeException();
+            Id = transactionId,
+            BrandId = wallet.BrandId!.Value,
+            PlayerCode = wallet.PlayerCode,
+            WalletId = wallet.Id,
+            Type = (short)record.TransactionType,
+            Amount = record.Amount,
+            LockAmount = record.LockAmount,
+            Balance = wallet.Balance + record.Amount,
+            LockedBalance = wallet.LockedBalance + record.LockAmount,
+            Description = record.Description,
+            ExternalTransactionId = record.ExternalId,
+            CreatedByUserId = record.UserId,
+            RecordedOn = DateTime.UtcNow.ToUniversalTime(),
+            SentOn = null
+        };
+        if (transaction.LockedBalance < 0M || transaction.Balance < 0M)
+        {
+            logger.LogError($"Invalid Balance {JsonSerializer.Serialize(record)}");
+            throw new InvalidOperationException();
         }
-        wallet.Balance += balance;
-        wallet.LockedBalance += lockedBalance;
-        wallet.UpdatedOn = DateTime.UtcNow;
+        await dbContext.Transactions.AddAsync(transaction).ConfigureAwait(false);
+
+        wallet.Balance = transaction.Balance;
+        wallet.LockedBalance = transaction.LockedBalance;
+        wallet.SnapshotId = transactionId;
+        wallet.UpdatedOn = transaction.RecordedOn;
+
         await dbContext.SaveChangesAsync().ConfigureAwait(false);
-        return wallet;
+
+        return new ExchangeResult(transactionId, transaction.Balance, transaction.LockedBalance);
     }
 }

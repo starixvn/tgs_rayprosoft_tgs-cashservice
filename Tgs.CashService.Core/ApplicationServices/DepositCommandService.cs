@@ -1,30 +1,26 @@
-﻿using Tgs.Cash.Protos;
+﻿using Tgs.CashService.Models;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
 [Obsolete("已淘汰")]
-internal class DepositCommandService(IWalletExchangeService walletExchangeService)
+internal class DepositCommandService(ITgsRepository tgsRepository)
     : IGetService<DepositCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
-        ?? throw new ArgumentNullException(nameof(walletExchangeService));
+    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
     public ValueTask<ExchangeResult> GetAsync(DepositCommand command, CancellationToken cancellationToken = default)
     {
-        var request = new WalletExchangeRequest
-        {
-            WalletId = command.WalletId,
-            TransactionType = TransactionType.DepositOld.ToString(),
-            Amount = command.Amount,
-            LockAmount = 0M,
-            Description = command.Description ?? string.Empty,
-            ExternalId = command.ExternalId ?? string.Empty,
-            CreatedUser = command.CreatedByUserId
-        };
+        var record = new ExchangeWalletRecord(
+            command.WalletId,
+            TransactionType.DepositOld,
+            command.Amount,
+            0,
+            command.Description ?? string.Empty,
+            command.ExternalId ?? string.Empty,
+            command.CreatedByUserId
+        );
 
-        return _walletExchangeService
-            .SendRequestAsync(request, cancellationToken)
-;
+        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

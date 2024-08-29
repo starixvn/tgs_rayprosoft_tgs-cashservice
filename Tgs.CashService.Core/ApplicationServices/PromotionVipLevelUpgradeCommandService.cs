@@ -1,28 +1,25 @@
-﻿using Tgs.Cash.Protos;
+﻿using Tgs.CashService.Models;
 using Tgs.ServiceUtility;
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class PromotionVipLevelupgradeCommandService(IWalletExchangeService walletExchangeService)
+internal class PromotionVipLevelupgradeCommandService(ITgsRepository tgsRepository)
     : IGetService<PromotionVipLevelUpgradeCommand, ExchangeResult>
 {
-    private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
-        ?? throw new ArgumentNullException(nameof(walletExchangeService));
+    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
     public async ValueTask<ExchangeResult> GetAsync(PromotionVipLevelUpgradeCommand command, CancellationToken cancellationToken = default)
     {
-        var request = new WalletExchangeRequest
-        {
-            WalletId = command.WalletId,
-            TransactionType = TransactionType.PromotionVipLevelUpgrade.ToString(),
-            Amount = command.Amount,
-            LockAmount = 0M,
-            Description = command.Description ?? string.Empty,
-            ExternalId = command.ExternalId ?? string.Empty
-        };
+        var record = new ExchangeWalletRecord(
+            command.WalletId,
+            TransactionType.PromotionVipLevelUpgrade,
+            command.Amount,
+            0,
+            command.Description ?? string.Empty,
+            command.ExternalId ?? string.Empty
+        );
 
-        return await _walletExchangeService
-            .SendRequestAsync(request, cancellationToken)
+        return await _tgsRepository.ExchangeWalletAsync(record, cancellationToken)
             .ConfigureAwait(false);
     }
 }

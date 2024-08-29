@@ -49,10 +49,6 @@ namespace Tgs.CashService.Repositories.Entities.Configurations
             entity.Property(e => e.Type).HasColumnName("type");
             entity.Property(e => e.WalletId).HasColumnName("wallet_id");
 
-            entity.HasOne(d => d.Wallet).WithMany(p => p.Transactions)
-            .HasForeignKey(d => d.WalletId)
-            .HasConstraintName("fk_transactions_wallets_wallet_id");
-
             OnConfigurePartial(entity);
         }
 
