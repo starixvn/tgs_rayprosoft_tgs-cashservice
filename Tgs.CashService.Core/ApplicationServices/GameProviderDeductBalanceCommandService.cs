@@ -20,7 +20,7 @@ internal class GameProviderDeductBalanceCommandService(IWalletExchangeService wa
         if (command.Amount <= 0)
         {
             logger.LogError($"Deduct Invalid Amount {JsonSerializer.Serialize(command)}");
-            return new BalanceResult(Guid.Empty, 0, 0, 1, "Invalid Amount");
+            return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.InvalidAmount);
         }
         Guid walletId = await tgsRepository.GetWalletIdAsync(command.PlayerCode, command.WalletId, cancellationToken).ConfigureAwait(false);
         var request = new WalletExchangeRequest
@@ -40,9 +40,9 @@ internal class GameProviderDeductBalanceCommandService(IWalletExchangeService wa
         if(response.Balance < 0)
         {
             logger.LogError($"Not enough balance to deduct {JsonSerializer.Serialize(command)}");
-            return new BalanceResult(response.TransactionId, response.Balance, response.LockedBalance, 1, "Not enough balance to deduct");
+            return new BalanceResult(response.TransactionId, response.Balance, response.LockedBalance, ErrorCodes.NotEnoughBalance);
         }
-        return new BalanceResult(response.TransactionId, response.Balance, response.LockedBalance, 0, string.Empty);
+        return new BalanceResult(response.TransactionId, response.Balance, response.LockedBalance);
 
     }
 }

@@ -12,14 +12,13 @@ internal class GameProviderGetBalanceCommandService(IWalletExchangeService walle
 
     public async ValueTask<BalanceResult> GetAsync(GameProviderGetBalanceCommand command, CancellationToken cancellationToken = default)
     {
-        Guid walletId = await _tgsRepository.GetWalletIdAsync(command.PlayerCode, null, cancellationToken).ConfigureAwait(false);
-        var balance = await _walletExchangeService
-            .GetBalanceAsync(walletId, cancellationToken)
-            .ConfigureAwait(false);
+        var wallet = await _tgsRepository.GetWalletByPlayerCodeAsync(command.PlayerCode, cancellationToken).ConfigureAwait(false);
 
-        var isExistWallet = balance is not null;
-        var errorCode = isExistWallet ? 0 : 1;
-        var errorMessage = isExistWallet? string.Empty : "Can't found wallet.";
-        return new BalanceResult(Guid.Empty, balance ?? 0, 0, errorCode, errorMessage);
+        if(wallet is null)
+        {
+            return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.NotFoundWallet);
+        }
+        return new BalanceResult(Guid.Empty, wallet.Balance, 0);
+
     }
 }

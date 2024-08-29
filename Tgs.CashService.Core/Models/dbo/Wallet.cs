@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.CashService.Repositories.Entities;
+namespace Tgs.CashService.Core.Entities;
 
 public partial class Wallet
 {

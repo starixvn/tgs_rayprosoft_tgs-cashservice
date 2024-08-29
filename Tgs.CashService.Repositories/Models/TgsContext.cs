@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using Tgs.CashService.Repositories.Entities.Configurations;
 #nullable enable
 
+using Tgs.CashService.Core.Entities;
+
 namespace Tgs.CashService.Repositories.Entities;
+
 
 public partial class TgsContext : DbContext
 {
@@ -13,8 +16,6 @@ public partial class TgsContext : DbContext
         : base(options)
     {
     }
-
-    public virtual DbSet<GameAction> GameActions { get; set; }
 
     public virtual DbSet<Transaction> Transactions { get; set; }
 
@@ -26,7 +27,6 @@ public partial class TgsContext : DbContext
             .HasPostgresExtension("ltree")
             .HasPostgresExtension("pg_trgm");
 
-        modelBuilder.ApplyConfiguration(new Configurations.GameActionConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.TransactionConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.WalletConfiguration());
         OnModelCreatingPartial(modelBuilder);

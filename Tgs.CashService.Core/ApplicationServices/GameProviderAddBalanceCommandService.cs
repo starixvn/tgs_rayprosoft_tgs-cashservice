@@ -26,6 +26,6 @@ internal class GameProviderAddBalanceCommandService(IWalletExchangeService walle
 
         var response = await _walletExchangeService
             .SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
-        return new BalanceResult(response.TransactionId, response.Balance, response.LockedBalance, 0, string.Empty);
+        return new BalanceResult(response.TransactionId, response.Balance, response.LockedBalance);
     }
 }

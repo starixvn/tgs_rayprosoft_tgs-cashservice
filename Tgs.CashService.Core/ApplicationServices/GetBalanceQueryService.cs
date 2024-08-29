@@ -2,18 +2,17 @@
 
 namespace Tgs.CashService.ApplicationServices;
 
-internal class GetBalanceQueryService(IWalletExchangeService walletExchangeService)
+internal class GetBalanceQueryService(IWalletExchangeService walletExchangeService, ITgsRepository tgsRepository)
     : IGetService<GetBalanceQuery, decimal>
 {
     private readonly IWalletExchangeService _walletExchangeService = walletExchangeService
         ?? throw new ArgumentNullException(nameof(walletExchangeService));
+    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 
     public async ValueTask<decimal> GetAsync(GetBalanceQuery query, CancellationToken cancellationToken = default)
     {
-        var balance = await _walletExchangeService
-            .GetBalanceAsync(query.WalletId, cancellationToken)
-            .ConfigureAwait(false);
+        var wallet = await _tgsRepository.GetWalletByIdAsync(query.WalletId, cancellationToken).ConfigureAwait(false);
 
-        return balance is null ? throw new InvalidOperationException("Can't found wallet.") : balance.Value;
+        return wallet is null ? throw new InvalidOperationException("Can't found wallet.") : wallet.Balance;
     }
 }

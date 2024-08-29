@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Tgs.CashService.Repositories.Entities;
 
 #nullable disable
+using Tgs.CashService.Core.Entities;
 
 namespace Tgs.CashService.Repositories.Entities.Configurations
 {

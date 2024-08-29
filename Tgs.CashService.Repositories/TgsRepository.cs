@@ -5,6 +5,7 @@ using Npgsql;
 using StackExchange.Redis;
 using Tgs.Cash.Common;
 using Tgs.CashService.Repositories.Entities;
+using Tgs.CashService.Core.Entities;
 using Tgs.Paging;
 
 namespace Tgs.CashService.Repositories;
@@ -189,10 +190,37 @@ internal class TgsRepository(
     {
         if (walletIdDefault == null ||walletIdDefault == Guid.Empty || walletIdDefault == default)
         {
-            var wallet = await dbContext.Wallets.FirstOrDefaultAsync(w => w.PlayerCode == playerCode).ConfigureAwait(false);
-            return wallet == default ? Guid.Empty : wallet.Id;
+            var wallet = await GetWalletByPlayerCodeAsync(playerCode).ConfigureAwait(false);
+            return wallet is null ? Guid.Empty : wallet.Id;
         }
         return walletIdDefault.GetValueOrDefault();
+    }
+    public async ValueTask<Wallet?> GetWalletByIdAsync(Guid walletId, CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Wallets.FirstOrDefaultAsync(wallet => wallet.Id == walletId).ConfigureAwait(false);
+    }
 
+    public async ValueTask<Wallet?> GetWalletByPlayerCodeAsync(string playerCode, CancellationToken cancellationToken = default)
+    {
+        var wallet = await dbContext.Wallets.FirstOrDefaultAsync(w => w.PlayerCode == playerCode).ConfigureAwait(false);
+        return wallet;
+    }
+
+    public async ValueTask<Wallet> UpdateWalletAsync(Guid walletId, decimal balance, decimal lockedBalance, CancellationToken cancellationToken = default)
+    {
+        var wallet = await dbContext.Wallets.SingleAsync(wallet => wallet.Id == walletId).ConfigureAwait(false);
+        if(wallet == null)
+        {
+            throw new InvalidOperationException("Can't found wallet.");
+        }
+        if(wallet.LockedBalance + lockedBalance < 0M)
+        {
+            throw new ArgumentOutOfRangeException();
+        }
+        wallet.Balance += balance;
+        wallet.LockedBalance += lockedBalance;
+        wallet.UpdatedOn = DateTime.UtcNow;
+        await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        return wallet;
     }
 }
