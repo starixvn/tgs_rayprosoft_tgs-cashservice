@@ -2,7 +2,7 @@
 
 public enum ErrorCodes
 {
-    Invalid = -1,
+    Undefined = -1,
     Success = 0,
     DuplicateTransaction = 1,
     NotFoundWallet = 2,

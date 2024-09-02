@@ -13,9 +13,14 @@ internal class GameProviderAddBalanceCommandService(ITgsRepository tgsRepository
 
     public async ValueTask<BalanceResult> GetAsync(GameProviderAddBalanceCommand command, CancellationToken cancellationToken = default)
     {
+        if(!await IsValidTransaction(command.ExternalId, cancellationToken).ConfigureAwait(false))
+        {
+            logger.LogError($"Add Balance - Duplicate transaction {JsonSerializer.Serialize(command)}");
+            return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.DuplicateTransaction);
+        }
         if (command.Amount <= 0)
         {
-            logger.LogError($"Invalid Amount {JsonSerializer.Serialize(command)}");
+            logger.LogError($"Add Balance - Invalid Amount {JsonSerializer.Serialize(command)}");
             return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.InvalidAmount);
         }
         try
@@ -39,5 +44,17 @@ internal class GameProviderAddBalanceCommandService(ITgsRepository tgsRepository
             logger.LogError(ex.Message);
         }
         return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.NotFoundWallet);
+    }
+
+    private async ValueTask<bool> IsValidTransaction(string? externalId, CancellationToken cancellationToken = default)
+    {
+        if (!string.IsNullOrEmpty(externalId))
+        {
+            var transaction = await _tgsRepository
+                .GetTransactionLogByTypeAndExternalIdAsync(TransactionType.GameProviderAddBalance, externalId, cancellationToken)
+                .ConfigureAwait(false);
+            return transaction == null;
+        }
+        return true;
     }
 }

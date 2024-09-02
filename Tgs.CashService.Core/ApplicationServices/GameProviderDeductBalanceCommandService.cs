@@ -13,9 +13,14 @@ internal class GameProviderDeductBalanceCommandService(ITgsRepository tgsReposit
 
     public async ValueTask<BalanceResult> GetAsync(GameProviderDeductBalanceCommand command, CancellationToken cancellationToken = default)
     {
+        if (!await IsValidTransaction(command.ExternalId, cancellationToken).ConfigureAwait(false))
+        {
+            logger.LogError($"Deduct Balance - Duplicate transaction {JsonSerializer.Serialize(command)}");
+            return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.DuplicateTransaction);
+        }
         if (command.Amount <= 0)
         {
-            logger.LogError($"Invalid Amount {JsonSerializer.Serialize(command)}");
+            logger.LogError($"Deduct Balance - Invalid Amount {JsonSerializer.Serialize(command)}");
             return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.InvalidAmount);
         }
         try
@@ -40,5 +45,17 @@ internal class GameProviderDeductBalanceCommandService(ITgsRepository tgsReposit
             var errorCode = ex is NotFoundWalletException ? ErrorCodes.NotFoundWallet : ErrorCodes.InsufficientFunds;
             return new BalanceResult(Guid.Empty, 0, 0, errorCode);
         }
+    }
+
+    private async ValueTask<bool> IsValidTransaction(string? externalId, CancellationToken cancellationToken = default)
+    {
+        if (!string.IsNullOrEmpty(externalId))
+        {
+            var transaction = await _tgsRepository
+                .GetTransactionLogByTypeAndExternalIdAsync(TransactionType.GameProviderDeductBalance, externalId, cancellationToken)
+                .ConfigureAwait(false);
+            return transaction == null;
+        }
+        return true;
     }
 }

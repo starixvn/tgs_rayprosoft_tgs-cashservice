@@ -210,6 +210,16 @@ internal class TgsRepository(
 
         return transactionQuery;
     }
+    public async ValueTask<Transaction?> GetTransactionLogByTypeAndExternalIdAsync(TransactionType type, 
+        string externalId,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Transactions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Type == (short)type && t.ExternalTransactionId == externalId, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
 
     public async ValueTask<Guid> GetWalletIdAsync(string playerCode,Guid? walletIdDefault = default, CancellationToken cancellationToken = default)
     {
