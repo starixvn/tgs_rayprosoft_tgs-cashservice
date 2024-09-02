@@ -72,7 +72,6 @@ internal class TgsRepository(
             CashType = type.ToString(),
             SnapshotId = Guid.Empty
         };
-        dbContext.Wallets.Add(wallet);
 
         var transactionId = await snGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
         var transaction = new Transaction
@@ -92,7 +91,9 @@ internal class TgsRepository(
             RecordedOn = DateTime.UtcNow.ToUniversalTime(),
             SentOn = null
         };
-        dbContext.Transactions.Add(transaction);
+
+        await dbContext.Wallets.AddAsync(wallet, cancellationToken).ConfigureAwait(false);
+        await dbContext.Transactions.AddAsync(transaction, cancellationToken).ConfigureAwait(false);
 
         _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -185,7 +186,7 @@ internal class TgsRepository(
     {
         var (from, to) = (queryRange.From.ToUniversalTime(), queryRange.To.ToUniversalTime());
 
-        var transactionQuery = dbContext.Transactions.AsQueryable()
+        var transactionQuery = dbContext.Transactions.AsNoTracking().AsQueryable()
             .Where(trx => trx.WalletId == walletId)
             .Where(trx => trx.RecordedOn >= from && trx.RecordedOn < to)
             .Select(trx => new TransactionData
@@ -222,6 +223,7 @@ internal class TgsRepository(
     public async ValueTask<Wallet?> GetWalletByIdAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
         return await dbContext.Wallets
+            .AsNoTracking()
             .FirstOrDefaultAsync(wallet => wallet.Id == walletId)
             .ConfigureAwait(false);
     }
@@ -229,6 +231,7 @@ internal class TgsRepository(
     public async ValueTask<Wallet?> GetWalletByPlayerCodeAsync(string playerCode, CancellationToken cancellationToken = default)
     {
         var wallet = await dbContext.Wallets
+            .AsNoTracking()
             .FirstOrDefaultAsync(w => w.PlayerCode == playerCode)
             .ConfigureAwait(false);
         return wallet;
@@ -267,14 +270,14 @@ internal class TgsRepository(
             logger.LogError($"Invalid Balance {JsonSerializer.Serialize(record)}");
             throw new InvalidOperationException();
         }
-        await dbContext.Transactions.AddAsync(transaction).ConfigureAwait(false);
+        await dbContext.Transactions.AddAsync(transaction, cancellationToken).ConfigureAwait(false);
 
         wallet.Balance = transaction.Balance;
         wallet.LockedBalance = transaction.LockedBalance;
         wallet.SnapshotId = transactionId;
         wallet.UpdatedOn = transaction.RecordedOn;
 
-        await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return new ExchangeResult(transactionId, transaction.Balance, transaction.LockedBalance);
     }
