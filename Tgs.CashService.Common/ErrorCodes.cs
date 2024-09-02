@@ -2,10 +2,12 @@
 
 public enum ErrorCodes
 {
+    Invalid = -1,
     Success = 0,
-    NotFoundWallet = 1,
-    NotEnoughBalance = 2,
-    InvalidAmount = 3,
+    DuplicateTransaction = 1,
+    NotFoundWallet = 2,
+    InvalidAmount = 307,
+    InsufficientFunds = 502,
 }
 
 public static class ErrorMessages
@@ -13,8 +15,9 @@ public static class ErrorMessages
     public static readonly Dictionary<ErrorCodes, string> Messages = new()
     {
         [ErrorCodes.Success] = "",
+        [ErrorCodes.DuplicateTransaction] = "Duplicate Transaction",
         [ErrorCodes.NotFoundWallet] ="Can't found wallet!",
-        [ErrorCodes.NotEnoughBalance] = "Not enough balance",
+        [ErrorCodes.InsufficientFunds] = "Player Has Insufficient Funds",
         [ErrorCodes.InvalidAmount] = "Invalid Amount",
     };
 }

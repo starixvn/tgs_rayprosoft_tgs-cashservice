@@ -245,7 +245,7 @@ internal class TgsRepository(
         if (wallet == null)
         {
             logger.LogError($"Can't found wallet {record.WalletId}.");
-            throw new InvalidOperationException("Can't found wallet.");
+            throw new NotFoundWalletException(ErrorMessages.Messages[ErrorCodes.NotFoundWallet]);
         }
         var transactionId = await snGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
         var transaction = new Transaction
@@ -268,7 +268,7 @@ internal class TgsRepository(
         if (transaction.LockedBalance < 0M || transaction.Balance < 0M)
         {
             logger.LogError($"Invalid Balance {JsonSerializer.Serialize(record)}");
-            throw new InvalidOperationException();
+            throw new InsufficientFundException(ErrorMessages.Messages[ErrorCodes.InsufficientFunds]);
         }
         await dbContext.Transactions.AddAsync(transaction, cancellationToken).ConfigureAwait(false);
 

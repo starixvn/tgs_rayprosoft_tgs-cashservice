@@ -37,7 +37,8 @@ internal class GameProviderDeductBalanceCommandService(ITgsRepository tgsReposit
         }
         catch (Exception ex) {
             logger.LogError(ex.Message);
+            var errorCode = ex is NotFoundWalletException ? ErrorCodes.NotFoundWallet : ErrorCodes.InsufficientFunds;
+            return new BalanceResult(Guid.Empty, 0, 0, errorCode);
         }
-        return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.NotEnoughBalance);
     }
 }
