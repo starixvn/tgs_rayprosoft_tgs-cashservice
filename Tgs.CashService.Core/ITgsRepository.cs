@@ -9,7 +9,7 @@ namespace Tgs.CashService;
 public interface ITgsRepository
 {
 
-    ValueTask<int> CountInRedisTransactionLogsAsync(Guid walletId, CancellationToken cancellationToken = default);
+    int CountInRedisTransactionLogs(Guid walletId, CancellationToken cancellationToken = default);
     ValueTask<int> CountTransactionLogsQueryAsync(
         Guid walletId,
         ValueRange<DateTime> queryRange,
@@ -23,8 +23,6 @@ public interface ITgsRepository
         CashType type,
         string currencyCode,
         CancellationToken cancellationToken = default);
-
-    ValueTask<string?> GetPlayerCodeByWalletIdAsync(Guid walletId, CancellationToken cancellationToken = default);
 
     IAsyncEnumerable<TransactionLog> QueryInRedisTransactionLogsAsync(
         Guid walletId,

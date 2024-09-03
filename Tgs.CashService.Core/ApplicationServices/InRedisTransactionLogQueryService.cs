@@ -15,5 +15,5 @@ internal class InRedisTransactionLogQueryService(
             .ApplyPaging(query.Paging);
 
     public ValueTask<int> GetAsync(InRedisTransactionLogQuery query, CancellationToken cancellationToken = default)
-        => tgsRepository.CountInRedisTransactionLogsAsync(query.WalletId, cancellationToken);
+        => ValueTask.FromResult(tgsRepository.CountInRedisTransactionLogs(query.WalletId, cancellationToken));
 }

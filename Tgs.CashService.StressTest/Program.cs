@@ -11,7 +11,7 @@ var builder = Host.CreateApplicationBuilder(args);
 
     _ = builder.Services
         .AddCashServiceClient()
-        .ConfigureHttpClient(httpClient => httpClient.BaseAddress = new Uri("http://cash-api-test.rpgp.cc"));
+        .ConfigureHttpClient(httpClient => httpClient.BaseAddress = new Uri("http://localhost:4433"));
 }
 
 using var app = builder.Build();
@@ -21,6 +21,7 @@ await app.StartAsync().ConfigureAwait(false);
 
     var brandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af");
 
+
     var walletIds = await File.ReadAllLinesAsync("wallet_ids.txt", Encoding.UTF8)
         .ToAsyncEnumerable()
         .SelectMany(arr => arr.ToAsyncEnumerable())
@@ -28,12 +29,13 @@ await app.StartAsync().ConfigureAwait(false);
         .ToArrayAsync()
         .ConfigureAwait(false);
 
+
     var singleWalletScenario = Scenario
-        .Create("單一錢包壓測", async context =>
+        .Create("stress test single wallet", async context =>
         {
             try
             {
-                var walletId = Guid.Parse("ce642d54-35f9-4aa7-96e2-eae6650c5a4d");
+                var walletId = Guid.Parse("484d862e-63ba-45b4-966b-57cbd1a7de3a");
 
                 _ = await client.DepositedAsync(
                     walletId,
@@ -50,10 +52,10 @@ await app.StartAsync().ConfigureAwait(false);
             }
         })
         .WithoutWarmUp()
-        .WithLoadSimulations(Simulation.RampingConstant(100, TimeSpan.FromSeconds(60D)));
+        .WithLoadSimulations(Simulation.RampingConstant(10, TimeSpan.FromSeconds(60D)));
 
     var wallets10000Scenario = Scenario.Create(
-        "錢包10000個壓測",
+        "stress test 10_000 wallets",
         async context =>
         {
             try
@@ -82,9 +84,9 @@ await app.StartAsync().ConfigureAwait(false);
         })
         .WithoutWarmUp()
         .WithLoadSimulations(
-            Simulation.RampingInject(10000, TimeSpan.FromSeconds(1D), TimeSpan.FromMinutes(5D)));
+            Simulation.RampingInject(100, TimeSpan.FromSeconds(1D), TimeSpan.FromMinutes(5D)));
 
     _ = NBomberRunner
-        .RegisterScenarios(wallets10000Scenario)
+        .RegisterScenarios(singleWalletScenario)
         .Run();
 }

@@ -106,8 +106,7 @@ builder.Services
             .GetRequiredKeyedService<IConnectionMultiplexer>("Redis")
             .GetDatabase())
     .AddCashServiceRepositories(
-        (_, optionsBuilder) => optionsBuilder.UseNpgsql("name=Tgs"),
-        sp => sp.GetRequiredKeyedService<IDatabase>("Redis"))
+        (_, optionsBuilder) => optionsBuilder.UseNpgsql("name=Tgs").EnableSensitiveDataLogging())
     .AddCashServiceCore(sp => sp.GetRequiredKeyedService<IDatabase>("Redis"))
     .Decorate<IWalletExchangeService, WalletExchangeServiceDecorator>();
 //builder.Services

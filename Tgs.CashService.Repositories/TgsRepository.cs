@@ -1,22 +1,20 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis;
 using Tgs.Cash.Common;
 using Tgs.CashService.Repositories.Entities;
 using Tgs.CashService.Core.Entities;
 using Tgs.Paging;
 using Microsoft.Extensions.Logging;
-using Tgs.Cash.Protos;
 using Tgs.SerialNumberGenerator;
 using Tgs.CashService.Models;
-using System.Threading;
+using Dapper;
 
 namespace Tgs.CashService.Repositories;
 
 internal class TgsRepository(
     TgsContext dbContext,
-    IDatabase redisDatabase,
+    IDbAcess dbAcess,
     ISerialNumberGenerator snGenerator,
     ILogger<TgsRepository> logger)
     : ITgsRepository
@@ -31,12 +29,9 @@ internal class TgsRepository(
         }
     };
 
-    public async ValueTask<int> CountInRedisTransactionLogsAsync(Guid walletId, CancellationToken cancellationToken = default)
+    public int CountInRedisTransactionLogs(Guid walletId, CancellationToken cancellationToken = default)
     {
-        var length = await redisDatabase.ListLengthAsync(
-            $"Tgs:Transactions:{walletId}").ConfigureAwait(false);
-
-        return (int)length;
+        return 0;
     }
 
     public async ValueTask<int> CountTransactionLogsQueryAsync(
@@ -58,8 +53,7 @@ internal class TgsRepository(
         CancellationToken cancellationToken = default)
     {
         var currentDate = DateTime.UtcNow;
-
-        var wallet = new Wallet
+        var param = new
         {
             Id = walletId,
             PlayerCode = userId,
@@ -68,69 +62,18 @@ internal class TgsRepository(
             Balance = 0,
             CreatedOn = currentDate,
             UpdatedOn = currentDate,
+            LockBalance = 0,
             BrandId = brandId,
             CashType = type.ToString(),
             SnapshotId = Guid.Empty
         };
-
-        var transactionId = await snGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
-        var transaction = new Transaction
-        {
-            Id = transactionId,
-            BrandId = wallet.BrandId!.Value,
-            PlayerCode = wallet.PlayerCode,
-            WalletId = walletId,
-            Type = (short)TransactionType.CreateWallet,
-            Amount = 0,
-            LockAmount = 0,
-            Balance = 0,
-            LockedBalance = 0,
-            Description = "Create Wallet",
-            ExternalTransactionId = string.Empty,
-            CreatedByUserId = null,
-            RecordedOn = DateTime.UtcNow.ToUniversalTime(),
-            SentOn = null
-        };
-
-        await dbContext.Wallets.AddAsync(wallet, cancellationToken).ConfigureAwait(false);
-        await dbContext.Transactions.AddAsync(transaction, cancellationToken).ConfigureAwait(false);
-
-        _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    public async ValueTask<string?> GetPlayerCodeByWalletIdAsync(Guid walletId, CancellationToken cancellationToken = default)
-    {
-        var wallet = await dbContext.Wallets
-            .FindAsync(
-            [walletId],
-            cancellationToken: cancellationToken).ConfigureAwait(false);
-
-        return wallet?.PlayerCode;
+        await dbAcess.ExecuteAsync(QueryStringMapper.InsertNewWallet, param).ConfigureAwait(false);
     }
 
     public IAsyncEnumerable<TransactionLog> QueryInRedisTransactionLogsAsync(
         Guid walletId,
         CancellationToken cancellationToken = default)
-        => redisDatabase.ListRangeAsync($"Tgs:Transactions:{walletId}")
-            .ToAsyncEnumerable()
-            .SelectMany(values => values.ToAsyncEnumerable())
-            .Select(value => JsonSerializer.Deserialize<TransactionRecord>((string)value!, _SerializerOptions))
-            .Where(record => record is not null)
-            .Select(record => record!)
-            .Select(record => new TransactionLog(
-                record.Id,
-                record.RecordedOn,
-                record.Type,
-                record.Amount,
-                record.Balance,
-                record.LockAmount,
-                record.LockedBalance,
-                record.Description,
-                record.ExternalId))
-            .ToArrayAsync(cancellationToken)
-            .AsTask()
-            .ToAsyncEnumerable()
-            .SelectMany(arr => arr.ToAsyncEnumerable());
+        => AsyncEnumerable.Empty<TransactionLog>();
 
     public IAsyncEnumerable<TransactionLog> QueryTransactionLogsAsync(
         Guid walletId,
@@ -214,10 +157,12 @@ internal class TgsRepository(
         string externalId,
         CancellationToken cancellationToken = default)
     {
-        return await dbContext.Transactions
-            .AsNoTracking()
-            .FirstOrDefaultAsync(t => t.Type == (short)type && t.ExternalTransactionId == externalId, cancellationToken)
-            .ConfigureAwait(false);
+        var param = new
+        {
+            Type = type,
+            ExternalId = externalId
+        };
+        return await dbAcess.QueryFirstOrDefaultAsync<Transaction>(QueryStringMapper.GetTransactionByTypeAndExternalId, param).ConfigureAwait(false);
     }
 
 
@@ -240,55 +185,37 @@ internal class TgsRepository(
 
     public async ValueTask<Wallet?> GetWalletByPlayerCodeAsync(string playerCode, CancellationToken cancellationToken = default)
     {
-        var wallet = await dbContext.Wallets
-            .AsNoTracking()
-            .FirstOrDefaultAsync(w => w.PlayerCode == playerCode)
-            .ConfigureAwait(false);
-        return wallet;
+        var parameters = new {PlayerCode = playerCode};
+        return await dbAcess.QueryFirstOrDefaultAsync<Wallet>(QueryStringMapper.GetWalletByPlayerCode, parameters).ConfigureAwait(false);
     }
 
     public async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default)
     {
-        var wallet = await dbContext.Wallets
-            .SingleAsync(wallet => wallet.Id == record.WalletId || wallet.PlayerCode == record.PlayerCode)
-            .ConfigureAwait(false);
-        if (wallet == null)
+        var transactionId = await snGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
+        var criteria = new ExchangeWalletCriteria(record, transactionId);
+        var spName = StoreProcedureMapper.ExchangeWalletSP;
+
+        var parameters = new DynamicParameters();
+        foreach (var property in typeof(ExchangeWalletCriteria).GetProperties()) 
+        { 
+            var value = property.GetValue(criteria);
+            parameters.Add(property.Name.ToLowerInvariant(), value);
+        }
+
+        var sqlQuery = $"CALL {spName}({string.Join(", ", typeof(ExchangeWalletCriteria).GetProperties().Select(p => $"@{p.Name.ToLowerInvariant()}"))})";
+        var result = await dbAcess.QueryFirstOrDefaultAsync<ExchangeWalletSPResult>(sqlQuery, parameters).ConfigureAwait(false);
+
+        if (result!.ErrorCode == (int)ErrorCodes.NotFoundWallet)
         {
             logger.LogError($"Can't found wallet {record.WalletId}.");
             throw new NotFoundWalletException(ErrorMessages.Messages[ErrorCodes.NotFoundWallet]);
         }
-        var transactionId = await snGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
-        var transaction = new Transaction
-        {
-            Id = transactionId,
-            BrandId = wallet.BrandId!.Value,
-            PlayerCode = wallet.PlayerCode,
-            WalletId = wallet.Id,
-            Type = (short)record.TransactionType,
-            Amount = record.Amount,
-            LockAmount = record.LockAmount,
-            Balance = wallet.Balance + record.Amount,
-            LockedBalance = wallet.LockedBalance + record.LockAmount,
-            Description = record.Description,
-            ExternalTransactionId = record.ExternalId,
-            CreatedByUserId = record.UserId,
-            RecordedOn = DateTime.UtcNow.ToUniversalTime(),
-            SentOn = null
-        };
-        if (transaction.LockedBalance < 0M || transaction.Balance < 0M)
+        if (result!.ErrorCode == (int)ErrorCodes.InsufficientFunds)
         {
             logger.LogError($"Invalid Balance {JsonSerializer.Serialize(record)}");
             throw new InsufficientFundException(ErrorMessages.Messages[ErrorCodes.InsufficientFunds]);
         }
-        await dbContext.Transactions.AddAsync(transaction, cancellationToken).ConfigureAwait(false);
 
-        wallet.Balance = transaction.Balance;
-        wallet.LockedBalance = transaction.LockedBalance;
-        wallet.SnapshotId = transactionId;
-        wallet.UpdatedOn = transaction.RecordedOn;
-
-        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-        return new ExchangeResult(transactionId, transaction.Balance, transaction.LockedBalance);
+        return new ExchangeResult(Guid.Parse(result.TransactionId), result.Balance, result.LockedBalance);
     }
 }

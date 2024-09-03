@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis;
 using Tgs.CashService;
 using Tgs.CashService.Repositories;
 using Tgs.CashService.Repositories.Entities;
@@ -10,13 +9,12 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCashServiceRepositories(
         this IServiceCollection services,
-        Action<IServiceProvider, DbContextOptionsBuilder> efConfigure,
-        Func<IServiceProvider, IDatabase> redisDatabaseResolve)
+        Action<IServiceProvider, DbContextOptionsBuilder> efConfigure)
         => services
             .AddDbContext<TgsContext>(efConfigure)
             .AddSerialNumberGenerator()
-            .AddScoped<ITgsRepository>(sp => ActivatorUtilities.CreateInstance<TgsRepository>(
+            .AddScoped<IDbAcess, DbAccess>()
+            .AddTransient<ITgsRepository, TgsRepository>(sp => ActivatorUtilities.CreateInstance<TgsRepository>(
                 sp,
-                sp.GetRequiredService<TgsContext>(),
-                redisDatabaseResolve(sp)));
+                sp.GetRequiredService<TgsContext>()));
 }
