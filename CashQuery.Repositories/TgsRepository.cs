@@ -217,7 +217,8 @@ public class TgsRepository(TgsContext dbContext) : ITgsRepository
     {
         var ids = transactionIds.ToArray();
 
-        return _dbContext.AdjustPlayerRecords.AsQueryable()
+        return _dbContext.AdjustPlayerRecords.AsNoTracking()
+            .AsQueryable()
             .Where(apr => apr.TransactionId != null)
             .Where(apr => ids.Contains(apr.TransactionId!.Value))
             .Select(apr => new PlayerAdjustRecord(apr.TransactionId!.Value, apr.IncludeInNetProfit))
@@ -226,7 +227,8 @@ public class TgsRepository(TgsContext dbContext) : ITgsRepository
 
     private IQueryable<AdjustAgentRecord> BuildAgentAdjustSummariesQuery(AdjustRecordQueryCondition condition)
     {
-        var query = from record in _dbContext.AdjustAgentRecords.AsQueryable()
+        var query = from record in _dbContext.AdjustAgentRecords.AsNoTracking()
+                    .AsQueryable()
                     where record.CreatedOn >= condition.CreatedOnRange.From
                         && record.CreatedOn < condition.CreatedOnRange.To
                     select record;
@@ -253,7 +255,8 @@ public class TgsRepository(TgsContext dbContext) : ITgsRepository
 
     private IQueryable<AdjustPlayerRecord> BuildPlayerAdjustSummariesQuery(AdjustRecordQueryCondition condition)
     {
-        var query = from record in _dbContext.AdjustPlayerRecords.AsQueryable()
+        var query = from record in _dbContext.AdjustPlayerRecords.AsNoTracking()
+                    .AsQueryable()
                     where record.CreatedOn >= condition.CreatedOnRange.From
                         && record.CreatedOn < condition.CreatedOnRange.To
                     select record;
@@ -276,7 +279,8 @@ public class TgsRepository(TgsContext dbContext) : ITgsRepository
 
     private IQueryable<AdjustAgentRecord> BuildAgentAdjustRecordsQuery(Guid brandId, AdjustRecordQueryCondition condition)
     {
-        var query = from record in _dbContext.AdjustAgentRecords.AsQueryable()
+        var query = from record in _dbContext.AdjustAgentRecords.AsNoTracking()
+                    .AsQueryable()
                     where record.BrandId == brandId
                         && record.CreatedOn >= condition.CreatedOnRange.From
                         && record.CreatedOn < condition.CreatedOnRange.To
@@ -304,7 +308,8 @@ public class TgsRepository(TgsContext dbContext) : ITgsRepository
 
     private IQueryable<AdjustPlayerRecord> BuildPlayerAdjustRecordsQuery(Guid brandId, AdjustRecordQueryCondition condition)
     {
-        var query = from record in _dbContext.AdjustPlayerRecords.AsQueryable()
+        var query = from record in _dbContext.AdjustPlayerRecords.AsNoTracking()
+                    .AsQueryable()
                     where record.BrandId == brandId
                         && record.CreatedOn >= condition.CreatedOnRange.From
                         && record.CreatedOn < condition.CreatedOnRange.To
