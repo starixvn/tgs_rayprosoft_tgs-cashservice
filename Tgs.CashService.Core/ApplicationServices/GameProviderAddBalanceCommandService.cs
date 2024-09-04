@@ -6,7 +6,7 @@ using Tgs.ServiceUtility;
 namespace Tgs.CashService.ApplicationServices;
 
 internal class GameProviderAddBalanceCommandService(ITgsRepository tgsRepository,
-    ILogger<GameProviderDeductBalanceCommand> logger)
+    ILogger<GameProviderAddBalanceCommand> logger)
     : IGetService<GameProviderAddBalanceCommand, BalanceResult>
 {
     private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));

@@ -1,5 +1,5 @@
-﻿using Tgs.Cash.Protos;
-using Tgs.CashService.ApplicationServices;
+﻿using Tgs.CashService.ApplicationServices;
+using Tgs.CashService.Models;
 
 namespace Tgs.CashService.Core.UnitTests.GameProviders;
 
@@ -7,11 +7,11 @@ namespace Tgs.CashService.Core.UnitTests.GameProviders;
 public class GameProviderDepositCommandServiceUnitTest
 {
     [Test]
-    public async Task Can_Create_GameProviderDeposit_Exchange()
+    public async Task GameProviderDepositCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new GameProviderDepositCommandService(fakeWalletExchangeService);
+        var sut = new GameProviderDepositCommandService(fakeTgsRepository);
 
         var command = new GameProviderDepositCommand(
             Guid.NewGuid(),
@@ -21,12 +21,13 @@ public class GameProviderDepositCommandServiceUnitTest
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                           && request.TransactionType == TransactionType.GameProviderDeposit.ToString()
-                           && request.Amount == -command.Amount
-                           && request.Description == command.Description
-                           && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+           .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+               record => record.WalletId == command.WalletId
+               && record.TransactionType == TransactionType.GameProviderDeposit
+               && record.Amount == -command.Amount
+                && record.LockAmount == 0
+               && record.Description == command.Description
+               && record.ExternalId == command.ExternalId));
     }
 }

@@ -1,5 +1,5 @@
-﻿using Tgs.Cash.Protos;
-using Tgs.CashService.ApplicationServices;
+﻿using Tgs.CashService.ApplicationServices;
+using Tgs.CashService.Models;
 
 namespace Tgs.CashService.Core.UnitTests;
 
@@ -7,11 +7,11 @@ namespace Tgs.CashService.Core.UnitTests;
 public class ManagementTests
 {
     [Test]
-    public async Task Can_Create_Bonus_Exchange()
+    public async Task BonusCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new BonusCommandService(fakeWalletExchangeService);
+        var sut = new BonusCommandService(fakeTgsRepository);
 
         var command = new BonusCommand(
             Guid.NewGuid(),
@@ -21,21 +21,22 @@ public class ManagementTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Bonus.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+            .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                record => record.WalletId == command.WalletId
+                && record.TransactionType == TransactionType.Bonus
+                && record.Amount == command.Amount
+                && record.LockAmount == 0
+                && record.Description == command.Description
+                && record.ExternalId == command.ExternalId));
     }
 
     [Test]
-    public async Task Can_Create_Rebate_Exchange()
+    public async Task RebateCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new RebateCommandService(fakeWalletExchangeService);
+        var sut = new RebateCommandService(fakeTgsRepository);
 
         var command = new RebateCommand(
             Guid.NewGuid(),
@@ -45,21 +46,22 @@ public class ManagementTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Rebate.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+            .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                record => record.WalletId == command.WalletId
+                && record.TransactionType == TransactionType.Rebate
+                && record.Amount == command.Amount.Truncate(2)
+                && record.LockAmount == 0
+                && record.Description == command.Description
+                && record.ExternalId == command.ExternalId));
     }
 
     [Test]
-    public async Task Can_Create_Other_Exchange()
+    public async Task OtherCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new OtherCommandService(fakeWalletExchangeService);
+        var sut = new OtherCommandService(fakeTgsRepository);
 
         var command = new OtherCommand(
             Guid.NewGuid(),
@@ -70,22 +72,23 @@ public class ManagementTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Other.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+            .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                record => record.WalletId == command.WalletId
+                && record.TransactionType == TransactionType.Other
+                && record.Amount == command.Amount
+                && record.LockAmount == 0
+                && record.Description == command.Description
+                && record.ExternalId == command.ExternalId
+                && record.UserId == command.CreatedByUserId));
     }
 
     [Test]
-    public async Task Can_Create_UnsettledBetManualCommand_Exchange()
+    public async Task UnsettledBetManualCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new UnsettledBetManualCommandService(fakeWalletExchangeService);
+        var sut = new UnsettledBetManualCommandService(fakeTgsRepository);
 
         var command = new UnsettledBetManualCommand(
             Guid.NewGuid(),
@@ -96,22 +99,23 @@ public class ManagementTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.UnsettledBetManual.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+             .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                 record => record.WalletId == command.WalletId
+                 && record.TransactionType == TransactionType.UnsettledBetManual
+                 && record.Amount == command.Amount
+                 && record.LockAmount == 0
+                 && record.Description == command.Description
+                 && record.ExternalId == command.ExternalId
+                 && record.UserId == command.CreatedByUserId));
     }
 
     [Test]
-    public async Task Can_Create_AdjustResettledBetManualCommand_Exchange()
+    public async Task AdjustResettledBetManualCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new AdjustResettledBetManualCommandService(fakeWalletExchangeService);
+        var sut = new AdjustResettledBetManualCommandService(fakeTgsRepository);
 
         var command = new AdjustResettledBetManualCommand(
             Guid.NewGuid(),
@@ -122,13 +126,14 @@ public class ManagementTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.AdjustResettledBetManual.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.AdjustResettledBetManual
+                  && record.Amount == command.Amount
+                  && record.LockAmount == 0
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId
+                  && record.UserId == command.CreatedByUserId));
     }
 }

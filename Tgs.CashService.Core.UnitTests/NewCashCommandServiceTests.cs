@@ -1,17 +1,15 @@
-﻿using Tgs.Cash.Protos;
-using Tgs.CashService.ApplicationServices;
+﻿using Tgs.CashService.ApplicationServices;
 
 namespace Tgs.CashService.Core.UnitTests;
 
 public class NewCashCommandServiceTests
 {
     [Test]
-    public async Task 建立一個新的錢包帳號()
+    public async Task NewCashCommandService_CreateWallet()
     {
         var fakeTgsRepository = Substitute.For<ITgsRepository>();
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
 
-        var sut = new NewCashCommandService(fakeTgsRepository, fakeWalletExchangeService);
+        var sut = new NewCashCommandService(fakeTgsRepository);
 
         var command = new NewCashCommand(Guid.NewGuid(), "test1", CashType.Player, "CNY");
 
@@ -23,11 +21,7 @@ public class NewCashCommandServiceTests
                 Arg.Is(command.BrandId),
                 Arg.Is(command.UserId),
                 Arg.Is(command.Type),
-                Arg.Is(command.CurrencyCode));
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.TransactionType == nameof(TransactionType.CreateWallet)
-                    && request.Amount.ToDecimal() == 0M
-                    && request.LockAmount.ToDecimal() == 0M));
+                Arg.Is(command.CurrencyCode),
+                Arg.Any<CancellationToken>());
     }
 }

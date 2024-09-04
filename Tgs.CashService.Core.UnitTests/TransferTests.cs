@@ -1,5 +1,5 @@
-﻿using Tgs.Cash.Protos;
-using Tgs.CashService.ApplicationServices;
+﻿using Tgs.CashService.ApplicationServices;
+using Tgs.CashService.Models;
 
 namespace Tgs.CashService.Core.UnitTests;
 
@@ -8,9 +8,9 @@ public class TransferTests
     [Test]
     public async Task Can_Create_TransferLock_Exchange()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new TransferLockCommandService(fakeWalletExchangeService);
+        var sut = new TransferLockCommandService(fakeTgsRepository);
 
         var command = new TransferLockCommand(
             Guid.NewGuid(),
@@ -21,23 +21,23 @@ public class TransferTests
 
         _ = await sut.GetAsync(command);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Transfer.ToString()
-                    && request.Amount == -command.Amount
-                    && request.LockAmount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId.ToString()
-                    && request.CreatedUser == command.Executor));
+        _ = fakeTgsRepository.Received(1)
+             .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                 record => record.WalletId == command.WalletId
+                 && record.TransactionType == TransactionType.Transfer
+                 && record.Amount == -command.Amount
+                 && record.LockAmount == command.Amount
+                 && record.Description == command.Description
+                 && record.ExternalId == command.ExternalId.ToString()
+                 && record.UserId == command.Executor));
     }
 
     [Test]
     public async Task Can_Create_TransferCommit_Exchange()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new TransferCommitCommandService(fakeWalletExchangeService);
+        var sut = new TransferCommitCommandService(fakeTgsRepository);
 
         var command = new TransferCommitCommand(
             Guid.NewGuid(),
@@ -47,24 +47,24 @@ public class TransferTests
             Guid.NewGuid());
 
         _ = await sut.GetAsync(command);
-
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.TransferCommit.ToString()
-                    && request.Amount == 0M
-                    && request.LockAmount == -command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId.ToString()
-                    && request.CreatedUser == command.Executor));
+        
+        _ = fakeTgsRepository.Received(1)
+             .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                 record => record.WalletId == command.WalletId
+                 && record.TransactionType == TransactionType.TransferCommit
+                 && record.Amount == 0
+                 && record.LockAmount == -command.Amount
+                 && record.Description == command.Description
+                 && record.ExternalId == command.ExternalId.ToString()
+                 && record.UserId == command.Executor));
     }
 
     [Test]
     public async Task Can_Create_TransferRollback_Exchange()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new TransferRollbackCommandService(fakeWalletExchangeService);
+        var sut = new TransferRollbackCommandService(fakeTgsRepository);
 
         var command = new TransferRollbackCommand(
             Guid.NewGuid(),
@@ -75,23 +75,23 @@ public class TransferTests
 
         _ = await sut.GetAsync(command);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.TransferRollback.ToString()
-                    && request.Amount == command.Amount
-                    && request.LockAmount == -command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId.ToString()
-                    && request.CreatedUser == command.Executor));
+        _ = fakeTgsRepository.Received(1)
+             .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                 record => record.WalletId == command.WalletId
+                 && record.TransactionType == TransactionType.TransferRollback
+                 && record.Amount == command.Amount
+                 && record.LockAmount == -command.Amount
+                 && record.Description == command.Description
+                 && record.ExternalId == command.ExternalId.ToString()
+                 && record.UserId == command.Executor));
     }
 
     [Test]
     public async Task Can_Create_ReceiveLock_Exchange()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new ReceiveLockCommandService(fakeWalletExchangeService);
+        var sut = new ReceiveLockCommandService(fakeTgsRepository);
 
         var command = new ReceiveLockCommand(
             Guid.NewGuid(),
@@ -102,23 +102,23 @@ public class TransferTests
 
         _ = await sut.GetAsync(command);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Receive.ToString()
-                    && request.Amount == 0M
-                    && request.LockAmount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId.ToString()
-                    && request.CreatedUser == command.Executor));
+        _ = fakeTgsRepository.Received(1)
+            .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                record => record.WalletId == command.WalletId
+                && record.TransactionType == TransactionType.Receive
+                && record.Amount == 0
+                && record.LockAmount == command.Amount
+                && record.Description == command.Description
+                && record.ExternalId == command.ExternalId.ToString()
+                && record.UserId == command.Executor));
     }
 
     [Test]
     public async Task Can_Create_ReceiveCommit_Exchange()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new ReceiveCommitCommandService(fakeWalletExchangeService);
+        var sut = new ReceiveCommitCommandService(fakeTgsRepository);
 
         var command = new ReceiveCommitCommand(
             Guid.NewGuid(),
@@ -129,23 +129,23 @@ public class TransferTests
 
         _ = await sut.GetAsync(command);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.ReceiveCommit.ToString()
-                    && request.Amount == command.Amount
-                    && request.LockAmount == -command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId.ToString()
-                    && request.CreatedUser == command.Executor));
+        _ = fakeTgsRepository.Received(1)
+            .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                record => record.WalletId == command.WalletId
+                && record.TransactionType == TransactionType.ReceiveCommit
+                && record.Amount == command.Amount
+                && record.LockAmount == -command.Amount
+                && record.Description == command.Description
+                && record.ExternalId == command.ExternalId.ToString()
+                && record.UserId == command.Executor));
     }
 
     [Test]
     public async Task Can_Create_ReceiveRollback_Exchange()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new ReceiveRollbackCommandService(fakeWalletExchangeService);
+        var sut = new ReceiveRollbackCommandService(fakeTgsRepository);
 
         var command = new ReceiveRollbackCommand(
             Guid.NewGuid(),
@@ -156,14 +156,14 @@ public class TransferTests
 
         _ = await sut.GetAsync(command);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.ReceiveRollback.ToString()
-                    && request.Amount == 0M
-                    && request.LockAmount == -command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId.ToString()
-                    && request.CreatedUser == command.Executor));
+        _ = fakeTgsRepository.Received(1)
+            .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                record => record.WalletId == command.WalletId
+                && record.TransactionType == TransactionType.ReceiveRollback
+                && record.Amount == 0
+                && record.LockAmount == -command.Amount
+                && record.Description == command.Description
+                && record.ExternalId == command.ExternalId.ToString()
+                && record.UserId == command.Executor));
     }
 }

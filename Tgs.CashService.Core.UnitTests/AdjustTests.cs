@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
-using Tgs.Cash.Protos;
 using Tgs.CashService.ApplicationServices;
+using Tgs.CashService.Models;
 
 namespace Tgs.CashService.Core.UnitTests;
 
@@ -8,16 +8,16 @@ namespace Tgs.CashService.Core.UnitTests;
 public class AdjustTests
 {
     [Test]
-    public async Task Can_Create_Company_Adjust_Exchange_V2()
+    public async Task AdjustCompanyCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
-
-        var sut = new AdjustCompanyCommandService(fakeWalletExchangeService);
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
+        
+        var sut = new AdjustCompanyCommandService(fakeTgsRepository);
 
         var command = new AdjustCompanyV2Command(
             Guid.NewGuid(),
             100M,
-            "新增公司調帳",
+            "AdjustCompanyV2Command",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
 
@@ -29,27 +29,28 @@ public class AdjustTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.AdjustCompany.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+            .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                record => record.WalletId == command.WalletId
+                && record.TransactionType == TransactionType.AdjustCompany
+                && record.Amount == command.Amount
+                && record.LockAmount == 0
+                && record.Description == description
+                && record.ExternalId == command.ExternalId
+                && record.UserId == command.CreatedByUserId));
     }
 
     [Test]
-    public async Task Can_Create_Bonus_Adjust_Exchange_V2()
+    public async Task AdjustBonusCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new AdjustBonusCommandService(fakeWalletExchangeService);
+        var sut = new AdjustBonusCommandService(fakeTgsRepository);
 
         var command = new AdjustBonusV2Command(
             Guid.NewGuid(),
             100M,
-            "新增優惠調帳",
+            "AdjustBonusCommandService",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
 
@@ -61,27 +62,28 @@ public class AdjustTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.AdjustBonus.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+           .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+               record => record.WalletId == command.WalletId
+               && record.TransactionType == TransactionType.AdjustBonus
+               && record.Amount == command.Amount
+                && record.LockAmount == 0
+               && record.Description == description
+               && record.ExternalId == command.ExternalId
+               && record.UserId == command.CreatedByUserId));
     }
 
     [Test]
-    public async Task Can_Create_Agent_Adjust_Exchange_V2()
+    public async Task AdjustAgentCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new AdjustAgentCommandService(fakeWalletExchangeService);
+        var sut = new AdjustAgentCommandService(fakeTgsRepository);
 
         var command = new AdjustAgentV2Command(
             Guid.NewGuid(),
             100M,
-            "新增代理調帳",
+            "AdjustAgentV2Command",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
 
@@ -93,28 +95,29 @@ public class AdjustTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.AdjustAgent.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+           .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+               record => record.WalletId == command.WalletId
+               && record.TransactionType == TransactionType.AdjustAgent
+               && record.Amount == command.Amount
+                && record.LockAmount == 0
+               && record.Description == description
+               && record.ExternalId == command.ExternalId
+               && record.UserId == command.CreatedByUserId));
     }
 
     [Test]
-    public async Task Can_Create_System_Adjust_Exchange_V2()
+    public async Task AdjustSystemCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new AdjustSystemCommandService(fakeWalletExchangeService);
+        var sut = new AdjustSystemCommandService(fakeTgsRepository);
 
         var command = new AdjustSystemV2Command(
             Guid.NewGuid(),
             100M,
             0M,
-            "新增系統調帳",
+            "AdjustSystemV2Command",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
 
@@ -126,39 +129,41 @@ public class AdjustTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.AdjustSystem.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+           .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+               record => record.WalletId == command.WalletId
+               && record.TransactionType == TransactionType.AdjustSystem
+               && record.Amount == command.Amount
+                && record.LockAmount == 0
+               && record.Description == description
+               && record.ExternalId == command.ExternalId
+               && record.UserId == command.CreatedByUserId));
     }
 
     [Test]
-    public async Task Can_Create_Transfer_Adjust_Exchange()
+    public async Task AdjustTransferCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new AdjustTransferCommandService(fakeWalletExchangeService);
+        var sut = new AdjustTransferCommandService(fakeTgsRepository);
 
         var command = new AdjustTransferCommand(
             Guid.NewGuid(),
             100M,
-            "新增系統轉帳",
+            "AdjustTransferCommandService",
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid());
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.AdjustTransfer.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+           .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+               record => record.WalletId == command.WalletId
+               && record.TransactionType == TransactionType.AdjustTransfer
+               && record.Amount == command.Amount
+                && record.LockAmount == 0
+               && record.Description == command.Description
+               && record.ExternalId == command.ExternalId
+               && record.UserId == command.CreatedByUserId));
     }
 }

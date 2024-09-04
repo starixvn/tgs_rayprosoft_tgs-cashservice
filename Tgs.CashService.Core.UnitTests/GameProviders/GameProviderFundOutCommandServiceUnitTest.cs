@@ -1,5 +1,5 @@
-﻿using Tgs.Cash.Protos;
-using Tgs.CashService.ApplicationServices;
+﻿using Tgs.CashService.ApplicationServices;
+using Tgs.CashService.Models;
 
 namespace Tgs.CashService.Core.UnitTests.GameProviders;
 
@@ -7,68 +7,27 @@ namespace Tgs.CashService.Core.UnitTests.GameProviders;
 public class GameProviderFundOutCommandServiceUnitTest
 {
     [Test]
-    public async Task GameProviderFundOutCommandService_轉出錢包金額到遊戲()
+    public async Task GameProviderFundOutCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new GameProviderFundOutCommandService(fakeWalletExchangeService);
+        var sut = new GameProviderFundOutCommandService(fakeTgsRepository);
 
         var command = new GameProviderFundOutCommand(
             Guid.NewGuid(),
             1000M,
             null,
             null);
-
-        _ = fakeWalletExchangeService.SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-            request => request.WalletId.ToGuid() == command.WalletId
-                && request.TransactionType == TransactionType.GameProviderFundOutLock.ToString()
-                && request.Amount == -command.Amount
-                && request.LockAmount == command.Amount))
-            .Returns(new ExchangeResult(Guid.NewGuid(), 0M, -1000M));
-
-        _ = fakeWalletExchangeService.SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-            request => request.WalletId.ToGuid() == command.WalletId
-                && request.TransactionType == TransactionType.GameProviderFundOutCommit.ToString()
-                && request.Amount == 0M
-                && request.LockAmount == -command.Amount))
-            .Returns(new ExchangeResult(Guid.NewGuid(), 0M, 0M));
 
         var actual = await sut.GetAsync(command);
 
-        Assert.That(actual.Balance, Is.EqualTo(0M));
-        Assert.That(actual.LockedBalance, Is.EqualTo(0M));
-    }
-
-    [Test]
-    public void GameProviderFundOutCommandService_轉出錢包金額到遊戲_如果轉出後餘額變負數_會恢復金額並且發生例外()
-    {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
-
-        var sut = new GameProviderFundOutCommandService(fakeWalletExchangeService);
-
-        var command = new GameProviderFundOutCommand(
-            Guid.NewGuid(),
-            1000M,
-            null,
-            null);
-
-        _ = fakeWalletExchangeService.SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-            request => request.WalletId.ToGuid() == command.WalletId
-                && request.TransactionType == TransactionType.GameProviderFundOutLock.ToString()
-                && request.Amount == -command.Amount
-                && request.LockAmount == command.Amount))
-            .Returns(new ExchangeResult(Guid.NewGuid(), -10M, -1000M));
-
-        _ = Assert.ThrowsAsync<Exception>(() => sut.GetAsync(command).AsTask());
-
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId.ToGuid() == command.WalletId
-                && request.TransactionType == TransactionType.GameProviderFundOutRollback.ToString()
-                && request.Amount == command.Amount
-                && request.LockAmount == -command.Amount));
-        _ = fakeWalletExchangeService.DidNotReceive()
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                req => req.TransactionType == TransactionType.GameProviderFundOutCommit.ToString()));
+        _ = fakeTgsRepository.Received(1)
+         .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+             record => record.WalletId == command.WalletId
+                 && record.TransactionType == TransactionType.GameProviderFundOutCommit
+                 && record.Amount == -command.Amount
+                 && record.LockAmount == 0
+                 && record.Description == string.Empty
+                 && record.ExternalId == string.Empty));
     }
 }

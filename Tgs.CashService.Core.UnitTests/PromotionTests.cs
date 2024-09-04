@@ -1,5 +1,5 @@
-﻿using Tgs.Cash.Protos;
-using Tgs.CashService.ApplicationServices;
+﻿using Tgs.CashService.ApplicationServices;
+using Tgs.CashService.Models;
 
 namespace Tgs.CashService.Core.UnitTests;
 
@@ -7,11 +7,11 @@ namespace Tgs.CashService.Core.UnitTests;
 public class PromotionTests
 {
     [Test]
-    public async Task Can_Create_Promotion_Exchange()
+    public async Task PromotionCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new PromotionCommandService(fakeWalletExchangeService);
+        var sut = new PromotionCommandService(fakeTgsRepository);
 
         var command = new PromotionCommand(
             Guid.NewGuid(),
@@ -22,21 +22,22 @@ public class PromotionTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Promotion.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.Promotion
+                  && record.Amount == command.Amount
+                  && record.LockAmount == 0
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId));
     }
 
     [Test]
-    public async Task Can_Create_Promotion_VipLevel_Upgrad_Exchange()
+    public async Task PromotionVipLevelupgradeCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new PromotionVipLevelupgradeCommandService(fakeWalletExchangeService);
+        var sut = new PromotionVipLevelupgradeCommandService(fakeTgsRepository);
 
         var command = new PromotionVipLevelUpgradeCommand(
             Guid.NewGuid(),
@@ -46,21 +47,22 @@ public class PromotionTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.PromotionVipLevelUpgrade.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+               .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                   record => record.WalletId == command.WalletId
+                   && record.TransactionType == TransactionType.PromotionVipLevelUpgrade
+                   && record.Amount == command.Amount
+                   && record.LockAmount == 0
+                   && record.Description == command.Description
+                   && record.ExternalId == command.ExternalId));
     }
 
     [Test]
-    public async Task Can_Create_Promotion_VipLevel_Season_Exchange()
+    public async Task PromotionVipLevelSeasonCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new PromotionVipLevelSeasonCommandService(fakeWalletExchangeService);
+        var sut = new PromotionVipLevelSeasonCommandService(fakeTgsRepository);
 
         var command = new PromotionVipLevelSeasonCommand(
             Guid.NewGuid(),
@@ -70,21 +72,22 @@ public class PromotionTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.PromotionVipLevelSeason.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+               .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                   record => record.WalletId == command.WalletId
+                   && record.TransactionType == TransactionType.PromotionVipLevelSeason
+                   && record.Amount == command.Amount
+                   && record.LockAmount == 0
+                   && record.Description == command.Description
+                   && record.ExternalId == command.ExternalId));
     }
 
     [Test]
-    public async Task Can_Create_Promotion_VipLevel_Birthday_Exchange()
+    public async Task PromotionVipLevelBirthdayCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new PromotionVipLevelBirthdayCommandService(fakeWalletExchangeService);
+        var sut = new PromotionVipLevelBirthdayCommandService(fakeTgsRepository);
 
         var command = new PromotionVipLevelBirthdayCommand(
             Guid.NewGuid(),
@@ -94,21 +97,22 @@ public class PromotionTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.PromotionVipLevelBirthday.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.PromotionVipLevelBirthday
+                  && record.Amount == command.Amount
+                  && record.LockAmount == 0
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId));
     }
 
     [Test]
-    public async Task Truncate_To_2_Decimal_places()
+    public async Task PromotionCommandService_TruncateAmount_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new PromotionCommandService(fakeWalletExchangeService);
+        var sut = new PromotionCommandService(fakeTgsRepository);
 
         var command = new PromotionCommand(
             Guid.NewGuid(),
@@ -119,12 +123,13 @@ public class PromotionTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Promotion.ToString()
-                    && request.Amount == 100.12M
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.Promotion
+                  && record.Amount == command.Amount.Truncate(2)
+                  && record.LockAmount == 0
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId));
     }
 }

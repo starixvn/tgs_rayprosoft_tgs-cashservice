@@ -1,5 +1,5 @@
-﻿using Tgs.Cash.Protos;
-using Tgs.CashService.ApplicationServices;
+﻿using Tgs.CashService.ApplicationServices;
+using Tgs.CashService.Models;
 
 namespace Tgs.CashService.Core.UnitTests;
 
@@ -8,11 +8,11 @@ public class PaymentTests
 {
     [Test]
     [Obsolete("已淘汰")]
-    public async Task Can_Create_Deposit_Exchange()
+    public async Task DepositCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new DepositCommandService(fakeWalletExchangeService);
+        var sut = new DepositCommandService(fakeTgsRepository);
 
         var command = new DepositCommand(
             Guid.NewGuid(),
@@ -23,23 +23,23 @@ public class PaymentTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.DepositOld.ToString()
-                    && request.Amount == command.Amount
-                    && request.LockAmount == 0M
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+             .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                 record => record.WalletId == command.WalletId
+                 && record.TransactionType == TransactionType.DepositOld
+                 && record.Amount == command.Amount
+                 && record.LockAmount == 0
+                 && record.Description == command.Description
+                 && record.ExternalId == command.ExternalId
+                 && record.UserId == command.CreatedByUserId));
     }
 
     [Test]
-    public async Task Can_Create_Deposited_Exchange()
+    public async Task DepositedCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new DepositedCommandService(fakeWalletExchangeService);
+        var sut = new DepositedCommandService(fakeTgsRepository);
 
         var command = new DepositedCommand(
             Guid.NewGuid(),
@@ -50,24 +50,24 @@ public class PaymentTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Deposit.ToString()
-                    && request.Amount == command.Amount
-                    && request.LockAmount == 0M
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.Deposit
+                  && record.Amount == command.Amount
+                  && record.LockAmount == 0
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId
+                  && record.UserId == command.CreatedByUserId));
     }
 
     [Test]
     [Obsolete("已淘汰")]
-    public async Task Can_Create_Withdrawal_Exchange()
+    public async Task WithdrawalCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new WithdrawalCommandService(fakeWalletExchangeService);
+        var sut = new WithdrawalCommandService(fakeTgsRepository);
 
         var command = new WithdrawalCommand(
             Guid.NewGuid(),
@@ -77,22 +77,22 @@ public class PaymentTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Withdrawal.ToString()
-                    && request.Amount == -command.Amount
-                    && request.LockAmount == 0M
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.Withdrawal
+                  && record.Amount == -command.Amount
+                  && record.LockAmount == 0
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId));
     }
 
     [Test]
-    public async Task Can_Create_WithdrawLock_Exchange()
+    public async Task WithdrawLockCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new WithdrawLockCommandService(fakeWalletExchangeService);
+        var sut = new WithdrawLockCommandService(fakeTgsRepository);
 
         var command = new WithdrawLockCommand(
             Guid.NewGuid(),
@@ -102,23 +102,23 @@ public class PaymentTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.WithdrawLock.ToString()
-                    && request.Amount == -command.Amount
-                    && request.LockAmount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.WithdrawLock
+                  && record.Amount == -command.Amount
+                  && record.LockAmount == command.Amount
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId));
     }
 
     [Test]
     [Obsolete("已淘汰")]
-    public async Task Can_Create_CancelWithdrawal_Exchange()
+    public async Task CancelWithdrawalCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new CancelWithdrawalCommandService(fakeWalletExchangeService);
+        var sut = new CancelWithdrawalCommandService(fakeTgsRepository);
 
         var command = new CancelWithdrawalCommand(
             Guid.NewGuid(),
@@ -129,23 +129,23 @@ public class PaymentTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.CancelWithdrawal.ToString()
-                    && request.Amount == command.Amount
-                    && request.LockAmount == 0M
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId
-                    && request.CreatedUser == command.CreatedByUserId));
+        _ = fakeTgsRepository.Received(1)
+               .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                   record => record.WalletId == command.WalletId
+                   && record.TransactionType == TransactionType.CancelWithdrawal
+                   && record.Amount == command.Amount
+                   && record.LockAmount == 0
+                   && record.Description == command.Description
+                   && record.ExternalId == command.ExternalId
+                   && record.UserId == command.CreatedByUserId));
     }
 
     [Test]
-    public async Task Can_Create_WithdrawCommit_Exchange()
+    public async Task CommitWithdrawCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new CommitWithdrawCommandService(fakeWalletExchangeService);
+        var sut = new CommitWithdrawCommandService(fakeTgsRepository);
 
         var command = new CommitWithdrawCommand(
             Guid.NewGuid(),
@@ -157,22 +157,23 @@ public class PaymentTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.WithdrawCommit.ToString()
-                    && request.Amount == 0M
-                    && request.LockAmount == -command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.WithdrawCommit
+                  && record.Amount == 0
+                  && record.LockAmount == -command.Amount
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId
+                  && record.UserId == command.CreatedByUserId));
     }
 
     [Test]
-    public async Task Can_Create_WithdrawRollback_Exchange()
+    public async Task RollbackWithdrawCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new RollbackWithdrawCommandService(fakeWalletExchangeService);
+        var sut = new RollbackWithdrawCommandService(fakeTgsRepository);
 
         var command = new RollbackWithdrawCommand(
             Guid.NewGuid(),
@@ -183,13 +184,13 @@ public class PaymentTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.WithdrawRollback.ToString()
-                    && request.Amount == command.Amount
-                    && request.LockAmount == -command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+               .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                   record => record.WalletId == command.WalletId
+                   && record.TransactionType == TransactionType.WithdrawRollback
+                   && record.Amount == command.Amount
+                   && record.LockAmount == -command.Amount
+                   && record.Description == command.Description
+                   && record.ExternalId == command.ExternalId));
     }
 }

@@ -1,16 +1,16 @@
-﻿using Tgs.Cash.Protos;
-using Tgs.CashService.ApplicationServices;
+﻿using Tgs.CashService.ApplicationServices;
+using Tgs.CashService.Models;
 
 namespace Tgs.CashService.Core.UnitTests;
 
 public class DividendAgentCommandServiceTests
 {
     [Test]
-    public async Task 代理分紅操作()
+    public async Task DividendAgentCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new DividendAgentCommandService(fakeWalletExchangeService);
+        var sut = new DividendAgentCommandService(fakeTgsRepository);
 
         var command = new DividendAgentCommand(
             Guid.NewGuid(),
@@ -20,12 +20,13 @@ public class DividendAgentCommandServiceTests
 
         _ = await sut.GetAsync(command);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == nameof(TransactionType.AgentDividend)
-                    && request.Amount == command.Amount
-                    && request.Description == string.Empty
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+           .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+               record => record.WalletId == command.WalletId
+               && record.TransactionType == TransactionType.AgentDividend
+               && record.Amount == command.Amount
+                && record.LockAmount == 0
+               && record.Description == string.Empty
+               && record.ExternalId == command.ExternalId));
     }
 }

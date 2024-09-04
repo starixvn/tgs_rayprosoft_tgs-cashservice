@@ -1,5 +1,5 @@
-﻿using Tgs.Cash.Protos;
-using Tgs.CashService.ApplicationServices;
+﻿using Tgs.CashService.ApplicationServices;
+using Tgs.CashService.Models;
 
 namespace Tgs.CashService.Core.UnitTests;
 
@@ -7,11 +7,11 @@ namespace Tgs.CashService.Core.UnitTests;
 public class RebateTests
 {
     [Test]
-    public async Task Can_Create_Rebate_Exchange()
+    public async Task RebateCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new RebateCommandService(fakeWalletExchangeService);
+        var sut = new RebateCommandService(fakeTgsRepository);
 
         var command = new RebateCommand(
             Guid.NewGuid(),
@@ -21,21 +21,22 @@ public class RebateTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Rebate.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.Rebate
+                  && record.Amount == command.Amount
+                  && record.LockAmount == 0
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId));
     }
 
     [Test]
-    public async Task Can_Create_Dividend_All_Agent_Rebate_Exchange()
+    public async Task DividendAllAgentRebateCommandService_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new DividendAllAgentRebateCommandService(fakeWalletExchangeService);
+        var sut = new DividendAllAgentRebateCommandService(fakeTgsRepository);
 
         var command = new DividendAllAgentRebateCommand(
             Guid.NewGuid(),
@@ -45,21 +46,22 @@ public class RebateTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.DividendAllAgentRebate.ToString()
-                    && request.Amount == command.Amount
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.DividendAllAgentRebate
+                  && record.Amount == command.Amount
+                  && record.LockAmount == 0
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId));
     }
 
     [Test]
-    public async Task Rebate_Truncate_To_2_Decimal_places()
+    public async Task RebateCommandService_TruncateAmount_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new RebateCommandService(fakeWalletExchangeService);
+        var sut = new RebateCommandService(fakeTgsRepository);
 
         var command = new RebateCommand(
             Guid.NewGuid(),
@@ -69,21 +71,22 @@ public class RebateTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.Rebate.ToString()
-                    && request.Amount == 100.12M
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.Rebate
+                  && record.Amount == 100.12M
+                  && record.LockAmount == 0
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId));
     }
 
     [Test]
-    public async Task All_Agent_Rebate_Truncate_To_2_Decimal_places()
+    public async Task DividendAllAgentRebateCommandService_TruncateAmount_ExchangeWallet()
     {
-        var fakeWalletExchangeService = Substitute.For<IWalletExchangeService>();
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-        var sut = new DividendAllAgentRebateCommandService(fakeWalletExchangeService);
+        var sut = new DividendAllAgentRebateCommandService(fakeTgsRepository);
 
         var command = new DividendAllAgentRebateCommand(
             Guid.NewGuid(),
@@ -93,12 +96,13 @@ public class RebateTests
 
         _ = await sut.GetAsync(command).ConfigureAwait(false);
 
-        _ = fakeWalletExchangeService.Received(1)
-            .SendRequestAsync(Arg.Is<WalletExchangeRequest>(
-                request => request.WalletId == command.WalletId
-                    && request.TransactionType == TransactionType.DividendAllAgentRebate.ToString()
-                    && request.Amount == 100.12M
-                    && request.Description == command.Description
-                    && request.ExternalId == command.ExternalId));
+        _ = fakeTgsRepository.Received(1)
+              .ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
+                  record => record.WalletId == command.WalletId
+                  && record.TransactionType == TransactionType.DividendAllAgentRebate
+                  && record.Amount == 100.12M
+                  && record.LockAmount == 0
+                  && record.Description == command.Description
+                  && record.ExternalId == command.ExternalId));
     }
 }
