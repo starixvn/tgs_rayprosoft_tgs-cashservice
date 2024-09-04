@@ -3,12 +3,10 @@ using Asp.Versioning.ApiExplorer;
 using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using NATS.Client.Core;
 using Npgsql;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using StackExchange.Redis;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Tgs.CashService;
 
@@ -96,32 +94,9 @@ builder.Services
     .AddProfileViewer();
 
 builder.Services
-    .AddKeyedSingleton<IConnectionMultiplexer>(
-        "Redis",
-        (sp, _) => ConnectionMultiplexer.Connect(
-            builder.Configuration.GetConnectionString("Redis")!))
-    .AddKeyedSingleton(
-        "Redis",
-        (sp, _) => sp
-            .GetRequiredKeyedService<IConnectionMultiplexer>("Redis")
-            .GetDatabase())
     .AddCashServiceRepositories(
         (_, optionsBuilder) => optionsBuilder.UseNpgsql("name=Tgs").EnableSensitiveDataLogging())
-    .AddCashServiceCore(sp => sp.GetRequiredKeyedService<IDatabase>("Redis"))
-    .Decorate<IWalletExchangeService, WalletExchangeServiceDecorator>();
-//builder.Services
-//    .AddKeyedSingleton(
-//        "Nats",
-//        (sp, _) => new NatsConnection(NatsOpts.Default with
-//        {
-//            Url = builder.Configuration.GetConnectionString("Nats")!
-//        }))
-//    .AddMessageQueue()
-//    .AddNatsMessageQueue(config => config
-//        .ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
-//        .SetSessionReplySubject($"tgs.cash.worker.{Environment.MachineName}.reply"))
-//    .ClearAllExchanges()
-//    .AddNatsGlobPatternExchange("*");
+    .AddCashServiceCore();
 
 builder.Services
     .AddInterceptionService()
