@@ -15,6 +15,7 @@ namespace Tgs.CashService
             Description = record.Description;
             ExternalId = record.ExternalId;
             CreatedByUserId = record.UserId?.ToString();
+            IsAllowNegative = record.isAllowNegative;
         }
 
         public string TransactionId { get; set; }
@@ -26,5 +27,6 @@ namespace Tgs.CashService
         public string Description { get; set; }
         public string ExternalId { get; set; }
         public string? CreatedByUserId { get; set; }
+        public bool IsAllowNegative { get; set; }
     }
 }

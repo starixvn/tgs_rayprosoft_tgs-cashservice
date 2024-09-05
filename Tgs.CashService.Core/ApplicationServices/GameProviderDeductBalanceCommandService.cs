@@ -33,8 +33,9 @@ internal class GameProviderDeductBalanceCommandService(ITgsRepository tgsReposit
             command.Description ?? string.Empty,
             command.ExternalId ?? string.Empty,
             null,
-            command.PlayerCode
-        );
+            command.PlayerCode,
+            false
+            );
 
             var result = await _tgsRepository.ExchangeWalletAsync(record, cancellationToken)
                 .ConfigureAwait(false);

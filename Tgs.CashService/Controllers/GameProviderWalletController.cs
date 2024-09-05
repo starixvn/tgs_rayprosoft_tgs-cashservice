@@ -276,4 +276,23 @@ public class GameProviderWalletController : ControllerBase
                 request.ExternalId), cts.Token)
             .ConfigureAwait(false);
     }
+
+    [HttpPut("gp/adjust-balance/{playerCode}", Name = "GameProviderAdjustBalance")]
+    public async ValueTask<BalanceResult> GameProviderAdjustBalanceAsync(
+        [FromServices] IGetService<GameProviderAdjustBalanceCommand, BalanceResult> service,
+        string playerCode,
+        [FromBody] GameProviderAdjustBalanceViewModel request)
+    {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
+        return await service
+            .GetAsync(new GameProviderAdjustBalanceCommand(
+                playerCode,
+                request.AddedAmount,
+                request.DeductedAmount,
+                request.WalletId,
+                request.Description,
+                request.ExternalId), cts.Token)
+            .ConfigureAwait(false);
+    }
 }

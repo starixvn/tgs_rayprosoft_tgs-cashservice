@@ -14,7 +14,10 @@ internal class GameProviderFundOutCommandService(ITgsRepository tgsRepository)
             -command.Amount,
             0,
             command.Description ?? string.Empty,
-            command.ExternalId ?? string.Empty
+            command.ExternalId ?? string.Empty,
+            null,
+            "",
+            false
         );
 
         return await tgsRepository.ExchangeWalletAsync(record, cancellationToken)

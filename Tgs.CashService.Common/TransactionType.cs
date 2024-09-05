@@ -25,6 +25,7 @@ public enum TransactionType
     UnsettledBetManual = 12,
     GameProviderDeductBalance = 13,
     GameProviderAddBalance = 14,
+    GameProviderAdjustBalance = 15,
     Other = 99,
     Snapshot = 100,
     CreateWallet = 110,
