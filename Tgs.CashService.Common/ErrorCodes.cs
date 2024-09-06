@@ -1,23 +1,24 @@
 ﻿namespace Tgs.CashService;
 
-public enum ErrorCodes
+public static class ErrorCode
 {
-    Undefined = -1,
-    Success = 0,
-    DuplicateTransaction = 1,
-    NotFoundWallet = 2,
-    InvalidAmount = 307,
-    InsufficientFunds = 502,
+    public const string Success = "0";
+    public const string Undefined = "201";
+    public const string DuplicateTransaction = "202";
+    public const string NotFoundWallet = "203";
+    public const string InvalidAmount = "204";
+    public const string InsufficientFunds = "205";
 }
 
 public static class ErrorMessages
 {
-    public static readonly Dictionary<ErrorCodes, string> Messages = new()
+    public static readonly Dictionary<string, string> Messages = new()
     {
-        [ErrorCodes.Success] = "",
-        [ErrorCodes.DuplicateTransaction] = "Duplicate Transaction",
-        [ErrorCodes.NotFoundWallet] ="Can't found wallet!",
-        [ErrorCodes.InsufficientFunds] = "Player Has Insufficient Funds",
-        [ErrorCodes.InvalidAmount] = "Invalid Amount",
+        [ErrorCode.Success] = "",
+        [ErrorCode.Undefined] = "Internal Server Error",
+        [ErrorCode.DuplicateTransaction] = "Duplicate Transaction",
+        [ErrorCode.NotFoundWallet] ="Can't found wallet",
+        [ErrorCode.InsufficientFunds] = "Player Has Insufficient Funds",
+        [ErrorCode.InvalidAmount] = "Invalid Amount",
     };
 }

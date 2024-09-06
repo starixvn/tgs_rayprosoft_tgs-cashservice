@@ -205,15 +205,15 @@ internal class TgsRepository(
         var sqlQuery = $"CALL {spName}({string.Join(", ", typeof(ExchangeWalletCriteria).GetProperties().Select(p => $"@{p.Name.ToLowerInvariant()}"))})";
         var result = await dbAcess.QueryFirstOrDefaultAsync<ExchangeWalletSPResult>(sqlQuery, parameters).ConfigureAwait(false);
 
-        if (result!.ErrorCode == (int)ErrorCodes.NotFoundWallet)
+        if (result!.ErrorCode == ErrorCode.NotFoundWallet)
         {
             logger.LogError($"Can't found wallet {record.WalletId}.");
-            throw new NotFoundWalletException(ErrorMessages.Messages[ErrorCodes.NotFoundWallet]);
+            throw new NotFoundWalletException(ErrorMessages.Messages[ErrorCode.NotFoundWallet]);
         }
-        if (result!.ErrorCode == (int)ErrorCodes.InsufficientFunds)
+        if (result!.ErrorCode == ErrorCode.InsufficientFunds)
         {
             logger.LogError($"Invalid Balance {JsonSerializer.Serialize(record)}");
-            throw new InsufficientFundException(ErrorMessages.Messages[ErrorCodes.InsufficientFunds]);
+            throw new InsufficientFundException(ErrorMessages.Messages[ErrorCode.InsufficientFunds]);
         }
 
         return new ExchangeResult(Guid.Parse(result.TransactionId), result.Balance, result.LockedBalance);

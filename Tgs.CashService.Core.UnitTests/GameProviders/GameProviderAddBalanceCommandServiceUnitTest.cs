@@ -28,7 +28,7 @@ public class GameProviderAddBalanceCommandServiceUnitTest
 
         var actual = await sut.GetAsync(command).ConfigureAwait(false);
 
-        ClassicAssert.AreEqual(ErrorCodes.InvalidAmount, actual.ErrorCode);
+        ClassicAssert.AreEqual(ErrorCode.InvalidAmount, actual.ErrorCode);
     }
 
     [Test]
@@ -53,7 +53,7 @@ public class GameProviderAddBalanceCommandServiceUnitTest
 
         var actual = await sut.GetAsync(command).ConfigureAwait(false);
 
-        ClassicAssert.AreEqual(ErrorCodes.DuplicateTransaction, actual.ErrorCode);
+        ClassicAssert.AreEqual(ErrorCode.DuplicateTransaction, actual.ErrorCode);
     }
 
 
@@ -89,7 +89,7 @@ public class GameProviderAddBalanceCommandServiceUnitTest
 
         var actual = await sut.GetAsync(command).ConfigureAwait(false);
 
-        ClassicAssert.AreEqual(ErrorCodes.NotFoundWallet, actual.ErrorCode);
+        ClassicAssert.AreEqual(ErrorCode.NotFoundWallet, actual.ErrorCode);
     }
 
     [Test]
@@ -124,7 +124,7 @@ public class GameProviderAddBalanceCommandServiceUnitTest
 
         var actual = await sut.GetAsync(command).ConfigureAwait(false);
 
-        ClassicAssert.AreEqual(ErrorCodes.Success, actual.ErrorCode);
+        ClassicAssert.AreEqual(ErrorCode.Success, actual.ErrorCode);
         ClassicAssert.AreEqual(100, actual.Balance);
         ClassicAssert.AreEqual(0, actual.LockedBalance);
     }

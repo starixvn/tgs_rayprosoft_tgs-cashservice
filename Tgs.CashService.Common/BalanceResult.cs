@@ -5,7 +5,7 @@ public record BalanceResult(
     Guid TransactionId,
     decimal Balance,
     decimal LockedBalance,
-    ErrorCodes ErrorCode = ErrorCodes.Success)
+    string ErrorCode = ErrorCode.Success)
 {
     public string ErrorMessage => ErrorMessages.Messages[ErrorCode];
 };

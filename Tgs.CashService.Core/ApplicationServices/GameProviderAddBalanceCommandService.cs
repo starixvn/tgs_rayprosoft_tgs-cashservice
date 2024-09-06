@@ -16,12 +16,12 @@ internal class GameProviderAddBalanceCommandService(ITgsRepository tgsRepository
         if(!await IsValidTransaction(command.ExternalId, cancellationToken).ConfigureAwait(false))
         {
             logger.LogError($"Add Balance - Duplicate transaction {JsonSerializer.Serialize(command)}");
-            return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.DuplicateTransaction);
+            return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.DuplicateTransaction);
         }
         if (command.Amount <= 0)
         {
             logger.LogError($"Add Balance - Invalid Amount {JsonSerializer.Serialize(command)}");
-            return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.InvalidAmount);
+            return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.InvalidAmount);
         }
         try
         {
@@ -43,7 +43,7 @@ internal class GameProviderAddBalanceCommandService(ITgsRepository tgsRepository
         catch (Exception ex) {
             logger.LogError(ex.Message);
         }
-        return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.NotFoundWallet);
+        return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.NotFoundWallet);
     }
 
     private async ValueTask<bool> IsValidTransaction(string? externalId, CancellationToken cancellationToken = default)

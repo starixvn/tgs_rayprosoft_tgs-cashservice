@@ -16,12 +16,12 @@ internal class GameProviderDeductBalanceCommandService(ITgsRepository tgsReposit
         if (!await IsValidTransaction(command.ExternalId, cancellationToken).ConfigureAwait(false))
         {
             logger.LogError($"Deduct Balance - Duplicate transaction {JsonSerializer.Serialize(command)}");
-            return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.DuplicateTransaction);
+            return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.DuplicateTransaction);
         }
         if (command.Amount <= 0)
         {
             logger.LogError($"Deduct Balance - Invalid Amount {JsonSerializer.Serialize(command)}");
-            return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.InvalidAmount);
+            return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.InvalidAmount);
         }
         try
         {
@@ -43,7 +43,7 @@ internal class GameProviderDeductBalanceCommandService(ITgsRepository tgsReposit
         }
         catch (Exception ex) {
             logger.LogError(ex.Message);
-            var errorCode = ex is NotFoundWalletException ? ErrorCodes.NotFoundWallet : ErrorCodes.InsufficientFunds;
+            var errorCode = ex is NotFoundWalletException ? ErrorCode.NotFoundWallet : ErrorCode.InsufficientFunds;
             return new BalanceResult(Guid.Empty, 0, 0, errorCode);
         }
     }

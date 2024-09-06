@@ -13,7 +13,7 @@ internal class GameProviderGetBalanceCommandService(ITgsRepository tgsRepository
 
         if(wallet is null)
         {
-            return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.NotFoundWallet);
+            return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.NotFoundWallet);
         }
         return new BalanceResult(Guid.Empty, wallet.Balance, wallet.LockedBalance);
 

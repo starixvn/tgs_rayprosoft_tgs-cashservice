@@ -8,5 +8,5 @@
         string ExternalId,
         Guid? UserId = null,
         string PlayerCode = "",
-        bool isAllowNegative = true);
+        bool IsAllowNegative = true);
 }

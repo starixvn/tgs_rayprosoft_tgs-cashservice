@@ -28,6 +28,9 @@ public class GameProviderFundOutCommandServiceUnitTest
                  && record.Amount == -command.Amount
                  && record.LockAmount == 0
                  && record.Description == string.Empty
-                 && record.ExternalId == string.Empty));
+                 && record.ExternalId == string.Empty
+                 && record.UserId == null
+                 && record.PlayerCode == string.Empty
+                 && record.IsAllowNegative == false));
     }
 }

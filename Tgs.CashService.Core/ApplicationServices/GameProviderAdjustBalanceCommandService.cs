@@ -16,7 +16,7 @@ internal class GameProviderAdjustBalanceCommandService(ITgsRepository tgsReposit
         if(!await IsValidTransaction(command.ExternalId, cancellationToken).ConfigureAwait(false))
         {
             logger.LogError($"Adjust Balance - Duplicate transaction {JsonSerializer.Serialize(command)}");
-            return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.DuplicateTransaction);
+            return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.DuplicateTransaction);
         }
         try
         {
@@ -38,7 +38,7 @@ internal class GameProviderAdjustBalanceCommandService(ITgsRepository tgsReposit
         catch (Exception ex) {
             logger.LogError(ex.Message);
         }
-        return new BalanceResult(Guid.Empty, 0, 0, ErrorCodes.NotFoundWallet);
+        return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.NotFoundWallet);
     }
 
     private async ValueTask<bool> IsValidTransaction(string? externalId, CancellationToken cancellationToken = default)
