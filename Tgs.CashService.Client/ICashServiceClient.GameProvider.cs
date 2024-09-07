@@ -1,4 +1,6 @@
-﻿namespace Tgs.CashService.Client;
+﻿using Google.Protobuf.WellKnownTypes;
+
+namespace Tgs.CashService.Client;
 
 public partial interface ICashServiceClient
 {
@@ -42,25 +44,27 @@ public partial interface ICashServiceClient
     ValueTask<BalanceResponse> GameProviderAddBalanceAsync(
         string playerCode,
         decimal amount,
-        string externalId,
+        ProviderInfo providerInfo,
         string? description = "",
-        Guid? walletId = null,
         CancellationToken cancellationToken = default);
 
     ValueTask<BalanceResponse> GameProviderDeductBalanceAsync(
         string playerCode,
         decimal amount,
-        string externalId,
+        ProviderInfo providerInfo,
         string? description = "",
-        Guid? walletId = null,
         CancellationToken cancellationToken = default);
 
      ValueTask<BalanceResponse> GameProviderAdjustBalanceAsync(
         string playerCode,
         decimal addedAmount,
         decimal deductedAmount,
-        string externalId,
+        ProviderInfo providerInfo,
         string? description = "",
-        Guid? walletId = null,
+        CancellationToken cancellationToken = default);
+
+    ValueTask<bool> IsExistGameProviderTransactionLogAsync(
+        string playerCode,
+        ProviderInfo providerInfo,
         CancellationToken cancellationToken = default);
 }
