@@ -162,8 +162,8 @@ internal partial class CashServiceClient
     public async ValueTask<BalanceResponse> GameProviderAddBalanceAsync(
         string playerCode,
         decimal amount,
+        string externalId,
         string? description = "",
-        string? externalId = null,
         Guid? walletId = null,
         CancellationToken cancellationToken = default)
     {
@@ -192,8 +192,8 @@ internal partial class CashServiceClient
     public async ValueTask<BalanceResponse> GameProviderDeductBalanceAsync(
         string playerCode,
         decimal amount,
+        string externalId,
         string? description = "",
-        string? externalId = null,
         Guid? walletId = null,
         CancellationToken cancellationToken = default)
     {
@@ -220,10 +220,10 @@ internal partial class CashServiceClient
     }
     public async ValueTask<BalanceResponse> GameProviderAdjustBalanceAsync(
         string playerCode,
-        decimal addedAmount = 0,
-        decimal deductedAmount = 0,
+        decimal addedAmount,
+        decimal deductedAmount,
+        string externalId,
         string? description = "",
-        string? externalId = null,
         Guid? walletId = null,
         CancellationToken cancellationToken = default)
     {

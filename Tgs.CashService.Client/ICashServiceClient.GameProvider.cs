@@ -42,25 +42,25 @@ public partial interface ICashServiceClient
     ValueTask<BalanceResponse> GameProviderAddBalanceAsync(
         string playerCode,
         decimal amount,
+        string externalId,
         string? description = "",
-        string? externalId = null,
         Guid? walletId = null,
         CancellationToken cancellationToken = default);
 
     ValueTask<BalanceResponse> GameProviderDeductBalanceAsync(
         string playerCode,
         decimal amount,
+        string externalId,
         string? description = "",
-        string? externalId = null,
         Guid? walletId = null,
         CancellationToken cancellationToken = default);
 
      ValueTask<BalanceResponse> GameProviderAdjustBalanceAsync(
         string playerCode,
-        decimal addedAmount = 0,
-        decimal deductedAmount = 0,
+        decimal addedAmount,
+        decimal deductedAmount,
+        string externalId,
         string? description = "",
-        string? externalId = null,
         Guid? walletId = null,
         CancellationToken cancellationToken = default);
 }
