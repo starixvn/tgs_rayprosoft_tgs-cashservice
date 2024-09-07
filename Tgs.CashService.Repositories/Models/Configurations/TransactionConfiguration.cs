@@ -37,6 +37,9 @@ namespace Tgs.CashService.Repositories.Entities.Configurations
             entity.Property(e => e.CreatedByUserId).HasColumnName("created_by_user_id");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.ExternalTransactionId).HasColumnName("external_transaction_id");
+            entity.Property(e => e.ProviderCode).HasColumnName("provider_code");
+            entity.Property(e => e.OperationId).HasColumnName("operation_id");
+            entity.Property(e => e.Action).HasColumnName("action");
             entity.Property(e => e.LockAmount)
             .HasPrecision(18, 6)
             .HasColumnName("lock_amount");

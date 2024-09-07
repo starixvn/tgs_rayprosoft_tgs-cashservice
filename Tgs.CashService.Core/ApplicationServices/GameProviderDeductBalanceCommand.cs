@@ -3,6 +3,8 @@
 public record GameProviderDeductBalanceCommand(
     string PlayerCode,
     decimal Amount,
-    Guid? WalletId,
     string? Description,
-    string? ExternalId);
+    string? ProviderCode,
+    string? ExternalId,
+    string? OperationId,
+    string? Action);

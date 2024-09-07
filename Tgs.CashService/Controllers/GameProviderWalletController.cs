@@ -207,23 +207,6 @@ public class GameProviderWalletController : ControllerBase
             .ConfigureAwait(false);
     }
 
-    /// <summary>
-    ///     Games the provider add balance asynchronous.
-    /// </summary>
-    /// <param name="service">The service.</param>
-    /// <param name="playerCode"></param>
-    /// <param name="request">The view model.</param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     <b>Example</b><br />
-    ///     Put PlayerCode: 4unwqobrfsro
-    ///     {
-    ///     "amount": 10,
-    ///     "walletId": "",
-    ///     "description": "place bet gameProviderId - gameId - RoundId - Amount",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///     }
-    /// </remarks>
     [HttpPut("gp/add-balance/{playerCode}", Name = "GameProviderAddBalance")]
     public async ValueTask<BalanceResult> GameProviderAddBalanceAsync(
         [FromServices] IGetService<GameProviderAddBalanceCommand, BalanceResult> service,
@@ -236,29 +219,14 @@ public class GameProviderWalletController : ControllerBase
             .GetAsync(new GameProviderAddBalanceCommand(
                 playerCode,
                 request.Amount,
-                request.WalletId,
                 request.Description,
-                request.ExternalId), cts.Token)
+                request.ProviderCode,
+                request.ExternalId,
+                request.OperationId,
+                request.Action), cts.Token)
             .ConfigureAwait(false);
     }
 
-    /// <summary>
-    ///     Games the provider deduct balance asynchronous.
-    /// </summary>
-    /// <param name="service">The service.</param>
-    /// <param name="playerCode"></param>
-    /// <param name="request">The view model.</param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     <b>Example</b><br />
-    ///     Put PlayerCode: 4unwqobrfsro
-    ///     {
-    ///     "amount": 10,
-    ///     "walletId": "",
-    ///     "description": "place bet gameProviderId - gameId - RoundId - Amount",
-    ///     "externalId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///     }
-    /// </remarks>
     [HttpPut("gp/deduct-balance/{playerCode}", Name = "GameProviderDeductBalance")]
     public async ValueTask<BalanceResult> GameProviderDeductBalanceAsync(
         [FromServices] IGetService<GameProviderDeductBalanceCommand, BalanceResult> service,
@@ -271,9 +239,11 @@ public class GameProviderWalletController : ControllerBase
             .GetAsync(new GameProviderDeductBalanceCommand(
                 playerCode,
                 request.Amount,
-                request.WalletId,
                 request.Description,
-                request.ExternalId), cts.Token)
+                request.ProviderCode,
+                request.ExternalId,
+                request.OperationId,
+                request.Action), cts.Token)
             .ConfigureAwait(false);
     }
 
@@ -290,9 +260,28 @@ public class GameProviderWalletController : ControllerBase
                 playerCode,
                 request.AddedAmount,
                 request.DeductedAmount,
-                request.WalletId,
                 request.Description,
-                request.ExternalId), cts.Token)
+                request.ProviderCode,
+                request.ExternalId,
+                request.OperationId,
+                request.Action), cts.Token)
+            .ConfigureAwait(false);
+    }
+
+    [HttpPut("gp/exist-transaction/{playerCode}", Name = "GameProviderExistTransactionLog")]
+    public async ValueTask<bool> GameProviderExistTransactionLogAsync(
+        [FromServices] IGetService<GameProviderExistTransactionCommand, bool> service,
+        string playerCode,
+        [FromBody] GameProviderExistTransactionViewModel request)
+    {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
+        return await service
+            .GetAsync(new GameProviderExistTransactionCommand(
+                playerCode,
+                request.ProviderCode,
+                request.ExternalId,
+                request.Action), cts.Token)
             .ConfigureAwait(false);
     }
 }

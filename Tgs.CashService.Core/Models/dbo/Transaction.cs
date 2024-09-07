@@ -29,4 +29,8 @@ public partial class Transaction
     public short Type { get; set; }
 
     public Guid WalletId { get; set; }
+
+    public string ProviderCode { get; set; }
+    public string OperationId { get; set; }
+    public string Action { get; set; }
 }

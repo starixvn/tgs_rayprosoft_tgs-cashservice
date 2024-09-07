@@ -8,5 +8,8 @@
         string ExternalId,
         Guid? UserId = null,
         string PlayerCode = "",
-        bool IsAllowNegative = true);
+        bool IsAllowNegative = true,
+        string? ProviderCode = null,
+        string? OperationId = null,
+        string? Action = null);
 }

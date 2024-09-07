@@ -30,7 +30,11 @@ internal class GameProviderAddBalanceCommandService(ITgsRepository tgsRepository
             command.Description ?? string.Empty,
             command.ExternalId ?? string.Empty,
             null,
-            command.PlayerCode
+            command.PlayerCode,
+            true,
+            command.ProviderCode,
+            command.OperationId,
+            command.Action
             );
 
             var result = await _tgsRepository.ExchangeWalletAsync(record, cancellationToken)
@@ -46,12 +50,18 @@ internal class GameProviderAddBalanceCommandService(ITgsRepository tgsRepository
 
     private async ValueTask<string> IsValidData(GameProviderAddBalanceCommand command, CancellationToken cancellationToken = default)
     {
-        if(string.IsNullOrEmpty(command.ExternalId)) 
+        if(command.Amount <= 0)
+        {
+            return ErrorCode.InvalidAmount;
+        }
+        if(string.IsNullOrEmpty(command.ExternalId) || string.IsNullOrEmpty(command.ProviderCode) 
+            || string.IsNullOrEmpty(command.OperationId) || string.IsNullOrEmpty(command.Action)) 
         {
             return ErrorCode.InvalidData;
         }
         var transaction = await _tgsRepository
-                .GetTransactionLogByExternalIdAsync(command.ExternalId, cancellationToken)
+                .GetTransactionLogByProviderInfoAsync(new ProviderInfo(command.ProviderCode, command.ExternalId, command.OperationId, command.Action), 
+                cancellationToken)
                 .ConfigureAwait(false);
         return transaction != null ? ErrorCode.DuplicateTransaction : ErrorCode.Success;
     }

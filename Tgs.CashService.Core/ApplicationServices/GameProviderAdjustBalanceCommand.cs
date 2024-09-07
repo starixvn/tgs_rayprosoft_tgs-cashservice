@@ -4,6 +4,8 @@ public record GameProviderAdjustBalanceCommand(
     string PlayerCode,
     decimal AddedAmount,
     decimal DeductedAmount,
-    Guid? WalletId,
     string? Description,
-    string? ExternalId);
+    string? ProviderCode,
+    string? ExternalId,
+    string? OperationId,
+    string? Action);
