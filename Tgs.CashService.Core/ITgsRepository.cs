@@ -41,9 +41,7 @@ public interface ITgsRepository
         IEnumerable<TransactionType> queryTypes,
         CancellationToken cancellationToken = default);
 
-    ValueTask<Transaction?> GetTransactionLogByTypeAndExternalIdAsync(TransactionType type, 
-        string externalId,
-        CancellationToken cancellationToken = default);
+    ValueTask<Transaction?> GetTransactionLogByExternalIdAsync(string externalId, CancellationToken cancellationToken = default);
 
     ValueTask<Guid> GetWalletIdAsync(
         string playerCode,

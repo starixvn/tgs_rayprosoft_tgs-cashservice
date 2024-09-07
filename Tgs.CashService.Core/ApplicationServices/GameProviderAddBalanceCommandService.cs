@@ -13,18 +13,15 @@ internal class GameProviderAddBalanceCommandService(ITgsRepository tgsRepository
 
     public async ValueTask<BalanceResult> GetAsync(GameProviderAddBalanceCommand command, CancellationToken cancellationToken = default)
     {
-        if(!await IsValidTransaction(command.ExternalId, cancellationToken).ConfigureAwait(false))
-        {
-            logger.LogError($"Add Balance - Duplicate transaction {JsonSerializer.Serialize(command)}");
-            return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.DuplicateTransaction);
-        }
-        if (command.Amount <= 0)
-        {
-            logger.LogError($"Add Balance - Invalid Amount {JsonSerializer.Serialize(command)}");
-            return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.InvalidAmount);
-        }
         try
         {
+            var errorCode = await IsValidData(command, cancellationToken).ConfigureAwait(false);
+            if (errorCode != ErrorCode.Success)
+            {
+                logger.LogError($"Add Balance - {ErrorMessages.Messages[errorCode]} {JsonSerializer.Serialize(command)}");
+                return new BalanceResult(Guid.Empty, 0, 0, errorCode);
+            }
+
             var record = new ExchangeWalletRecord(
             null,
             TransactionType.GameProviderAddBalance,
@@ -42,19 +39,20 @@ internal class GameProviderAddBalanceCommandService(ITgsRepository tgsRepository
         }
         catch (Exception ex) {
             logger.LogError(ex.Message);
+            var code = ExceptionMapper.GetErrorCodeByException(ex);
+            return new BalanceResult(Guid.Empty, 0, 0, code);
         }
-        return new BalanceResult(Guid.Empty, 0, 0, ErrorCode.NotFoundWallet);
     }
 
-    private async ValueTask<bool> IsValidTransaction(string? externalId, CancellationToken cancellationToken = default)
+    private async ValueTask<string> IsValidData(GameProviderAddBalanceCommand command, CancellationToken cancellationToken = default)
     {
-        if (!string.IsNullOrEmpty(externalId))
+        if(string.IsNullOrEmpty(command.ExternalId)) 
         {
-            var transaction = await _tgsRepository
-                .GetTransactionLogByTypeAndExternalIdAsync(TransactionType.GameProviderAddBalance, externalId, cancellationToken)
-                .ConfigureAwait(false);
-            return transaction == null;
+            return ErrorCode.InvalidData;
         }
-        return true;
+        var transaction = await _tgsRepository
+                .GetTransactionLogByExternalIdAsync(command.ExternalId, cancellationToken)
+                .ConfigureAwait(false);
+        return transaction != null ? ErrorCode.DuplicateTransaction : ErrorCode.Success;
     }
 }

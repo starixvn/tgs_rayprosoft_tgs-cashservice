@@ -11,7 +11,7 @@
                                                             WHERE w.player_code = @PlayerCode;";
         public static readonly string GetTransactionByTypeAndExternalId = @"SELECT t.id as Id 
                                                                         FROM dbo.transactions t 
-                                                                        WHERE t.type = @Type AND t.external_transaction_id = @ExternalId";
+                                                                        WHERE t.external_transaction_id = @ExternalId";
         public static readonly string InsertNewWallet = @"INSERT INTO dbo.wallets(
 	                                                    id, 
 	                                                    player_code, 

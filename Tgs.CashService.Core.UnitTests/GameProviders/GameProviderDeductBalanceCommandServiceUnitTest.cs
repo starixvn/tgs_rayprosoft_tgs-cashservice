@@ -12,7 +12,7 @@ namespace Tgs.CashService.Core.UnitTests.GameProviders;
 public class GameProviderDeductBalanceCommandServiceUnitTest
 {
     [Test]
-    public async Task GameProviderDeductBalanceCommandService_WhenAmountLessThanOrEqual0_ReturnErrorInvalidAmount()
+    public async Task GameProviderDeductBalanceCommandService_WhenExternalIdIsNull_ReturnErrorInvalidData()
     {
         var fakeTgsRepository = Substitute.For<ITgsRepository>();
         var fakeLogger = Substitute.For<ILogger<GameProviderDeductBalanceCommand>>();
@@ -21,14 +21,14 @@ public class GameProviderDeductBalanceCommandServiceUnitTest
 
         var command = new GameProviderDeductBalanceCommand(
             "player_code",
-            -100M,
+            100M,
             null,
             "Description",
             string.Empty);
 
         var actual = await sut.GetAsync(command).ConfigureAwait(false);
 
-        ClassicAssert.AreEqual(ErrorCode.InvalidAmount, actual.ErrorCode);
+        ClassicAssert.AreEqual(ErrorCode.InvalidData, actual.ErrorCode);
     }
 
     [Test]
@@ -46,9 +46,7 @@ public class GameProviderDeductBalanceCommandServiceUnitTest
             "Description",
             "ExternalId");
         var transaction = new Transaction { Amount = 100M };
-        fakeTgsRepository.GetTransactionLogByTypeAndExternalIdAsync(
-            Arg.Is(TransactionType.GameProviderDeductBalance),
-            Arg.Is(command.ExternalId!))
+        fakeTgsRepository.GetTransactionLogByExternalIdAsync(Arg.Is(command.ExternalId!))
             .Returns(transaction);
 
         var actual = await sut.GetAsync(command).ConfigureAwait(false);
@@ -72,9 +70,7 @@ public class GameProviderDeductBalanceCommandServiceUnitTest
             null,
             "Description",
             "ExternalId");
-        fakeTgsRepository.GetTransactionLogByTypeAndExternalIdAsync(
-            Arg.Is(TransactionType.GameProviderDeductBalance),
-            Arg.Is(command.ExternalId!))
+        fakeTgsRepository.GetTransactionLogByExternalIdAsync(Arg.Is(command.ExternalId!))
             .ReturnsNull();
         fakeTgsRepository.ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
                record => record.WalletId == null
@@ -107,9 +103,7 @@ public class GameProviderDeductBalanceCommandServiceUnitTest
             null,
             "Description",
             "ExternalId");
-        fakeTgsRepository.GetTransactionLogByTypeAndExternalIdAsync(
-            Arg.Is(TransactionType.GameProviderDeductBalance),
-            Arg.Is(command.ExternalId!))
+        fakeTgsRepository.GetTransactionLogByExternalIdAsync(Arg.Is(command.ExternalId!))
             .ReturnsNull();
         fakeTgsRepository.ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
                record => record.WalletId == null
@@ -142,9 +136,7 @@ public class GameProviderDeductBalanceCommandServiceUnitTest
             null,
             "Description",
             "ExternalId");
-        fakeTgsRepository.GetTransactionLogByTypeAndExternalIdAsync(
-            Arg.Is(TransactionType.GameProviderDeductBalance),
-            Arg.Is(command.ExternalId!))
+        fakeTgsRepository.GetTransactionLogByExternalIdAsync(Arg.Is(command.ExternalId!))
             .ReturnsNull();
         var exchangeResult = new ExchangeResult(Guid.Empty, 100, 0);
         fakeTgsRepository.ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(

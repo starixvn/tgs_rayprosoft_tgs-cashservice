@@ -153,13 +153,10 @@ internal class TgsRepository(
 
         return transactionQuery;
     }
-    public async ValueTask<Transaction?> GetTransactionLogByTypeAndExternalIdAsync(TransactionType type, 
-        string externalId,
-        CancellationToken cancellationToken = default)
+    public async ValueTask<Transaction?> GetTransactionLogByExternalIdAsync(string externalId, CancellationToken cancellationToken = default)
     {
         var param = new
         {
-            Type = type,
             ExternalId = externalId
         };
         return await dbAcess.QueryFirstOrDefaultAsync<Transaction>(QueryStringMapper.GetTransactionByTypeAndExternalId, param).ConfigureAwait(false);

@@ -12,7 +12,7 @@ namespace Tgs.CashService.Core.UnitTests.GameProviders;
 public class GameProviderAddBalanceCommandServiceUnitTest
 {
     [Test]
-    public async Task GameProviderAddBalanceCommandService_WhenAmountLessThanOrEqual0_ReturnErrorInvalidAmount()
+    public async Task GameProviderAddBalanceCommandService_WhenExternalIdIsNull_ReturnErrorInvalidData()
     {
         var fakeTgsRepository = Substitute.For<ITgsRepository>();
         var fakeLogger = Substitute.For<ILogger<GameProviderAddBalanceCommand>>();
@@ -21,14 +21,15 @@ public class GameProviderAddBalanceCommandServiceUnitTest
 
         var command = new GameProviderAddBalanceCommand(
             "player_code",
-            -100M,
+            100M,
             null,
             "Description",
-            string.Empty);
+            "");
+        var transaction = new Transaction { Amount = 100M };
 
         var actual = await sut.GetAsync(command).ConfigureAwait(false);
 
-        ClassicAssert.AreEqual(ErrorCode.InvalidAmount, actual.ErrorCode);
+        ClassicAssert.AreEqual(ErrorCode.InvalidData, actual.ErrorCode);
     }
 
     [Test]
@@ -46,17 +47,13 @@ public class GameProviderAddBalanceCommandServiceUnitTest
             "Description",
             "ExternalId");
         var transaction = new Transaction { Amount = 100M };
-        fakeTgsRepository.GetTransactionLogByTypeAndExternalIdAsync(
-            Arg.Is(TransactionType.GameProviderAddBalance),
-            Arg.Is(command.ExternalId!))
+        fakeTgsRepository.GetTransactionLogByExternalIdAsync(Arg.Is(command.ExternalId!))
             .Returns(transaction);
 
         var actual = await sut.GetAsync(command).ConfigureAwait(false);
 
         ClassicAssert.AreEqual(ErrorCode.DuplicateTransaction, actual.ErrorCode);
     }
-
-
 
     [Test]
     public async Task GameProviderAddBalanceCommandService_WhenInvalidPlayerCode_ReturnErrorNotFoundWallet()
@@ -72,9 +69,7 @@ public class GameProviderAddBalanceCommandServiceUnitTest
             null,
             "Description",
             "ExternalId");
-        fakeTgsRepository.GetTransactionLogByTypeAndExternalIdAsync(
-            Arg.Is(TransactionType.GameProviderAddBalance),
-            Arg.Is(command.ExternalId!))
+        fakeTgsRepository.GetTransactionLogByExternalIdAsync(Arg.Is(command.ExternalId!))
             .ReturnsNull();
         fakeTgsRepository.ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(
                record => record.WalletId == null
@@ -85,7 +80,7 @@ public class GameProviderAddBalanceCommandServiceUnitTest
                && record.ExternalId == command.ExternalId
                && record.UserId == null
                && record.PlayerCode == command.PlayerCode))
-           .Throws(new Exception("testing"));
+           .Throws(new NotFoundWalletException("testing"));
 
         var actual = await sut.GetAsync(command).ConfigureAwait(false);
 
@@ -106,9 +101,7 @@ public class GameProviderAddBalanceCommandServiceUnitTest
             null,
             "Description",
             "ExternalId");
-        fakeTgsRepository.GetTransactionLogByTypeAndExternalIdAsync(
-            Arg.Is(TransactionType.GameProviderAddBalance),
-            Arg.Is(command.ExternalId!))
+        fakeTgsRepository.GetTransactionLogByExternalIdAsync(Arg.Is(command.ExternalId!))
             .ReturnsNull();
         var exchangeResult = new ExchangeResult(Guid.Empty, 100,0);
         fakeTgsRepository.ExchangeWalletAsync(Arg.Is<ExchangeWalletRecord>(

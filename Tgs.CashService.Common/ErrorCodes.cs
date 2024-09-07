@@ -8,6 +8,7 @@ public static class ErrorCode
     public const string NotFoundWallet = "203";
     public const string InvalidAmount = "204";
     public const string InsufficientFunds = "205";
+    public const string InvalidData = "206";
 }
 
 public static class ErrorMessages
@@ -20,5 +21,6 @@ public static class ErrorMessages
         [ErrorCode.NotFoundWallet] ="Can't found wallet",
         [ErrorCode.InsufficientFunds] = "Player Has Insufficient Funds",
         [ErrorCode.InvalidAmount] = "Invalid Amount",
+        [ErrorCode.InvalidData] = "Invalid Data",
     };
 }
