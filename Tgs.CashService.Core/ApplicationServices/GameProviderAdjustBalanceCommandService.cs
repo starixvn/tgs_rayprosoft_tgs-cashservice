@@ -18,7 +18,7 @@ internal class GameProviderAdjustBalanceCommandService(ITgsRepository tgsReposit
             var errorCode = await IsValidData(command, cancellationToken).ConfigureAwait(false);
             if (errorCode != ErrorCode.Success)
             {
-                logger.LogError($"Add Balance - {ErrorMessages.Messages[errorCode]} {JsonSerializer.Serialize(command)}");
+                logger.LogError($"Adjust Balance - {ErrorMessages.Messages[errorCode]} {JsonSerializer.Serialize(command)}");
                 return new BalanceResult(Guid.Empty, 0, 0, errorCode);
             }
 
