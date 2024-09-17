@@ -15,7 +15,7 @@ internal class GameProviderAdjustBalanceCommandService(ITgsRepository tgsReposit
     {
         try
         {
-            var errorCode = await IsValidData(command, cancellationToken).ConfigureAwait(false);
+            var errorCode = IsValidData(command, cancellationToken);
             if (errorCode != ErrorCode.Success)
             {
                 logger.LogError($"Adjust Balance - {ErrorMessages.Messages[errorCode]} {JsonSerializer.Serialize(command)}");
@@ -48,7 +48,7 @@ internal class GameProviderAdjustBalanceCommandService(ITgsRepository tgsReposit
         }
     }
 
-    private async ValueTask<string> IsValidData(GameProviderAdjustBalanceCommand command, CancellationToken cancellationToken = default)
+    private string IsValidData(GameProviderAdjustBalanceCommand command, CancellationToken cancellationToken = default)
     {
         if (command.AddedAmount < 0 || command.DeductedAmount < 0)
         {
@@ -59,10 +59,7 @@ internal class GameProviderAdjustBalanceCommandService(ITgsRepository tgsReposit
         {
             return ErrorCode.InvalidData;
         }
-        var transaction = await _tgsRepository
-                .GetTransactionLogByProviderInfoAsync(new ProviderInfo(command.ProviderCode, command.ExternalId, command.OperationId, command.Action),
-                cancellationToken)
-                .ConfigureAwait(false);
-        return transaction != null ? ErrorCode.DuplicateTransaction : ErrorCode.Success;
+       
+        return ErrorCode.Success;
     }
 }

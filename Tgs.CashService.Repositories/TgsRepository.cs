@@ -160,11 +160,6 @@ internal class TgsRepository(
         parameters.Add("ExternalId", providerInfo.RefId);
         parameters.Add("ProviderCode", providerInfo.ProviderCode);
         parameters.Add("Action", providerInfo.Action);
-        if (!string.IsNullOrEmpty(providerInfo.OperationId))
-        {
-            parameters.Add("OperationId", providerInfo.OperationId);
-            return await dbAcess.QueryFirstOrDefaultAsync<Transaction>(QueryStringMapper.GetTransactionByOperationId, parameters).ConfigureAwait(false);
-        }
         return await dbAcess.QueryFirstOrDefaultAsync<Transaction>(QueryStringMapper.GetTransactionByAction, parameters).ConfigureAwait(false);
     }
 
@@ -217,6 +212,11 @@ internal class TgsRepository(
         {
             logger.LogError($"Invalid Balance {JsonSerializer.Serialize(record)}");
             throw new InsufficientFundException(ErrorMessages.Messages[ErrorCode.InsufficientFunds]);
+        }
+        if(result!.ErrorCode == ErrorCode.DuplicateTransaction)
+        {
+            logger.LogError($"Duplicate Transaction {JsonSerializer.Serialize(record)}");
+            throw new DuplicateTransactionException(ErrorMessages.Messages[ErrorCode.DuplicateTransaction]);
         }
 
         return new ExchangeResult(Guid.Parse(result.TransactionId), result.Balance, result.LockedBalance);
