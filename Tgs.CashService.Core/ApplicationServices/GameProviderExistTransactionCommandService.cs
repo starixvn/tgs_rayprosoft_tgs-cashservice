@@ -20,7 +20,7 @@ internal class GameProviderExistTransactionCommandService(ITgsRepository tgsRepo
         }
 
         var transaction = await _tgsRepository
-            .GetTransactionLogByProviderInfoAsync(new ProviderInfo(command.ProviderCode, command.ExternalId, command.Action),
+            .GetTransactionLogByProviderInfoAsync(command.PlayerCode, new ProviderInfo(command.ProviderCode, command.ExternalId, command.Action),
             cancellationToken)
             .ConfigureAwait(false);
         return transaction != null;

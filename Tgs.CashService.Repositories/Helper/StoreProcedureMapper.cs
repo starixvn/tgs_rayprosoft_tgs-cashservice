@@ -11,7 +11,8 @@
                                                             WHERE w.player_code = @PlayerCode;";
         public static readonly string GetTransactionByAction = @"SELECT t.id as Id 
                                                                         FROM dbo.transactions t 
-                                                                        WHERE t.external_transaction_id = @ExternalId 
+                                                                        WHERE t.player_code = @PlayerCode
+                                                                            AND t.external_transaction_id = @ExternalId 
                                                                             AND t.provider_code = @ProviderCode
                                                                             AND t.action = @Action
                                                                         LIMIT 1";

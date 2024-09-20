@@ -154,9 +154,10 @@ internal class TgsRepository(
         return transactionQuery;
     }
 
-    public async ValueTask<Transaction?> GetTransactionLogByProviderInfoAsync(ProviderInfo providerInfo, CancellationToken cancellationToken = default)
+    public async ValueTask<Transaction?> GetTransactionLogByProviderInfoAsync(string playerCode, ProviderInfo providerInfo, CancellationToken cancellationToken = default)
     {
         var parameters = new DynamicParameters();
+        parameters.Add("PlayerCode", playerCode);
         parameters.Add("ExternalId", providerInfo.RefId);
         parameters.Add("ProviderCode", providerInfo.ProviderCode);
         parameters.Add("Action", providerInfo.Action);

@@ -41,7 +41,7 @@ public interface ITgsRepository
         IEnumerable<TransactionType> queryTypes,
         CancellationToken cancellationToken = default);
 
-    ValueTask<Transaction?> GetTransactionLogByProviderInfoAsync(ProviderInfo providerInfo, CancellationToken cancellationToken = default);
+    ValueTask<Transaction?> GetTransactionLogByProviderInfoAsync(string playerCode, ProviderInfo providerInfo, CancellationToken cancellationToken = default);
 
     ValueTask<Guid> GetWalletIdAsync(
         string playerCode,
