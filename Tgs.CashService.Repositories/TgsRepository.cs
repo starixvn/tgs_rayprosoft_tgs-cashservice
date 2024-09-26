@@ -211,7 +211,7 @@ internal class TgsRepository(
         }
         if (result!.ErrorCode == ErrorCode.InsufficientFunds)
         {
-            logger.LogError($"Invalid Balance {JsonSerializer.Serialize(record)}");
+            logger.LogWarning($"Invalid Balance {JsonSerializer.Serialize(record)}");
             throw new InsufficientFundException(ErrorMessages.Messages[ErrorCode.InsufficientFunds]);
         }
         if(result!.ErrorCode == ErrorCode.DuplicateTransaction)
