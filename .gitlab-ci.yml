@@ -6,3 +6,28 @@ include:
   - project: ci/core-cicd
     ref: main
     file: luminet.gitlab-ci.yml
+
+sonar_dotnet:
+  allow_failure: true
+
+unit_test_dotnet: &unit_test_dotnet
+  variables:
+    LOG_TEST_PATH: ./TestResults/unit-tests
+    TESTS_PATH: "*/bin/debug/*/Tgs.CashService.Core.UnitTests.dll"
+    TESTS_DLL: "*Tgs.CashService.Core.UnitTests.dll"
+  script:
+    - dotnet build
+    - dotnet test $TESTS_PATH --logger:"junit;LogFilePath=$LOG_TEST_PATH/{assembly}-tests.xml;MethodFormat=Class;FailureBodyFormat=Verbose" || true
+    - for path in $(find ./ -name $TESTS_DLL);
+      do
+      if echo $path | grep 'bin';
+      then
+      coverlet $path --target "dotnet" --targetargs "test $TESTS_PATH --no-build" --format opencover --output "${path##*/}-$(date +%s).coverage.opencover.xml";
+      fi
+      done
+  artifacts:
+    paths:
+      - $LOG_TEST_PATH
+    reports:
+      junit:
+        - $LOG_TEST_PATH/*tests.xml
