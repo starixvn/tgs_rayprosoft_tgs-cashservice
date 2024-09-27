@@ -13,8 +13,8 @@ sonar_dotnet:
 unit_test_dotnet: &unit_test_dotnet
   variables:
     LOG_TEST_PATH: ./TestResults/unit-tests
-    TESTS_PATH: "*/bin/debug/*/Tgs.CashService.Core.UnitTests.dll"
-    TESTS_DLL: "*Tgs.CashService.Core.UnitTests.dll"
+    TESTS_PATH: "*/bin/debug/*/*UnitTests.dll"
+    TESTS_DLL: "*UnitTests.dll"
   script:
     - dotnet build
     - dotnet test $TESTS_PATH --logger:"junit;LogFilePath=$LOG_TEST_PATH/{assembly}-tests.xml;MethodFormat=Class;FailureBodyFormat=Verbose" || true
