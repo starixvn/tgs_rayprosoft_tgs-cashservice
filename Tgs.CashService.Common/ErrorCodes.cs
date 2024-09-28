@@ -9,6 +9,7 @@ public static class ErrorCode
     public const string InvalidAmount = "204";
     public const string InsufficientFunds = "205";
     public const string InvalidData = "206";
+    public const string DuplicateTransactionByAction = "207";
 }
 
 public static class ErrorMessages
@@ -22,5 +23,6 @@ public static class ErrorMessages
         [ErrorCode.InsufficientFunds] = "Player Has Insufficient Funds",
         [ErrorCode.InvalidAmount] = "Invalid Amount",
         [ErrorCode.InvalidData] = "Invalid Data",
+        [ErrorCode.DuplicateTransactionByAction] = "Transaction already exists with this action",
     };
 }

@@ -42,7 +42,7 @@ internal class GameProviderAdjustBalanceCommandService(ITgsRepository tgsReposit
             return new BalanceResult(result.TransactionId, result.Balance, result.LockedBalance);
         }
         catch (Exception ex) {
-            logger.LogError(ex.Message);
+            logger.LogError($"Adjust Balance - {ex.Message} - {JsonSerializer.Serialize(command)}");
             var code = ExceptionMapper.GetErrorCodeByException(ex);
             return new BalanceResult(Guid.Empty, 0, 0, code);
         }

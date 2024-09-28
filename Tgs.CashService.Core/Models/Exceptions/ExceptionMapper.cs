@@ -8,6 +8,7 @@
             [typeof(NotFoundWalletException)] = ErrorCode.NotFoundWallet,
             [typeof(InsufficientFundException)] = ErrorCode.InsufficientFunds,
             [typeof(InvalidDataException)] = ErrorCode.InvalidData,
+            [typeof(DuplicateTransactionByActionException)] = ErrorCode.DuplicateTransactionByAction,
         };
 
         public static string GetErrorCodeByException(Exception ex)

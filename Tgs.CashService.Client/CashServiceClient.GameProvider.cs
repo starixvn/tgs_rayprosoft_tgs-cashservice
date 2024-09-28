@@ -278,4 +278,37 @@ internal partial class CashServiceClient
 
         return JsonSerializer.Deserialize<bool>(contentJson, _SerializerOptions)!;
     }
+
+    public async ValueTask<BalanceResponse> GameProviderAdjustBalanceByActionAsync(
+        string playerCode,
+        decimal amount,
+        ProviderInfo providerInfo,
+        bool isAllowNegative = false,
+        string? description = "",
+        CancellationToken cancellationToken = default)
+    {
+        var request = new
+        {
+            Amount = amount,
+            Description = description,
+            providerInfo.ProviderCode,
+            ExternalId = providerInfo.RefId,
+            providerInfo.OperationId,
+            providerInfo.Action,
+            IsAllowNegative = isAllowNegative
+        };
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PutAsync($"/wallet/gp/adjust-balance-by-action/{playerCode}", requestContent, cancellationToken)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<BalanceResponse>(contentJson, _SerializerOptions)!;
+    }
 }

@@ -67,4 +67,12 @@ public partial interface ICashServiceClient
         string playerCode,
         ProviderInfo providerInfo,
         CancellationToken cancellationToken = default);
+
+    ValueTask<BalanceResponse> GameProviderAdjustBalanceByActionAsync(
+       string playerCode,
+       decimal amount,
+       ProviderInfo providerInfo,
+       bool isAllowNegative = false,
+       string? description = "",
+       CancellationToken cancellationToken = default);
 }

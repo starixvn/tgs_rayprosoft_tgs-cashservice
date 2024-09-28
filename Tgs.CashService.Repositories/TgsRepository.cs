@@ -190,13 +190,23 @@ internal class TgsRepository(
 
     public async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default)
     {
+       return await ExchangeWalletAsync(record, StoreProcedureMapper.ExchangeWalletSP, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async ValueTask<ExchangeResult> ExchangeWalletByActionAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default)
+    {
+        return await ExchangeWalletAsync(record, StoreProcedureMapper.ExchangeWalletByActionSP, cancellationToken).ConfigureAwait(false);
+    }
+
+
+    private async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, string spName,CancellationToken cancellationToken = default)
+    {
         var transactionId = await snGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
         var criteria = new ExchangeWalletCriteria(record, transactionId);
-        var spName = StoreProcedureMapper.ExchangeWalletSP;
 
         var parameters = new DynamicParameters();
-        foreach (var property in typeof(ExchangeWalletCriteria).GetProperties()) 
-        { 
+        foreach (var property in typeof(ExchangeWalletCriteria).GetProperties())
+        {
             var value = property.GetValue(criteria);
             parameters.Add(property.Name.ToLowerInvariant(), value);
         }
@@ -206,18 +216,19 @@ internal class TgsRepository(
 
         if (result!.ErrorCode == ErrorCode.NotFoundWallet)
         {
-            logger.LogError($"Can't found wallet {record.WalletId}.");
             throw new NotFoundWalletException(ErrorMessages.Messages[ErrorCode.NotFoundWallet]);
         }
         if (result!.ErrorCode == ErrorCode.InsufficientFunds)
         {
-            logger.LogWarning($"Invalid Balance {JsonSerializer.Serialize(record)}");
             throw new InsufficientFundException(ErrorMessages.Messages[ErrorCode.InsufficientFunds]);
         }
-        if(result!.ErrorCode == ErrorCode.DuplicateTransaction)
+        if (result!.ErrorCode == ErrorCode.DuplicateTransaction)
         {
-            logger.LogError($"Duplicate Transaction {JsonSerializer.Serialize(record)}");
             throw new DuplicateTransactionException(ErrorMessages.Messages[ErrorCode.DuplicateTransaction]);
+        }
+        if (result!.ErrorCode == ErrorCode.DuplicateTransactionByAction)
+        {
+            throw new DuplicateTransactionByActionException(ErrorMessages.Messages[ErrorCode.DuplicateTransactionByAction]);
         }
 
         return new ExchangeResult(Guid.Parse(result.TransactionId), result.Balance, result.LockedBalance);

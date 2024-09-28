@@ -3,6 +3,7 @@
     public static class StoreProcedureMapper
     {
         public static readonly string ExchangeWalletSP = "dbo.cashservice_exchange_wallet";
+        public static readonly string ExchangeWalletByActionSP = "dbo.cashservice_exchange_wallet_by_action";
     }
     public static class QueryStringMapper
     {
