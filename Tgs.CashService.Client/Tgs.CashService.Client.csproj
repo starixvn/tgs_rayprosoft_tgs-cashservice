@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<Version>0.2.20</Version>
+		<Version>0.2.21</Version>
 		<Authors>Raypro</Authors>
 		<Description>Tgs CashService Client</Description>
 		<PackageProjectUrl>https://git3.nexdev.net/tgs/rayprosoft/tgs-cashservice</PackageProjectUrl>
