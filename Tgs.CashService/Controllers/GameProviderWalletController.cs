@@ -285,7 +285,7 @@ public class GameProviderWalletController : ControllerBase
             .ConfigureAwait(false);
     }
 
-    [HttpPut("gp/adjust-balance-by-action{playerCode}", Name = "GameProviderAdjustBalanceByAction")]
+    [HttpPut("gp/adjust-balance-by-action/{playerCode}", Name = "GameProviderAdjustBalanceByAction")]
     public async ValueTask<BalanceResult> GameProviderAdjustBalanceByActionAsync(
         [FromServices] IGetService<GameProviderAdjustBalanceByActionCommand, BalanceResult> service,
         string playerCode,
