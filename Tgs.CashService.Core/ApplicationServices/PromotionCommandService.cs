@@ -5,8 +5,6 @@ namespace Tgs.CashService.ApplicationServices;
 
 internal class PromotionCommandService(ITgsRepository tgsRepository) : IGetService<PromotionCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public async ValueTask<ExchangeResult> GetAsync(PromotionCommand command, CancellationToken cancellationToken = default)
     {
         var record = new ExchangeWalletRecord(
@@ -18,7 +16,7 @@ internal class PromotionCommandService(ITgsRepository tgsRepository) : IGetServi
             command.ExternalId ?? string.Empty
         );
 
-        return await _tgsRepository.ExchangeWalletAsync(record, cancellationToken)
+        return await tgsRepository.ExchangeWalletAsync(record, cancellationToken)
             .ConfigureAwait(false);
     }
 }

@@ -6,8 +6,6 @@ namespace Tgs.CashService.ApplicationServices;
 internal class PromotionVipLevelSeasonCommandService(ITgsRepository tgsRepository)
     : IGetService<PromotionVipLevelSeasonCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public async ValueTask<ExchangeResult> GetAsync(PromotionVipLevelSeasonCommand command, CancellationToken cancellationToken = default)
     {
         var record = new ExchangeWalletRecord(
@@ -19,7 +17,7 @@ internal class PromotionVipLevelSeasonCommandService(ITgsRepository tgsRepositor
             command.ExternalId ?? string.Empty
         );
 
-        return await _tgsRepository.ExchangeWalletAsync(record, cancellationToken)
+        return await tgsRepository.ExchangeWalletAsync(record, cancellationToken)
             .ConfigureAwait(false);
     }
 }

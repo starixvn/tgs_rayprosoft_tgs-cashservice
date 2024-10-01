@@ -9,16 +9,14 @@ internal class GameProviderAdjustBalanceByActionCommandService(ITgsRepository tg
     ILogger<GameProviderAdjustBalanceByActionCommand> logger)
     : IGetService<GameProviderAdjustBalanceByActionCommand, BalanceResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public async ValueTask<BalanceResult> GetAsync(GameProviderAdjustBalanceByActionCommand command, CancellationToken cancellationToken = default)
     {
         try
         {
-            var errorCode = IsValidData(command, cancellationToken);
+            var errorCode = IsValidData(command);
             if (errorCode != ErrorCode.Success)
             {
-                logger.LogError($"Adjust Balance With Action - {ErrorMessages.Messages[errorCode]} {JsonSerializer.Serialize(command)}");
+                logger.LogError($"Adjust Balance With Action - {ErrorMessageMapper.Messages[errorCode]} {JsonSerializer.Serialize(command)}");
                 return new BalanceResult(Guid.Empty, 0, 0, errorCode);
             }
 
@@ -37,24 +35,25 @@ internal class GameProviderAdjustBalanceByActionCommandService(ITgsRepository tg
             command.Action
             );
 
-            var result = await _tgsRepository.ExchangeWalletByActionAsync(record, cancellationToken)
+            var result = await tgsRepository.ExchangeWalletByActionAsync(record, cancellationToken)
                 .ConfigureAwait(false);
             return new BalanceResult(result.TransactionId, result.Balance, result.LockedBalance);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             logger.LogError($"Adjust Balance With Action - {ex.Message} - {JsonSerializer.Serialize(command)}");
             var code = ExceptionMapper.GetErrorCodeByException(ex);
             return new BalanceResult(Guid.Empty, 0, 0, code);
         }
     }
 
-    private string IsValidData(GameProviderAdjustBalanceByActionCommand command, CancellationToken cancellationToken = default)
+    private string IsValidData(GameProviderAdjustBalanceByActionCommand command)
     {
         if (string.IsNullOrEmpty(command.ExternalId) || string.IsNullOrEmpty(command.ProviderCode)
             || string.IsNullOrEmpty(command.OperationId) || string.IsNullOrEmpty(command.Action))
         {
             return ErrorCode.InvalidData;
         }
-        return  ErrorCode.Success;
+        return ErrorCode.Success;
     }
 }

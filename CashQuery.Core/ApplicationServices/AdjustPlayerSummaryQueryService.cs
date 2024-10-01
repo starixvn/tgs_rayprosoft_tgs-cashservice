@@ -6,10 +6,8 @@ internal class AdjustPlayerSummaryQueryService(ITgsRepository tgsRepository)
         : IQueryService<AdjustPlayerSummaryQuery, BrandAdjustSummary>,
     IGetService<AdjustPlayerSummaryQuery, int>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public IAsyncEnumerable<BrandAdjustSummary> QueryAsync(AdjustPlayerSummaryQuery query, CancellationToken cancellationToken = default)
-        => _tgsRepository.QueryPlayerAdjustSummariesAsync(
+        => tgsRepository.QueryPlayerAdjustSummariesAsync(
             new AdjustRecordQueryCondition(
                 query.CreatedOnRange,
                 query.SearchTypes,
@@ -18,7 +16,7 @@ internal class AdjustPlayerSummaryQueryService(ITgsRepository tgsRepository)
             cancellationToken);
 
     public ValueTask<int> GetAsync(AdjustPlayerSummaryQuery query, CancellationToken cancellationToken = default)
-        => _tgsRepository.CountQueryPlayerAdjustSummariesAsync(
+        => tgsRepository.CountQueryPlayerAdjustSummariesAsync(
             new AdjustRecordQueryCondition(
                 query.CreatedOnRange,
                 query.SearchTypes,

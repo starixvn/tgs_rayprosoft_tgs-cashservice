@@ -9,16 +9,14 @@ internal class GameProviderDeductBalanceCommandService(ITgsRepository tgsReposit
     ILogger<GameProviderDeductBalanceCommand> logger)
     : IGetService<GameProviderDeductBalanceCommand, BalanceResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public async ValueTask<BalanceResult> GetAsync(GameProviderDeductBalanceCommand command, CancellationToken cancellationToken = default)
     {
         try
         {
-            var errorCode = IsValidData(command, cancellationToken);
+            var errorCode = IsValidData(command);
             if (errorCode != ErrorCode.Success)
             {
-                logger.LogError($"Deduct Balance - {ErrorMessages.Messages[errorCode]} {JsonSerializer.Serialize(command)}");
+                logger.LogError($"Deduct Balance - {ErrorMessageMapper.Messages[errorCode]} {JsonSerializer.Serialize(command)}");
                 return new BalanceResult(Guid.Empty, 0, 0, errorCode);
             }
 
@@ -37,18 +35,19 @@ internal class GameProviderDeductBalanceCommandService(ITgsRepository tgsReposit
             command.Action
             );
 
-            var result = await _tgsRepository.ExchangeWalletAsync(record, cancellationToken)
+            var result = await tgsRepository.ExchangeWalletAsync(record, cancellationToken)
                 .ConfigureAwait(false);
             return new BalanceResult(result.TransactionId, result.Balance, result.LockedBalance);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             logger.LogError($"Deduct Balance - {ex.Message} - {JsonSerializer.Serialize(command)}");
             var code = ExceptionMapper.GetErrorCodeByException(ex);
             return new BalanceResult(Guid.Empty, 0, 0, code);
         }
     }
 
-    private string IsValidData(GameProviderDeductBalanceCommand command, CancellationToken cancellationToken = default)
+    private string IsValidData(GameProviderDeductBalanceCommand command)
     {
         if (command.Amount <= 0)
         {
@@ -59,6 +58,6 @@ internal class GameProviderDeductBalanceCommandService(ITgsRepository tgsReposit
         {
             return ErrorCode.InvalidData;
         }
-        return  ErrorCode.Success;
+        return ErrorCode.Success;
     }
 }

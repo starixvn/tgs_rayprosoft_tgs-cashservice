@@ -1,12 +1,11 @@
 ﻿using System.Data;
 using Dapper;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace Tgs.CashService.Repositories
 {
-    internal interface IDbAcess 
+    public interface IDbAcess
     {
         Task<IEnumerable<T>> QueryAsync<T>(string sql, object parameters);
 
@@ -14,15 +13,14 @@ namespace Tgs.CashService.Repositories
 
         Task<int> ExecuteAsync(string sql, object parameters);
     }
-    internal class DbAccess : IDbAcess
+
+    public class DbAccess : IDbAcess
     {
         private readonly string connectionString;
-        private readonly ILogger<DbAccess> logger;
 
-        public DbAccess(IConfiguration configuration, ILogger<DbAccess> logger)
+        public DbAccess(IConfiguration configuration)
         {
             connectionString = configuration.GetConnectionString("Tgs")!;
-            this.logger = logger;
         }
 
         public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object parameters)

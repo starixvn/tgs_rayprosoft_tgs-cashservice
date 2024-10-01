@@ -30,7 +30,7 @@ public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
 
     private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
     {
-        var info = new OpenApiInfo()
+        var info = new OpenApiInfo
         {
             Title = "Tgs.CashService",
             Version = description.ApiVersion.ToString(),

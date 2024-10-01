@@ -6,8 +6,6 @@ namespace Tgs.CashService.ApplicationServices;
 internal class PromotionVipLevelBirthdayCommandService(ITgsRepository tgsRepository)
     : IGetService<PromotionVipLevelBirthdayCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public async ValueTask<ExchangeResult> GetAsync(PromotionVipLevelBirthdayCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -20,7 +18,7 @@ internal class PromotionVipLevelBirthdayCommandService(ITgsRepository tgsReposit
             command.ExternalId ?? string.Empty
         );
 
-        return await _tgsRepository.ExchangeWalletAsync(record, cancellationToken)
+        return await tgsRepository.ExchangeWalletAsync(record, cancellationToken)
             .ConfigureAwait(false);
     }
 }

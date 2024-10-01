@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashService.Core.Entities;
 
-public partial class Transaction
+public class Transaction
 {
     public Guid Id { get; set; }
 
@@ -30,7 +30,9 @@ public partial class Transaction
 
     public Guid WalletId { get; set; }
 
-    public string ProviderCode { get; set; }
-    public string OperationId { get; set; }
-    public string Action { get; set; }
+    public string? ProviderCode { get; set; }
+
+    public string? OperationId { get; set; }
+
+    public string? Action { get; set; }
 }

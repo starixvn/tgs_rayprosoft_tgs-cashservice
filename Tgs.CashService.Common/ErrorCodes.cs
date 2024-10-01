@@ -12,9 +12,9 @@ public static class ErrorCode
     public const string DuplicateTransactionByAction = "207";
 }
 
-public static class ErrorMessages
+public static class ErrorMessageMapper
 {
-    public static readonly Dictionary<string, string> Messages = new()
+    private static readonly Dictionary<string, string> ErrorMessages = new ()
     {
         [ErrorCode.Success] = "",
         [ErrorCode.Undefined] = "Internal Server Error",
@@ -25,4 +25,6 @@ public static class ErrorMessages
         [ErrorCode.InvalidData] = "Invalid Data",
         [ErrorCode.DuplicateTransactionByAction] = "Transaction already exists with this action",
     };
+    public static IReadOnlyDictionary<string, string> Messages => ErrorMessages;
+
 }

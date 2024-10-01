@@ -6,10 +6,8 @@ internal class AdjustAgentWalletRecordQueryService(ITgsRepository tgsRepository)
         : IQueryService<AdjustAgentWalletRecordQuery, AdjustRecord>,
     IGetService<AdjustAgentWalletRecordQuery, int>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public IAsyncEnumerable<AdjustRecord> QueryAsync(AdjustAgentWalletRecordQuery query, CancellationToken cancellationToken = default)
-        => _tgsRepository.QueryAgentAdjustRecordsAsync(
+        => tgsRepository.QueryAgentAdjustRecordsAsync(
             query.BrandId,
             new AdjustRecordQueryCondition(
                 query.CreatedOnRange,
@@ -20,7 +18,7 @@ internal class AdjustAgentWalletRecordQueryService(ITgsRepository tgsRepository)
             cancellationToken);
 
     public ValueTask<int> GetAsync(AdjustAgentWalletRecordQuery query, CancellationToken cancellationToken = default)
-        => _tgsRepository.CountQueryAgentAdjustRecordsAsync(
+        => tgsRepository.CountQueryAgentAdjustRecordsAsync(
             query.BrandId,
             new AdjustRecordQueryCondition(
                 query.CreatedOnRange,

@@ -6,8 +6,6 @@ namespace Tgs.CashService.ApplicationServices;
 internal class PromotionVipLevelupgradeCommandService(ITgsRepository tgsRepository)
     : IGetService<PromotionVipLevelUpgradeCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public async ValueTask<ExchangeResult> GetAsync(PromotionVipLevelUpgradeCommand command, CancellationToken cancellationToken = default)
     {
         var record = new ExchangeWalletRecord(
@@ -19,7 +17,7 @@ internal class PromotionVipLevelupgradeCommandService(ITgsRepository tgsReposito
             command.ExternalId ?? string.Empty
         );
 
-        return await _tgsRepository.ExchangeWalletAsync(record, cancellationToken)
+        return await tgsRepository.ExchangeWalletAsync(record, cancellationToken)
             .ConfigureAwait(false);
     }
 }

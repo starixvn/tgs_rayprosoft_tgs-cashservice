@@ -6,8 +6,6 @@ namespace Tgs.CashService.ApplicationServices;
 internal class AdjustResettledBetManualCommandService(ITgsRepository tgsRepository)
     : IGetService<AdjustResettledBetManualCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public ValueTask<ExchangeResult> GetAsync(AdjustResettledBetManualCommand command, CancellationToken cancellationToken = default)
     {
         var record = new ExchangeWalletRecord(
@@ -20,6 +18,6 @@ internal class AdjustResettledBetManualCommandService(ITgsRepository tgsReposito
             command.CreatedByUserId
         );
 
-        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
+        return tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

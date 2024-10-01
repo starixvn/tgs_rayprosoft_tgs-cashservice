@@ -1,34 +1,22 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Tgs.Cash.Common;
-using Tgs.CashService.Repositories.Entities;
 using Tgs.CashService.Core.Entities;
-using Tgs.Paging;
-using Microsoft.Extensions.Logging;
-using Tgs.SerialNumberGenerator;
 using Tgs.CashService.Models;
-using Dapper;
+using Tgs.CashService.Repositories.Entities;
+using Tgs.Paging;
+using Tgs.SerialNumberGenerator;
 
 namespace Tgs.CashService.Repositories;
 
 internal class TgsRepository(
     TgsContext dbContext,
     IDbAcess dbAcess,
-    ISerialNumberGenerator snGenerator,
-    ILogger<TgsRepository> logger)
+    ISerialNumberGenerator snGenerator)
     : ITgsRepository
 {
-    private static readonly JsonSerializerOptions _SerializerOptions = new(JsonSerializerDefaults.Web)
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-        WriteIndented = false,
-        Converters =
-        {
-            new JsonStringEnumConverter()
-        }
-    };
-
     public int CountInRedisTransactionLogs(Guid walletId, CancellationToken cancellationToken = default)
     {
         return 0;
@@ -52,7 +40,7 @@ internal class TgsRepository(
         string currencyCode,
         CancellationToken cancellationToken = default)
     {
-        var currentDate = DateTime.UtcNow;
+        var currentDate = DateTimeOffset.UtcNow;
         var param = new
         {
             Id = walletId,
@@ -122,8 +110,52 @@ internal class TgsRepository(
             .SumAsync(t => t.Amount, cancellationToken)
             .ConfigureAwait(false);
 
+    public async ValueTask<Transaction?> GetTransactionLogByProviderInfoAsync(string playerCode, ProviderInfo providerInfo, CancellationToken cancellationToken = default)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("PlayerCode", playerCode);
+        parameters.Add("ExternalId", providerInfo.RefId);
+        parameters.Add("ProviderCode", providerInfo.ProviderCode);
+        parameters.Add("Action", providerInfo.Action);
+        return await dbAcess.QueryFirstOrDefaultAsync<Transaction>(QueryStringMapper.GetTransactionByAction, parameters).ConfigureAwait(false);
+    }
+
+    public async ValueTask<Guid> GetWalletIdAsync(string playerCode, Guid? walletIdDefault = default, CancellationToken cancellationToken = default)
+    {
+        if (walletIdDefault == null || walletIdDefault == Guid.Empty || walletIdDefault == default)
+        {
+            var wallet = await GetWalletByPlayerCodeAsync(playerCode, cancellationToken).ConfigureAwait(false);
+            return wallet is null ? Guid.Empty : wallet.Id;
+        }
+        return walletIdDefault.GetValueOrDefault();
+    }
+
+    public async ValueTask<Wallet?> GetWalletByIdAsync(Guid walletId, CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Wallets
+            .AsNoTracking()
+            .FirstOrDefaultAsync(wallet => wallet.Id == walletId)
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask<Wallet?> GetWalletByPlayerCodeAsync(string playerCode, CancellationToken cancellationToken = default)
+    {
+        var parameters = new { PlayerCode = playerCode };
+        return await dbAcess.QueryFirstOrDefaultAsync<Wallet>(QueryStringMapper.GetWalletByPlayerCode, parameters).ConfigureAwait(false);
+    }
+
+    public async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default)
+    {
+        return await ExchangeWalletAsync(record, StoreProcedureMapper.ExchangeWalletSP, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async ValueTask<ExchangeResult> ExchangeWalletByActionAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default)
+    {
+        return await ExchangeWalletAsync(record, StoreProcedureMapper.ExchangeWalletByActionSP, cancellationToken).ConfigureAwait(false);
+    }
+
     private IQueryable<TransactionData> MakeTransactionLogQuery(
-            Guid walletId,
+                                    Guid walletId,
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes)
     {
@@ -149,57 +181,14 @@ internal class TgsRepository(
         var transactionTypes = queryTypes.Select(t => (short)t).ToArray();
 
         if (transactionTypes.Length > 0)
+        {
             transactionQuery = transactionQuery.Where(trx => transactionTypes.Contains(trx.Type));
+        }
 
         return transactionQuery;
     }
 
-    public async ValueTask<Transaction?> GetTransactionLogByProviderInfoAsync(string playerCode, ProviderInfo providerInfo, CancellationToken cancellationToken = default)
-    {
-        var parameters = new DynamicParameters();
-        parameters.Add("PlayerCode", playerCode);
-        parameters.Add("ExternalId", providerInfo.RefId);
-        parameters.Add("ProviderCode", providerInfo.ProviderCode);
-        parameters.Add("Action", providerInfo.Action);
-        return await dbAcess.QueryFirstOrDefaultAsync<Transaction>(QueryStringMapper.GetTransactionByAction, parameters).ConfigureAwait(false);
-    }
-
-
-    public async ValueTask<Guid> GetWalletIdAsync(string playerCode,Guid? walletIdDefault = default, CancellationToken cancellationToken = default)
-    {
-        if (walletIdDefault == null ||walletIdDefault == Guid.Empty || walletIdDefault == default)
-        {
-            var wallet = await GetWalletByPlayerCodeAsync(playerCode).ConfigureAwait(false);
-            return wallet is null ? Guid.Empty : wallet.Id;
-        }
-        return walletIdDefault.GetValueOrDefault();
-    }
-    public async ValueTask<Wallet?> GetWalletByIdAsync(Guid walletId, CancellationToken cancellationToken = default)
-    {
-        return await dbContext.Wallets
-            .AsNoTracking()
-            .FirstOrDefaultAsync(wallet => wallet.Id == walletId)
-            .ConfigureAwait(false);
-    }
-
-    public async ValueTask<Wallet?> GetWalletByPlayerCodeAsync(string playerCode, CancellationToken cancellationToken = default)
-    {
-        var parameters = new {PlayerCode = playerCode};
-        return await dbAcess.QueryFirstOrDefaultAsync<Wallet>(QueryStringMapper.GetWalletByPlayerCode, parameters).ConfigureAwait(false);
-    }
-
-    public async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default)
-    {
-       return await ExchangeWalletAsync(record, StoreProcedureMapper.ExchangeWalletSP, cancellationToken).ConfigureAwait(false);
-    }
-
-    public async ValueTask<ExchangeResult> ExchangeWalletByActionAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default)
-    {
-        return await ExchangeWalletAsync(record, StoreProcedureMapper.ExchangeWalletByActionSP, cancellationToken).ConfigureAwait(false);
-    }
-
-
-    private async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, string spName,CancellationToken cancellationToken = default)
+    private async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, string spName, CancellationToken cancellationToken = default)
     {
         var transactionId = await snGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
         var criteria = new ExchangeWalletCriteria(record, transactionId);
@@ -216,19 +205,19 @@ internal class TgsRepository(
 
         if (result!.ErrorCode == ErrorCode.NotFoundWallet)
         {
-            throw new NotFoundWalletException(ErrorMessages.Messages[ErrorCode.NotFoundWallet]);
+            throw new NotFoundWalletException(ErrorMessageMapper.Messages[ErrorCode.NotFoundWallet]);
         }
         if (result!.ErrorCode == ErrorCode.InsufficientFunds)
         {
-            throw new InsufficientFundException(ErrorMessages.Messages[ErrorCode.InsufficientFunds]);
+            throw new InsufficientFundException(ErrorMessageMapper.Messages[ErrorCode.InsufficientFunds]);
         }
         if (result!.ErrorCode == ErrorCode.DuplicateTransaction)
         {
-            throw new DuplicateTransactionException(ErrorMessages.Messages[ErrorCode.DuplicateTransaction]);
+            throw new DuplicateTransactionException(ErrorMessageMapper.Messages[ErrorCode.DuplicateTransaction]);
         }
         if (result!.ErrorCode == ErrorCode.DuplicateTransactionByAction)
         {
-            throw new DuplicateTransactionByActionException(ErrorMessages.Messages[ErrorCode.DuplicateTransactionByAction]);
+            throw new DuplicateTransactionByActionException(ErrorMessageMapper.Messages[ErrorCode.DuplicateTransactionByAction]);
         }
 
         return new ExchangeResult(Guid.Parse(result.TransactionId), result.Balance, result.LockedBalance);

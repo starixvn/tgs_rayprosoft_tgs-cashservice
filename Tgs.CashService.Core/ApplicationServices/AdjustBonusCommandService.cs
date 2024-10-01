@@ -7,8 +7,6 @@ namespace Tgs.CashService.ApplicationServices;
 internal class AdjustBonusCommandService(ITgsRepository tgsRepository)
     : IGetService<AdjustBonusV2Command, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public ValueTask<ExchangeResult> GetAsync(AdjustBonusV2Command command, CancellationToken cancellationToken = default)
     {
         var description = new
@@ -26,6 +24,6 @@ internal class AdjustBonusCommandService(ITgsRepository tgsRepository)
             command.ExternalId ?? string.Empty,
             command.CreatedByUserId
         );
-        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
+        return tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

@@ -2,7 +2,7 @@
 {
     public static class ExceptionMapper
     {
-        public static readonly Dictionary<Type, string> ErrorCodeByException = new()
+        private static readonly Dictionary<Type, string> ErrorCodeByException = new()
         {
             [typeof(DuplicateTransactionException)] = ErrorCode.DuplicateTransaction,
             [typeof(NotFoundWalletException)] = ErrorCode.NotFoundWallet,

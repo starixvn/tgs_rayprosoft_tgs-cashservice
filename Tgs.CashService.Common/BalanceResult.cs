@@ -7,5 +7,5 @@ public record BalanceResult(
     decimal LockedBalance,
     string ErrorCode = ErrorCode.Success)
 {
-    public string ErrorMessage => ErrorMessages.Messages[ErrorCode];
+    public string ErrorMessage => ErrorMessageMapper.Messages[ErrorCode];
 };

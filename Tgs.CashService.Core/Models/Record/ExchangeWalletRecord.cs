@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashService.Models
 {
-    public record ExchangeWalletRecord(Guid? WalletId, 
+    public record ExchangeWalletRecord(Guid? WalletId,
         TransactionType TransactionType,
         decimal Amount,
         decimal LockAmount,

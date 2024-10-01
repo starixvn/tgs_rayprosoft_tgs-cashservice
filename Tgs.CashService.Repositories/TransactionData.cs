@@ -1,6 +1,6 @@
 ﻿namespace Tgs.CashService.Repositories;
 
-internal class TransactionData
+public class TransactionData
 {
     public Guid Id { get; set; }
 

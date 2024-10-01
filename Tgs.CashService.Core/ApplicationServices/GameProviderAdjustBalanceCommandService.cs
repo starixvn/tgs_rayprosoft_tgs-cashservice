@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Text.Json;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Tgs.CashService.Models;
 using Tgs.ServiceUtility;
 
@@ -9,16 +9,14 @@ internal class GameProviderAdjustBalanceCommandService(ITgsRepository tgsReposit
     ILogger<GameProviderAdjustBalanceCommand> logger)
     : IGetService<GameProviderAdjustBalanceCommand, BalanceResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public async ValueTask<BalanceResult> GetAsync(GameProviderAdjustBalanceCommand command, CancellationToken cancellationToken = default)
     {
         try
         {
-            var errorCode = IsValidData(command, cancellationToken);
+            var errorCode = IsValidData(command);
             if (errorCode != ErrorCode.Success)
             {
-                logger.LogError($"Adjust Balance - {ErrorMessages.Messages[errorCode]} {JsonSerializer.Serialize(command)}");
+                logger.LogError($"Adjust Balance - {ErrorMessageMapper.Messages[errorCode]} {JsonSerializer.Serialize(command)}");
                 return new BalanceResult(Guid.Empty, 0, 0, errorCode);
             }
 
@@ -37,18 +35,19 @@ internal class GameProviderAdjustBalanceCommandService(ITgsRepository tgsReposit
             command.Action
             );
 
-            var result = await _tgsRepository.ExchangeWalletAsync(record, cancellationToken)
+            var result = await tgsRepository.ExchangeWalletAsync(record, cancellationToken)
                 .ConfigureAwait(false);
             return new BalanceResult(result.TransactionId, result.Balance, result.LockedBalance);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             logger.LogError($"Adjust Balance - {ex.Message} - {JsonSerializer.Serialize(command)}");
             var code = ExceptionMapper.GetErrorCodeByException(ex);
             return new BalanceResult(Guid.Empty, 0, 0, code);
         }
     }
 
-    private string IsValidData(GameProviderAdjustBalanceCommand command, CancellationToken cancellationToken = default)
+    private string IsValidData(GameProviderAdjustBalanceCommand command)
     {
         if (command.AddedAmount < 0 || command.DeductedAmount < 0)
         {
@@ -59,7 +58,7 @@ internal class GameProviderAdjustBalanceCommandService(ITgsRepository tgsReposit
         {
             return ErrorCode.InvalidData;
         }
-       
+
         return ErrorCode.Success;
     }
 }

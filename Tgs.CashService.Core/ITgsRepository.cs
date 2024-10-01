@@ -1,5 +1,4 @@
 ﻿using Tgs.Cash.Common;
-using Tgs.Cash.Protos;
 using Tgs.CashService.Core.Entities;
 using Tgs.CashService.Models;
 using Tgs.Paging;
@@ -8,8 +7,8 @@ namespace Tgs.CashService;
 
 public interface ITgsRepository
 {
-
     int CountInRedisTransactionLogs(Guid walletId, CancellationToken cancellationToken = default);
+
     ValueTask<int> CountTransactionLogsQueryAsync(
         Guid walletId,
         ValueRange<DateTime> queryRange,

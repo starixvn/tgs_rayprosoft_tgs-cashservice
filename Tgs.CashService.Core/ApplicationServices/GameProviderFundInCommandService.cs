@@ -6,8 +6,6 @@ namespace Tgs.CashService.ApplicationServices;
 internal class GameProviderFundInCommandService(ITgsRepository tgsRepository)
     : IGetService<GameProviderFundInCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public ValueTask<ExchangeResult> GetAsync(GameProviderFundInCommand command, CancellationToken cancellationToken = default)
     {
         var record = new ExchangeWalletRecord(
@@ -19,6 +17,6 @@ internal class GameProviderFundInCommandService(ITgsRepository tgsRepository)
             command.ExternalId ?? string.Empty
         );
 
-        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
+        return tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

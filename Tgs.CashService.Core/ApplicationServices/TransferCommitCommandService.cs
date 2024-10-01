@@ -5,8 +5,6 @@ namespace Tgs.CashService.ApplicationServices;
 
 internal class TransferCommitCommandService(ITgsRepository tgsRepository) : IGetService<TransferCommitCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public ValueTask<ExchangeResult> GetAsync(TransferCommitCommand command, CancellationToken cancellationToken = default)
     {
         var record = new ExchangeWalletRecord(
@@ -19,6 +17,6 @@ internal class TransferCommitCommandService(ITgsRepository tgsRepository) : IGet
             command.Executor
         );
 
-        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
+        return tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

@@ -5,8 +5,6 @@ namespace Tgs.CashService.ApplicationServices;
 
 internal class RollbackWithdrawCommandService(ITgsRepository tgsRepository) : IGetService<RollbackWithdrawCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public ValueTask<ExchangeResult> GetAsync(RollbackWithdrawCommand command, CancellationToken cancellationToken = default)
     {
         var record = new ExchangeWalletRecord(
@@ -18,6 +16,6 @@ internal class RollbackWithdrawCommandService(ITgsRepository tgsRepository) : IG
             command.ExternalId ?? string.Empty
         );
 
-        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
+        return tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

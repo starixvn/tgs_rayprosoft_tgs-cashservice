@@ -4,11 +4,9 @@ using Tgs.ServiceUtility;
 namespace Tgs.CashService.ApplicationServices;
 
 [Obsolete("已淘汰")]
-internal class CancelWithdrawalCommandService( ITgsRepository tgsRepository)
+internal class CancelWithdrawalCommandService(ITgsRepository tgsRepository)
     : IGetService<CancelWithdrawalCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public ValueTask<ExchangeResult> GetAsync(CancelWithdrawalCommand command, CancellationToken cancellationToken = default)
     {
         var record = new ExchangeWalletRecord(
@@ -21,6 +19,6 @@ internal class CancelWithdrawalCommandService( ITgsRepository tgsRepository)
             command.CreatedByUserId
         );
 
-        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
+        return tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

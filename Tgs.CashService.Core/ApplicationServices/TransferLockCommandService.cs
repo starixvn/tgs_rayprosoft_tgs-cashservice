@@ -5,8 +5,6 @@ namespace Tgs.CashService.ApplicationServices;
 
 internal class TransferLockCommandService(ITgsRepository tgsRepository) : IGetService<TransferLockCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public ValueTask<ExchangeResult> GetAsync(TransferLockCommand command, CancellationToken cancellationToken = default)
     {
         var record = new ExchangeWalletRecord(
@@ -19,6 +17,6 @@ internal class TransferLockCommandService(ITgsRepository tgsRepository) : IGetSe
             command.Executor
         );
 
-        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
+        return tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

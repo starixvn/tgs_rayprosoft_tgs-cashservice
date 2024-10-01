@@ -6,8 +6,6 @@ namespace Tgs.CashService.ApplicationServices;
 internal class DividendAllAgentRebateCommandService(ITgsRepository tgsRepository)
     : IGetService<DividendAllAgentRebateCommand, ExchangeResult>
 {
-    private readonly ITgsRepository _tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-
     public ValueTask<ExchangeResult> GetAsync(
         DividendAllAgentRebateCommand command,
         CancellationToken cancellationToken = default)
@@ -21,6 +19,6 @@ internal class DividendAllAgentRebateCommandService(ITgsRepository tgsRepository
             command.ExternalId ?? string.Empty
         );
 
-        return _tgsRepository.ExchangeWalletAsync(record, cancellationToken);
+        return tgsRepository.ExchangeWalletAsync(record, cancellationToken);
     }
 }

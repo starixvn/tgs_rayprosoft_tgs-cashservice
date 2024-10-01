@@ -12,7 +12,7 @@ public class WalletManagementController : ControllerBase
     [HttpPut(Name = "CreateNewCash")]
     public ValueTask<Guid> CreateNewCashAsync(
         [FromServices] IGetService<NewCashCommand, Guid> createService,
-        [FromBody] NewCashReqeustViewModel viewModel)
+        [FromBody] NewCashRequestViewModel viewModel)
     {
         var command = new NewCashCommand(
             viewModel.BrandId,
