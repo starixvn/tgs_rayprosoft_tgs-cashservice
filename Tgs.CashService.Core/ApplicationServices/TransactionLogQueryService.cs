@@ -3,21 +3,14 @@
 namespace Tgs.CashService.ApplicationServices;
 
 internal class TransactionLogQueryService(ITgsRepository tgsRepository)
-    : IQueryService<TransactionLogQuery, TransactionLog>
-    , IGetService<TransactionLogQuery, int>
+    : IGetService<TransactionLogQuery, IEnumerable<TransactionLog>>
 {
-    public IAsyncEnumerable<TransactionLog> QueryAsync(TransactionLogQuery query, CancellationToken cancellationToken = default)
-        => tgsRepository.QueryTransactionLogsAsync(
+    public async ValueTask<IEnumerable<TransactionLog>> GetAsync(TransactionLogQuery query, CancellationToken cancellationToken = default)
+        => await tgsRepository.QueryTransactionLogsAsync(
             query.WalletId,
             query.QueryRange,
             query.QueryTypes,
-            query.Paging,
-            cancellationToken);
-
-    public async ValueTask<int> GetAsync(TransactionLogQuery query, CancellationToken cancellationToken = default)
-        => await tgsRepository.CountTransactionLogsQueryAsync(
-            query.WalletId,
-            query.QueryRange,
-            query.QueryTypes,
+            query.PageIndex,
+            query.PageSize,
             cancellationToken).ConfigureAwait(false);
 }

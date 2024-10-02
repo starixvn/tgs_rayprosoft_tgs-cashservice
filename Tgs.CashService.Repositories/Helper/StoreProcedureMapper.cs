@@ -15,13 +15,19 @@
                                                                     external_transaction_id => @externalTransactionId,
                                                                     provider_code => @providerCode,
                                                                     action => @action)";
-        public static readonly string GettransactionLogsFC = @"SELECT * FROM dbo.transaction_get_info(
+        public static readonly string GetTransactionLogsFC = @"SELECT * FROM dbo.transaction_get_info(
                                                                     wallet_id => @walletId,
                                                                     from_time => @fromTime,
                                                                     to_time => @toTime,
                                                                     type => @type,
                                                                     page_size => @pageSize,
                                                                     page_index => @pageIndex)";
+
+        public static readonly string GetTransactionTotalAmountFC = @"SELECT * FROM dbo.transaction_get_total_amount(
+                                                                    wallet_id => @walletId,
+                                                                    from_time => @fromTime,
+                                                                    to_time => @toTime,
+                                                                    type => @type)";
     }
 }
 

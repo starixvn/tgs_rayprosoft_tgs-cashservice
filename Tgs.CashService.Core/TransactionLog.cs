@@ -8,4 +8,5 @@ public record TransactionLog(
     decimal LockAmount,
     decimal LockedBalance,
     string? Description,
-    string? ExternalId);
+    string? ExternalId,
+    int TotalCount = 0);

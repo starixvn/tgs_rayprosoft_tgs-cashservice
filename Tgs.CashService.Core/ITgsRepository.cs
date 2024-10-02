@@ -1,20 +1,11 @@
 ﻿using Tgs.Cash.Common;
 using Tgs.CashService.Core.Entities;
 using Tgs.CashService.Models;
-using Tgs.Paging;
 
 namespace Tgs.CashService;
 
 public interface ITgsRepository
 {
-    int CountInRedisTransactionLogs(Guid walletId, CancellationToken cancellationToken = default);
-
-    ValueTask<int> CountTransactionLogsQueryAsync(
-        Guid walletId,
-        ValueRange<DateTime> queryRange,
-        IEnumerable<TransactionType> queryTypes,
-        CancellationToken cancellationToken = default);
-
     ValueTask CreateWalletAsync(
         Guid walletId,
         Guid brandId,
@@ -23,15 +14,12 @@ public interface ITgsRepository
         string currencyCode,
         CancellationToken cancellationToken = default);
 
-    IAsyncEnumerable<TransactionLog> QueryInRedisTransactionLogsAsync(
-        Guid walletId,
-        CancellationToken cancellationToken = default);
-
-    IAsyncEnumerable<TransactionLog> QueryTransactionLogsAsync(
+    ValueTask<IEnumerable<TransactionLog>> QueryTransactionLogsAsync(
         Guid walletId,
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes,
-        Paging<TransactionLog> paging,
+        int pageIndex,
+        int pageSize,
         CancellationToken cancellationToken = default);
 
     ValueTask<decimal> QueryTransactionTotalAmountAsync(

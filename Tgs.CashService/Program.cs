@@ -1,7 +1,6 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using FluentdForward.OpenTelemetry.MessagePack;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using OpenTelemetry.Metrics;
@@ -81,7 +80,6 @@ builder.Services
             .AddHttpClientInstrumentation()
             .AddGrpcClientInstrumentation()
             .AddGrpcCoreInstrumentation()
-            .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
             .AddProfileViewExporter()
             .AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector")))
     .WithMetrics(meterBuilder => meterBuilder
@@ -94,8 +92,7 @@ builder.Services
     .AddProfileViewer();
 
 builder.Services
-    .AddCashServiceRepositories(
-        (_, optionsBuilder) => optionsBuilder.UseNpgsql("name=Tgs").EnableSensitiveDataLogging())
+    .AddCashServiceRepositories()
     .AddCashServiceCore();
 
 builder.Services

@@ -1,35 +1,16 @@
 ﻿using Dapper;
-using Microsoft.EntityFrameworkCore;
 using Tgs.Cash.Common;
 using Tgs.CashService.Core.Entities;
 using Tgs.CashService.Models;
-using Tgs.CashService.Repositories.Entities;
-using Tgs.Paging;
 using Tgs.SerialNumberGenerator;
 
 namespace Tgs.CashService.Repositories;
 
 internal class TgsRepository(
-    TgsContext dbContext,
     IDbAcess dbAcess,
     ISerialNumberGenerator snGenerator)
     : ITgsRepository
 {
-    public int CountInRedisTransactionLogs(Guid walletId, CancellationToken cancellationToken = default)
-    {
-        return 0;
-    }
-
-    public async ValueTask<int> CountTransactionLogsQueryAsync(
-        Guid walletId,
-        ValueRange<DateTime> queryRange,
-        IEnumerable<TransactionType> queryTypes,
-        CancellationToken cancellationToken = default)
-        => await MakeTransactionLogQuery(
-            walletId,
-            queryRange,
-            queryTypes).CountAsync(cancellationToken).ConfigureAwait(false);
-
     public async ValueTask CreateWalletAsync(
         Guid walletId,
         Guid brandId,
@@ -57,44 +38,37 @@ internal class TgsRepository(
         await dbAcess.ExecuteAsync(sqlQuery, param).ConfigureAwait(false);
     }
 
-    public IAsyncEnumerable<TransactionLog> QueryInRedisTransactionLogsAsync(
-        Guid walletId,
-        CancellationToken cancellationToken = default)
-        => AsyncEnumerable.Empty<TransactionLog>();
-
-    public IAsyncEnumerable<TransactionLog> QueryTransactionLogsAsync(
+    public async ValueTask<IEnumerable<TransactionLog>> QueryTransactionLogsAsync(
         Guid walletId,
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes,
-        Paging<TransactionLog> paging,
+        int pageIndex,
+        int pageSize,
         CancellationToken cancellationToken = default)
     {
-        var query = MakeTransactionLogQuery(walletId, queryRange, queryTypes);
-
-        var dbPaging = paging.ConvertTo<TransactionData>(newPaging =>
+        var parameters = new
         {
-            _ = newPaging.MapProperty(
-                nameof(TransactionLog.RecordedOn),
-                row => row.RecordedOn);
-        });
-
-        query = query.ApplyOrderBy(dbPaging).ApplyPaging(dbPaging);
-
-        return query.ToAsyncEnumerable()
-            .Select(row => new TransactionLog(
-                row.Id,
-                row.RecordedOn,
-                (TransactionType)row.Type,
-                row.Amount,
-                row.Balance,
-                row.RecordType is "G"
-                    ? 0M
-                    : row.LockAmount,
-                row.RecordType is "G"
-                    ? 0M
-                    : row.LockedBalance,
-                row.Description,
-                row.ExternalTransactionId));
+            walletId,
+            fromTime = queryRange.From,
+            toTime = queryRange.To,
+            type = queryTypes.Select(t => (short)t).ToArray(),
+            pageSize,
+            pageIndex
+        };
+        var data = await dbAcess.QueryAsync<TransactionData>(FunctionMapper.GetTransactionLogsFC, parameters).ConfigureAwait(false);
+        return data.Select(log =>
+                            new TransactionLog(
+                                log.Id, 
+                                log.RecordedOn, 
+                                (TransactionType)log.Type, 
+                                log.Amount, 
+                                log.Balance, 
+                                log.LockAmount, 
+                                log.LockedBalance, 
+                                log.Description,
+                                log.ExternalTransactionId, 
+                                log.TotalCount
+                            ));
     }
 
     public async ValueTask<decimal> QueryTransactionTotalAmountAsync(
@@ -102,12 +76,17 @@ internal class TgsRepository(
         ValueRange<DateTime> queryRange,
         IEnumerable<TransactionType> queryTypes,
         CancellationToken cancellationToken = default)
-        => await MakeTransactionLogQuery(
+    {
+        var parameters = new 
+        {
             walletId,
-            queryRange,
-            queryTypes)
-            .SumAsync(t => t.Amount, cancellationToken)
-            .ConfigureAwait(false);
+            fromTime = queryRange.From,
+            toTime = queryRange.To,
+            type = queryTypes.Select(t => (short)t).ToArray(),
+        };
+        var data = await dbAcess.QueryFirstOrDefaultAsync<dynamic>(FunctionMapper.GetTransactionTotalAmountFC, parameters).ConfigureAwait(false);
+        return data?.TotalAmount ?? 0;
+    }
 
     public async ValueTask<string?> GetTransactionIdByProviderInfoAsync(string playerCode, ProviderInfo providerInfo, CancellationToken cancellationToken = default)
     {
@@ -149,40 +128,6 @@ internal class TgsRepository(
     public async ValueTask<ExchangeResult> ExchangeWalletByActionAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default)
     {
         return await ExchangeWalletAsync(record, StoreProcedureMapper.ExchangeWalletByActionSP, cancellationToken).ConfigureAwait(false);
-    }
-
-    private IQueryable<TransactionData> MakeTransactionLogQuery(
-                                    Guid walletId,
-        ValueRange<DateTime> queryRange,
-        IEnumerable<TransactionType> queryTypes)
-    {
-        var (from, to) = (queryRange.From.ToUniversalTime(), queryRange.To.ToUniversalTime());
-
-        var transactionQuery = dbContext.Transactions.AsNoTracking().AsQueryable()
-            .Where(trx => trx.WalletId == walletId)
-            .Where(trx => trx.RecordedOn >= from && trx.RecordedOn < to)
-            .Select(trx => new TransactionData
-            {
-                Id = trx.Id,
-                RecordType = "T",
-                Amount = trx.Amount,
-                LockAmount = trx.LockAmount,
-                Balance = trx.Balance,
-                LockedBalance = trx.LockedBalance,
-                Type = trx.Type,
-                RecordedOn = trx.RecordedOn,
-                Description = trx.Description,
-                ExternalTransactionId = trx.ExternalTransactionId
-            });
-
-        var transactionTypes = queryTypes.Select(t => (short)t).ToArray();
-
-        if (transactionTypes.Length > 0)
-        {
-            transactionQuery = transactionQuery.Where(trx => transactionTypes.Contains(trx.Type));
-        }
-
-        return transactionQuery;
     }
 
     private async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, string spName, CancellationToken cancellationToken = default)

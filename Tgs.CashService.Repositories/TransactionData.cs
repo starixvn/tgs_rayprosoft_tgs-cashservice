@@ -4,8 +4,6 @@ public class TransactionData
 {
     public Guid Id { get; set; }
 
-    public string RecordType { get; set; } = default!;
-
     public decimal Amount { get; set; }
 
     public decimal LockAmount { get; set; }
@@ -21,4 +19,6 @@ public class TransactionData
     public string? Description { get; set; }
 
     public string? ExternalTransactionId { get; set; }
+
+    public int TotalCount { get; set; }
 }
