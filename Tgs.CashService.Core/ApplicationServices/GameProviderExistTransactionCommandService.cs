@@ -18,10 +18,10 @@ internal class GameProviderExistTransactionCommandService(ITgsRepository tgsRepo
             throw new ArgumentNullException(ErrorMessageMapper.Messages[ErrorCode.InvalidData]);
         }
 
-        var transaction = await tgsRepository
-            .GetTransactionLogByProviderInfoAsync(command.PlayerCode, new ProviderInfo(command.ProviderCode, command.ExternalId, command.Action),
+        var transactionId = await tgsRepository
+            .GetTransactionIdByProviderInfoAsync(command.PlayerCode, new ProviderInfo(command.ProviderCode, command.ExternalId, command.Action),
             cancellationToken)
             .ConfigureAwait(false);
-        return transaction != null;
+        return !string.IsNullOrEmpty(transactionId);
     }
 }

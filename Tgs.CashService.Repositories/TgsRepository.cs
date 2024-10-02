@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using Dapper;
+﻿using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Tgs.Cash.Common;
 using Tgs.CashService.Core.Entities;
@@ -50,12 +48,13 @@ internal class TgsRepository(
             Balance = 0,
             CreatedOn = currentDate,
             UpdatedOn = currentDate,
-            LockBalance = 0,
+            LockedBalance = 0,
             BrandId = brandId,
             CashType = type.ToString(),
             SnapshotId = Guid.Empty
         };
-        await dbAcess.ExecuteAsync(QueryStringMapper.InsertNewWallet, param).ConfigureAwait(false);
+        string sqlQuery = $"CALL {StoreProcedureMapper.InsertWalletSP}({string.Join(", ", param.GetType().GetProperties().Select(p => $"{p.Name.ToLower()} => @{p.Name.ToLower()}"))})";
+        await dbAcess.ExecuteAsync(sqlQuery, param).ConfigureAwait(false);
     }
 
     public IAsyncEnumerable<TransactionLog> QueryInRedisTransactionLogsAsync(
@@ -110,14 +109,16 @@ internal class TgsRepository(
             .SumAsync(t => t.Amount, cancellationToken)
             .ConfigureAwait(false);
 
-    public async ValueTask<Transaction?> GetTransactionLogByProviderInfoAsync(string playerCode, ProviderInfo providerInfo, CancellationToken cancellationToken = default)
+    public async ValueTask<string?> GetTransactionIdByProviderInfoAsync(string playerCode, ProviderInfo providerInfo, CancellationToken cancellationToken = default)
     {
-        var parameters = new DynamicParameters();
-        parameters.Add("PlayerCode", playerCode);
-        parameters.Add("ExternalId", providerInfo.RefId);
-        parameters.Add("ProviderCode", providerInfo.ProviderCode);
-        parameters.Add("Action", providerInfo.Action);
-        return await dbAcess.QueryFirstOrDefaultAsync<Transaction>(QueryStringMapper.GetTransactionByAction, parameters).ConfigureAwait(false);
+        var parameters = new
+        {
+            playerCode,
+            externalTransactionId = providerInfo.RefId,
+            providerCode = providerInfo.ProviderCode,
+            action = providerInfo.Action
+        };
+        return (await dbAcess.QueryFirstOrDefaultAsync<Guid?>(FunctionMapper.GetTransactionIdByProviderInfoFC, parameters).ConfigureAwait(false))?.ToString();
     }
 
     public async ValueTask<Guid> GetWalletIdAsync(string playerCode, Guid? walletIdDefault = default, CancellationToken cancellationToken = default)
@@ -132,16 +133,12 @@ internal class TgsRepository(
 
     public async ValueTask<Wallet?> GetWalletByIdAsync(Guid walletId, CancellationToken cancellationToken = default)
     {
-        return await dbContext.Wallets
-            .AsNoTracking()
-            .FirstOrDefaultAsync(wallet => wallet.Id == walletId)
-            .ConfigureAwait(false);
+        return await dbAcess.QueryFirstOrDefaultAsync<Wallet>(FunctionMapper.GetWalletByIdFC, new { id = walletId }).ConfigureAwait(false);
     }
 
     public async ValueTask<Wallet?> GetWalletByPlayerCodeAsync(string playerCode, CancellationToken cancellationToken = default)
     {
-        var parameters = new { PlayerCode = playerCode };
-        return await dbAcess.QueryFirstOrDefaultAsync<Wallet>(QueryStringMapper.GetWalletByPlayerCode, parameters).ConfigureAwait(false);
+        return await dbAcess.QueryFirstOrDefaultAsync<Wallet>(FunctionMapper.GetWalletByPlayerCodeFC, new { playerCode }).ConfigureAwait(false);
     }
 
     public async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, CancellationToken cancellationToken = default)
@@ -200,7 +197,9 @@ internal class TgsRepository(
             parameters.Add(property.Name.ToLowerInvariant(), value);
         }
 
-        var sqlQuery = $"CALL {spName}({string.Join(", ", typeof(ExchangeWalletCriteria).GetProperties().Select(p => $"@{p.Name.ToLowerInvariant()}"))})";
+        var sqlQuery = $"CALL {spName}({string.Join(", ", typeof(ExchangeWalletCriteria)
+            .GetProperties()
+            .Select(p => $"{p.Name.ToLowerInvariant()} => @{p.Name.ToLowerInvariant()}"))})";
         var result = await dbAcess.QueryFirstOrDefaultAsync<ExchangeWalletSPResult>(sqlQuery, parameters).ConfigureAwait(false);
 
         if (result!.ErrorCode == ErrorCode.NotFoundWallet)
