@@ -22,7 +22,7 @@ internal class GameProviderAdjustBalanceByActionCommandService(ITgsRepository tg
 
             var record = new ExchangeWalletRecord(
             null,
-            TransactionType.GameProviderDeductBalance,
+            command.Type,
             command.Amount,
             0,
             command.Description ?? string.Empty,
@@ -49,6 +49,10 @@ internal class GameProviderAdjustBalanceByActionCommandService(ITgsRepository tg
 
     private string IsValidData(GameProviderAdjustBalanceByActionCommand command)
     {
+        if (command.Amount == 0)
+        {
+            return ErrorCode.InvalidAmount;
+        }
         if (string.IsNullOrEmpty(command.ExternalId) || string.IsNullOrEmpty(command.ProviderCode)
             || string.IsNullOrEmpty(command.OperationId) || string.IsNullOrEmpty(command.Action))
         {

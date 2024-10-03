@@ -302,6 +302,29 @@ public class GameProviderWalletController : ControllerBase
                 request.ExternalId,
                 request.OperationId,
                 request.Action,
+                TransactionType.GameProviderAdjustBalance,
+                request.IsAllowNegative), cts.Token)
+            .ConfigureAwait(false);
+    }
+
+    [HttpPut("gp/add-deduct-balance-by-action/{playerCode}", Name = "GameProviderAddOrDeductBalanceByAction")]
+    public async ValueTask<BalanceResult> GameProviderAddOrDeductBalanceByActionAsync(
+        [FromServices] IGetService<GameProviderAdjustBalanceByActionCommand, BalanceResult> service,
+        string playerCode,
+        [FromBody] GameProviderAdjustBalanceByActionViewModel request)
+    {
+        using var cts = HttpContext.RequestAborted.Wait10Seconds();
+
+        return await service
+            .GetAsync(new GameProviderAdjustBalanceByActionCommand(
+                playerCode,
+                request.Amount,
+                request.Description,
+                request.ProviderCode,
+                request.ExternalId,
+                request.OperationId,
+                request.Action,
+                request.Amount < 0 ? TransactionType.GameProviderDeductBalance : TransactionType.GameProviderAddBalance,
                 request.IsAllowNegative), cts.Token)
             .ConfigureAwait(false);
     }

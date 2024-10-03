@@ -8,4 +8,5 @@ public record GameProviderAdjustBalanceByActionCommand(
     string ExternalId,
     string OperationId,
     string Action,
+    TransactionType Type,
     bool IsAllowNegative);
