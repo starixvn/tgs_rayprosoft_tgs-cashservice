@@ -41,7 +41,7 @@ internal class GameProviderAdjustBalanceByActionCommandService(ITgsRepository tg
         }
         catch (Exception ex)
         {
-            logger.LogError($"Adjust Balance With Action - {ex.Message} - {JsonSerializer.Serialize(command)}");
+            logger.LogError(ex, $"Adjust Balance With Action - {ex.Message} - {JsonSerializer.Serialize(command)}");
             var code = ExceptionMapper.GetErrorCodeByException(ex);
             return new BalanceResult(Guid.Empty, 0, 0, code);
         }

@@ -41,7 +41,7 @@ internal class GameProviderDeductBalanceCommandService(ITgsRepository tgsReposit
         }
         catch (Exception ex)
         {
-            logger.LogError($"Deduct Balance - {ex.Message} - {JsonSerializer.Serialize(command)}");
+            logger.LogError(ex, $"Deduct Balance - {ex.Message} - {JsonSerializer.Serialize(command)}");
             var code = ExceptionMapper.GetErrorCodeByException(ex);
             return new BalanceResult(Guid.Empty, 0, 0, code);
         }

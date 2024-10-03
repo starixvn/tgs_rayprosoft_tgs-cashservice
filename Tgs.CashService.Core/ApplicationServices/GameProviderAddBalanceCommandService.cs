@@ -41,7 +41,7 @@ internal class GameProviderAddBalanceCommandService(ITgsRepository tgsRepository
         }
         catch (Exception ex)
         {
-            logger.LogError($"Add Balance - {ex.Message} - {JsonSerializer.Serialize(command)}");
+            logger.LogError(ex, $"Add Balance - {ex.Message} - {JsonSerializer.Serialize(command)}");
             var code = ExceptionMapper.GetErrorCodeByException(ex);
             return new BalanceResult(Guid.Empty, 0, 0, code);
         }
