@@ -2,13 +2,11 @@
 using Tgs.Cash.Common;
 using Tgs.CashService.Core.Entities;
 using Tgs.CashService.Models;
-using Tgs.SerialNumberGenerator;
 
 namespace Tgs.CashService.Repositories;
 
 internal class TgsRepository(
-    IDbAcess dbAcess,
-    ISerialNumberGenerator snGenerator)
+    IDbAcess dbAcess)
     : ITgsRepository
 {
     public async ValueTask CreateWalletAsync(
@@ -132,7 +130,7 @@ internal class TgsRepository(
 
     private async ValueTask<ExchangeResult> ExchangeWalletAsync(ExchangeWalletRecord record, string spName, CancellationToken cancellationToken = default)
     {
-        var transactionId = await snGenerator.GenerateAsync(cancellationToken).ConfigureAwait(false);
+        var transactionId = Guid.NewGuid();
         var criteria = new ExchangeWalletCriteria(record, transactionId);
 
         var parameters = new DynamicParameters();

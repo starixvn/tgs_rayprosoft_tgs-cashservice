@@ -8,7 +8,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCashServiceRepositories(
         this IServiceCollection services)
         => services
-            .AddSerialNumberGenerator()
             .AddScoped<IDbAcess, DbAccess>()
             .AddTransient<ITgsRepository, TgsRepository>(sp => ActivatorUtilities.CreateInstance<TgsRepository>(
                 sp));
